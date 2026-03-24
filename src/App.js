@@ -110,9 +110,9 @@ function App() {
             </p>
 
             <div className="bg-white rounded-2xl shadow-sm p-6 mb-10 text-left">
-              <p className="text-4xl font-bold text-gray-900 mb-2">17.5%</p>
+              <p className="text-4xl font-bold text-gray-900 mb-2">57%</p>
               <p className="text-gray-600 leading-relaxed">
-                That's the share of eligible Ontario voters who actually voted for the party currently making decisions about your rent, your tuition, and your healthcare. The rest either voted for someone else - or didn't show up at all.
+               That's how many eligible voters didn't cast a ballot. How many didn't vote for the party making decisions about your rent, your tuition, and your healthcare.
               </p>
             </div>
 
@@ -281,7 +281,7 @@ function ResultsPage({ answers, onRestart }) {
 
         <div className="bg-green-50 border border-green-200 rounded-2xl p-4 mb-6 text-center">
           <p className="text-green-800 font-medium">
-            🗳️ Ontario's next provincial election is June 5, 2029 - voter registration is free and takes 2 minutes
+            🗳️ Ontario's next provincial election will come - voter registration is free and takes 2 minutes
           </p>
         </div>
 
@@ -319,7 +319,7 @@ function ResultsPage({ answers, onRestart }) {
 
         <div className="bg-white rounded-2xl shadow-sm p-8 mb-5">
           <h3 className="text-xl font-bold text-gray-900 mb-2">Ready to do something about it?</h3>
-          <p className="text-gray-500 text-sm mb-5">Ontario's next election is June 5, 2029. Registration takes 2 minutes.</p>
+          <p className="text-gray-500 text-sm mb-5">Ontario's next election will come. Registration takes 2 minutes.</p>
           <div className="grid grid-cols-1 gap-3">
             <a
               href="https://www.registertovoteon.ca/"
