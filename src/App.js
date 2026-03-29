@@ -71,9 +71,10 @@ const policies = [
     tagText: "#5b21b6",
     plain: "Ontario's minimum wage rose from $15/hr in 2022 to $17.20/hr in October 2024 - a 14.7% increase over two years. However the living wage in the GTA is estimated at $23-25/hr, meaning full-time minimum wage workers still face a major gap.",
     getImpact: (a) => {
+      if (a.employment === 'Looking for work') return "Ontario's minimum wage is now $17.20/hr, up from $15 in 2022. But the bigger picture for job seekers is that the GTA living wage is $23-25/hr - meaning even a full-time minimum wage job won't cover rent, food, and transit in most of the city. The job market has also tightened due to interest rate hikes slowing the economy.";
       if (a.student === 'In high school') return "Most first jobs for high schoolers pay at or near minimum wage. At $17.20/hr you're making more than students did in 2022 ($15/hr), but the GTA living wage is estimated at $23-25/hr - meaning even full-time minimum wage isn't enough to live independently in most of Ontario.";
       if (a.student === 'Yes, college/university') return "Most student part-time jobs pay at or near minimum wage. At $17.20/hr working 20 hours a week you're making about $17,900/year - around $2,600 more than in 2022. Still well below the $23-25/hr living wage in the GTA though.";
-      if (a.income === 'Under $40k') return "If you're earning near minimum wage, the jump to $17.20/hr means roughly $4,000/year more than 2022 rates at full-time hours. But Ontario inflation over the same period eroded much of that gain - groceries, rent, and transit all went up significantly too.";
+      if (a.employment === 'Employed part-time' || a.income === 'Under $40k') return "If you're earning near minimum wage, the jump to $17.20/hr means roughly $4,000/year more than 2022 rates at full-time hours. But Ontario inflation over the same period eroded much of that gain - groceries, rent, and transit all went up significantly too.";
       if (a.income === '$40k-$75k') return "You're likely earning above minimum wage, but these increases affect your cost of living indirectly - businesses often raise prices to offset higher labour costs. The gap between minimum wage ($17.20/hr) and GTA living wage ($23-25/hr) also means many workers around you are still cost-burdened.";
       return "At your income level minimum wage increases don't affect your earnings directly. But Ontario's minimum wage is still significantly below the estimated living wage of $23-25/hr in the GTA, meaning many workers are still struggling despite the increases.";
     },
@@ -130,6 +131,7 @@ const policies = [
     tagText: "#0c4a6e",
     plain: "In March 2025, the US imposed 25% tariffs on Canadian steel, aluminum, and automobiles. Ontario's manufacturing sector - which sends 40% of its output to the US - was hit hardest. Ontario's Financial Accountability Office projects 119,200 fewer jobs in Ontario by 2026 compared to a no-tariff scenario.",
     getImpact: (a) => {
+      if (a.employment === 'Looking for work') return "The timing couldn't be worse. US tariffs are projected to cost Ontario 119,200 jobs by 2026 according to the Financial Accountability Office. Manufacturing, auto, and trades jobs - historically strong options for job seekers - are among the most at risk.";
       if (a.student === 'In high school') return "By the time you enter the job market, Ontario's economy could look very different. The FAO projects 119,200 fewer jobs in Ontario by 2026 due to US tariffs. Manufacturing, auto, and steel jobs - traditionally strong entry-level options - are among the most affected sectors.";
       if (a.student === 'Yes, college/university' || a.student === 'Recently graduated') return "If you're studying in or entering fields connected to manufacturing, engineering, or trade, the tariff situation directly affects your job prospects. Ontario's auto and steel industries - which employ hundreds of thousands - are projected to see significant output declines.";
       if (a.income === 'Under $40k') return "Lower-income workers are disproportionately represented in the manufacturing and trades jobs most at risk from tariffs. If you or family members work in auto, steel, or related industries, job security is a real concern. The FAO projects Ontario's manufacturing GDP could drop 8% in 2026.";
@@ -252,7 +254,8 @@ function PersonalizationForm({ onComplete }) {
   const [answers, setAnswers] = useState({
     student: null,
     income: null,
-    housing: null
+    housing: null,
+    employment: null
   });
 
   const questions = [
@@ -260,6 +263,11 @@ function PersonalizationForm({ onComplete }) {
       key: 'student',
       question: 'What is your current student status?',
       options: ['Yes, college/university', 'In high school', 'Recently graduated', 'Not a student']
+    },
+    {
+      key: 'employment',
+      question: "What's your employment situation?",
+      options: ['Employed full-time', 'Employed part-time', 'Looking for work', 'Not currently working']
     },
     {
       key: 'income',
@@ -273,8 +281,8 @@ function PersonalizationForm({ onComplete }) {
     }
   ];
 
-  const isComplete = answers.student && answers.income && answers.housing;
-  const answeredCount = [answers.student, answers.income, answers.housing].filter(Boolean).length;
+  const isComplete = answers.student && answers.income && answers.housing && answers.employment;
+  const answeredCount = [answers.student, answers.employment, answers.income, answers.housing].filter(Boolean).length;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 px-4 py-12">
@@ -283,7 +291,7 @@ function PersonalizationForm({ onComplete }) {
           <h1 className="text-4xl font-bold text-gray-900 mb-2">Tallied</h1>
           <p className="text-gray-500">Step 1 of 3 - Tell us about yourself</p>
           <div className="flex justify-center gap-2 mt-4">
-            {[0, 1, 2].map(i => (
+            {[0, 1, 2, 3].map(i => (
               <div
                 key={i}
                 className={`w-3 h-3 rounded-full transition-colors ${i < answeredCount ? 'bg-blue-600' : 'bg-gray-300'}`}
@@ -386,7 +394,7 @@ function PoliciesPage({ answers, onComplete }) {
           </div>
         ))}
 
-        <div className="bg-white rounded-2xl shadow-sm p-8 mb-5 sticky bottom-4">
+        <div className="bg-white rounded-2xl shadow-sm p-8 mb-5">
           <h3 className="text-xl font-bold text-gray-900 mb-2">
             Which 3 issues matter most to you?
           </h3>
@@ -444,6 +452,12 @@ function ResultsPage({ answers, selectedIssues, onRestart }) {
       'Recently graduated': 'recent grad',
       'Not a student': 'non-student'
     },
+    employment: {
+      'Employed full-time': 'employed full-time',
+      'Employed part-time': 'employed part-time',
+      'Looking for work': 'looking for work',
+      'Not currently working': 'not currently working'
+    },
     income: {
       'Under $40k': 'under $40k income',
       '$40k-$75k': '$40k-$75k income',
@@ -472,7 +486,7 @@ function ResultsPage({ answers, selectedIssues, onRestart }) {
             Step 3 of 3 - Your priorities: <span className="font-semibold text-blue-600">{selectedIssueLabels.join(', ')}</span>
           </p>
           <p className="text-sm text-gray-400">
-            Showing results for a {labelMap.student[answers.student]}, {labelMap.income[answers.income]}, {labelMap.housing[answers.housing]}
+            Showing results for a {labelMap.student[answers.student]}, {labelMap.employment[answers.employment]}, {labelMap.income[answers.income]}, {labelMap.housing[answers.housing]}
           </p>
         </div>
 
