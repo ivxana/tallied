@@ -217,6 +217,17 @@ function App() {
       <PersonalizationForm
         onComplete={(answers) => {
           setUserAnswers(answers);
+          setCurrentStep('priorities');
+        }}
+      />
+    );
+  }
+
+  if (currentStep === 'priorities') {
+    return (
+      <PrioritiesPage
+        onComplete={(issues) => {
+          setSelectedIssues(issues);
           setCurrentStep('policies');
         }}
       />
@@ -227,10 +238,8 @@ function App() {
     return (
       <PoliciesPage
         answers={userAnswers}
-        onComplete={(issues) => {
-          setSelectedIssues(issues);
-          setCurrentStep('results');
-        }}
+        selectedIssues={selectedIssues}
+        onComplete={() => setCurrentStep('results')}
       />
     );
   }
@@ -238,6 +247,21 @@ function App() {
   if (currentStep === 'results') {
     return (
       <ResultsPage
+        answers={userAnswers}
+        selectedIssues={selectedIssues}
+        onContinue={() => setCurrentStep('summary')}
+        onRestart={() => {
+          setCurrentStep('landing');
+          setSelectedIssues([]);
+          setUserAnswers(null);
+        }}
+      />
+    );
+  }
+
+  if (currentStep === 'summary') {
+    return (
+      <DecisionSummaryPage
         answers={userAnswers}
         selectedIssues={selectedIssues}
         onRestart={() => {
@@ -339,76 +363,46 @@ function PersonalizationForm({ onComplete }) {
   );
 }
 
-function PoliciesPage({ answers, onComplete }) {
-  const [selectedIssues, setSelectedIssues] = useState([]);
+function PrioritiesPage({ onComplete }) {
+  const [selected, setSelected] = useState([]);
 
-  const toggleIssue = (key) => {
-    if (selectedIssues.includes(key)) {
-      setSelectedIssues(selectedIssues.filter(k => k !== key));
-    } else if (selectedIssues.length < 3) {
-      setSelectedIssues([...selectedIssues, key]);
+  const toggle = (key) => {
+    if (selected.includes(key)) {
+      setSelected(selected.filter(k => k !== key));
+    } else if (selected.length < 3) {
+      setSelected([...selected, key]);
     }
   };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 px-4 py-12">
       <div className="max-w-2xl mx-auto">
+        {/* Progress */}
         <div className="text-center mb-8">
           <h1 className="text-4xl font-bold text-gray-900 mb-2">Tallied</h1>
-          <p className="text-gray-500 mb-1">Step 2 of 3 - See how policies affect you</p>
-          <p className="text-sm text-gray-400">Scroll through all 8 issues, then pick your top 3</p>
+          <div className="flex justify-center gap-2 mt-3 mb-3">
+            {['Profile', 'Priorities', 'Policies', 'Comparison', 'Summary'].map((s, i) => (
+              <div key={s} className="flex items-center gap-1">
+                <div className={`w-2 h-2 rounded-full ${i === 1 ? 'bg-blue-600' : i < 1 ? 'bg-blue-300' : 'bg-gray-200'}`} />
+                <span className={`text-xs hidden sm:inline ${i === 1 ? 'text-blue-600 font-semibold' : 'text-gray-400'}`}>{s}</span>
+              </div>
+            ))}
+          </div>
         </div>
 
-        {policies.map(policy => (
-          <div key={policy.id} className="bg-white rounded-2xl shadow-sm p-8 mb-5">
-            <div className="flex items-start justify-between mb-3">
-              <span
-                className="text-xs font-semibold px-3 py-1 rounded-full"
-                style={{ backgroundColor: policy.tagColor, color: policy.tagText }}
-              >
-                {policy.tag}
-              </span>
-              <span className="text-sm text-gray-400">{policy.year}</span>
-            </div>
-            <h3 className="text-xl font-bold text-gray-900 mb-3">{policy.title}</h3>
-            <p className="text-gray-600 text-sm leading-relaxed mb-4">{policy.plain}</p>
-            <div className="bg-blue-50 rounded-xl p-4 mb-4">
-              <p className="text-xs font-semibold text-blue-600 uppercase tracking-wide mb-2">
-                How this affects you
-              </p>
-              <p className="text-gray-800 text-sm leading-relaxed">
-                {policy.getImpact(answers)}
-              </p>
-            </div>
-            <div className="flex items-center justify-between">
-              <a
-                href={policy.link}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-blue-600 text-sm font-medium hover:underline"
-              >
-                {policy.linkLabel}
-              </a>
-              <p className="text-xs text-gray-400">Source: {policy.source}</p>
-            </div>
-          </div>
-        ))}
-
         <div className="bg-white rounded-2xl shadow-sm p-8 mb-5">
-          <h3 className="text-xl font-bold text-gray-900 mb-2">
-            Which 3 issues matter most to you?
-          </h3>
-          <p className="text-gray-500 text-sm mb-5">
-            Select up to 3 - we'll show you how candidates address YOUR priorities. ({selectedIssues.length}/3 selected)
+          <h2 className="text-2xl font-bold text-gray-900 mb-2">What matters most to you?</h2>
+          <p className="text-gray-500 text-sm mb-6">
+            Pick your top 3 issues. We'll show you exactly how recent policy decisions have affected people in your situation — and how today's candidates plan to address them. ({selected.length}/3 selected)
           </p>
           <div className="grid grid-cols-2 gap-3 mb-6">
             {issueOptions.map(issue => {
-              const isSelected = selectedIssues.includes(issue.key);
-              const isDisabled = !isSelected && selectedIssues.length >= 3;
+              const isSelected = selected.includes(issue.key);
+              const isDisabled = !isSelected && selected.length >= 3;
               return (
                 <button
                   key={issue.key}
-                  onClick={() => toggleIssue(issue.key)}
+                  onClick={() => toggle(issue.key)}
                   disabled={isDisabled}
                   className={`p-4 rounded-xl text-left transition-all border-2 ${
                     isSelected
@@ -418,7 +412,7 @@ function PoliciesPage({ answers, onComplete }) {
                       : 'bg-gray-50 text-gray-700 border-transparent hover:border-blue-200'
                   }`}
                 >
-                  <div className="text-lg mb-1">{issue.emoji}</div>
+                  <div className="text-2xl mb-1">{issue.emoji}</div>
                   <div className="font-semibold text-sm">{issue.label}</div>
                   <div className={`text-xs mt-1 ${isSelected ? 'text-blue-100' : 'text-gray-400'}`}>
                     {issue.description}
@@ -428,15 +422,125 @@ function PoliciesPage({ answers, onComplete }) {
             })}
           </div>
           <button
-            onClick={() => selectedIssues.length > 0 && onComplete(selectedIssues)}
-            disabled={selectedIssues.length === 0}
+            onClick={() => selected.length > 0 && onComplete(selected)}
+            disabled={selected.length === 0}
             className={`w-full py-4 rounded-xl font-semibold text-lg transition-all ${
-              selectedIssues.length > 0
+              selected.length > 0
                 ? 'bg-blue-600 text-white hover:bg-blue-700 shadow-md'
                 : 'bg-gray-200 text-gray-400 cursor-not-allowed'
             }`}
           >
-            See Candidate Comparison
+            See How These Issues Affect You
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function PolicyCard({ policy, answers }) {
+  return (
+    <div className="bg-white rounded-2xl shadow-sm p-6 mb-5">
+      <div className="flex items-start justify-between mb-3">
+        <span
+          className="text-xs font-semibold px-3 py-1 rounded-full"
+          style={{ backgroundColor: policy.tagColor, color: policy.tagText }}
+        >
+          {policy.tag}
+        </span>
+        <span className="text-sm text-gray-400">{policy.year}</span>
+      </div>
+      <h3 className="text-xl font-bold text-gray-900 mb-3">{policy.title}</h3>
+      <p className="text-gray-600 text-sm leading-relaxed mb-4">{policy.plain}</p>
+      <div className="bg-blue-50 rounded-xl p-4 mb-4">
+        <p className="text-xs font-semibold text-blue-600 uppercase tracking-wide mb-2">
+          How this affects you
+        </p>
+        <p className="text-gray-800 text-sm leading-relaxed">
+          {policy.getImpact(answers)}
+        </p>
+      </div>
+      <div className="flex items-center justify-between">
+        <a href={policy.link} target="_blank" rel="noopener noreferrer"
+          className="text-blue-600 text-sm font-medium hover:underline">
+          {policy.linkLabel}
+        </a>
+        <p className="text-xs text-gray-400">Source: {policy.source}</p>
+      </div>
+    </div>
+  );
+}
+
+function PoliciesPage({ answers, selectedIssues, onComplete }) {
+  const [showAll, setShowAll] = useState(false);
+
+  const priorityPolicies = policies.filter(p => selectedIssues.includes(p.issueKey));
+  const otherPolicies = policies.filter(p => !selectedIssues.includes(p.issueKey));
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 px-4 py-12">
+      <div className="max-w-2xl mx-auto">
+        {/* Progress */}
+        <div className="text-center mb-8">
+          <h1 className="text-4xl font-bold text-gray-900 mb-2">Tallied</h1>
+          <div className="flex justify-center gap-2 mt-3 mb-3">
+            {['Profile', 'Priorities', 'Policies', 'Comparison', 'Summary'].map((s, i) => (
+              <div key={s} className="flex items-center gap-1">
+                <div className={`w-2 h-2 rounded-full ${i === 2 ? 'bg-blue-600' : i < 2 ? 'bg-blue-300' : 'bg-gray-200'}`} />
+                <span className={`text-xs hidden sm:inline ${i === 2 ? 'text-blue-600 font-semibold' : 'text-gray-400'}`}>{s}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Signpost */}
+        <div className="bg-blue-600 rounded-2xl p-6 mb-6 text-white">
+          <h2 className="text-xl font-bold mb-2">Step 3: Understand the Landscape</h2>
+          <p className="text-blue-100 text-sm leading-relaxed">
+            Before comparing candidates, see how recent policy decisions have already affected people like you. This is your context — what's actually happened, and what's at stake.
+          </p>
+        </div>
+
+        {/* Priority policies */}
+        <h3 className="text-lg font-bold text-gray-700 mb-4">📌 Your Priority Issues</h3>
+        {priorityPolicies.map(policy => (
+          <PolicyCard key={policy.id} policy={policy} answers={answers} />
+        ))}
+
+        {/* Explore all toggle */}
+        {!showAll ? (
+          <button
+            onClick={() => setShowAll(true)}
+            className="w-full py-4 rounded-xl font-medium text-gray-600 bg-white border-2 border-gray-200 hover:border-blue-300 transition-all mb-6"
+          >
+            Explore all 8 issues ↓
+          </button>
+        ) : (
+          <>
+            <h3 className="text-lg font-bold text-gray-700 mb-4 mt-2">🗂 Other Issues</h3>
+            {otherPolicies.map(policy => (
+              <PolicyCard key={policy.id} policy={policy} answers={answers} />
+            ))}
+            <button
+              onClick={() => setShowAll(false)}
+              className="w-full py-3 rounded-xl font-medium text-gray-400 text-sm mb-6"
+            >
+              Show less ↑
+            </button>
+          </>
+        )}
+
+        {/* Continue signpost */}
+        <div className="bg-white rounded-2xl shadow-sm p-6 mb-5">
+          <h3 className="text-lg font-bold text-gray-900 mb-2">Ready to compare candidates?</h3>
+          <p className="text-gray-500 text-sm mb-5">
+            Now that you understand how policies have affected people like you, let's see what Carney and Poilievre actually plan to do about your top priorities.
+          </p>
+          <button
+            onClick={onComplete}
+            className="w-full py-4 rounded-xl font-semibold text-lg bg-blue-600 text-white hover:bg-blue-700 shadow-md transition-all"
+          >
+            Compare Candidates on My Priorities →
           </button>
         </div>
       </div>
@@ -661,7 +765,7 @@ const candidateComparison = {
   }
 };
 
-function ResultsPage({ answers, selectedIssues, onRestart }) {
+function ResultsPage({ answers, selectedIssues, onContinue, onRestart }) {
   const [showNDP, setShowNDP] = useState(false);
 
   const selectedIssueLabels = issueOptions
@@ -702,11 +806,27 @@ function ResultsPage({ answers, selectedIssues, onRestart }) {
         {/* Header */}
         <div className="text-center mb-8">
           <h1 className="text-4xl font-bold text-gray-900 mb-2">Tallied</h1>
+          <div className="flex justify-center gap-2 mt-3 mb-3">
+            {['Profile', 'Priorities', 'Policies', 'Comparison', 'Summary'].map((s, i) => (
+              <div key={s} className="flex items-center gap-1">
+                <div className={`w-2 h-2 rounded-full ${i === 3 ? 'bg-blue-600' : i < 3 ? 'bg-blue-300' : 'bg-gray-200'}`} />
+                <span className={`text-xs hidden sm:inline ${i === 3 ? 'text-blue-600 font-semibold' : 'text-gray-400'}`}>{s}</span>
+              </div>
+            ))}
+          </div>
           <p className="text-gray-600 mb-1">
             Your priorities: <span className="font-semibold text-blue-600">{selectedIssueLabels.join(', ')}</span>
           </p>
           <p className="text-sm text-gray-400">
             Personalized for a {labelMap.student[answers.student]}, {labelMap.employment[answers.employment]}, {labelMap.income[answers.income]}, {labelMap.housing[answers.housing]}
+          </p>
+        </div>
+
+        {/* Signpost */}
+        <div className="bg-blue-600 rounded-2xl p-6 mb-6 text-white">
+          <h2 className="text-xl font-bold mb-2">Step 4: Compare the Candidates</h2>
+          <p className="text-blue-100 text-sm leading-relaxed">
+            Now that you understand how policies have shaped your world, here's what Carney and Poilievre actually propose to do about your priorities — in plain language.
           </p>
         </div>
 
@@ -801,36 +921,16 @@ function ResultsPage({ answers, selectedIssues, onRestart }) {
           )}
         </div>
 
-        {/* Action section */}
-        <div className="bg-white rounded-2xl shadow-sm p-8 mb-5">
-          <h3 className="text-xl font-bold text-gray-900 mb-2">Ready to do something about it?</h3>
-          <p className="text-gray-500 text-sm mb-5">Ontario's next provincial election is June 5, 2029. Federal elections happen at least every 5 years. Registration takes 2 minutes.</p>
-          <div className="grid grid-cols-1 gap-3">
-            <a
-              href="https://www.registertovoteon.ca/"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="block w-full text-center bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-xl transition-colors"
-            >
-              Register to Vote (Ontario)
-            </a>
-            <a
-              href="https://www.elections.ca/content.aspx?section=vot&dir=reg/etr&document=index&lang=e"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="block w-full text-center bg-white hover:bg-gray-50 text-blue-600 font-semibold py-3 px-6 rounded-xl transition-colors border-2 border-blue-200"
-            >
-              Register to Vote (Federal)
-            </a>
-            <a
-              href="https://www.elections.on.ca/en/voting-in-ontario/electoral-districts.html"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="block w-full text-center bg-white hover:bg-gray-50 text-gray-600 font-semibold py-3 px-6 rounded-xl transition-colors border-2 border-gray-200"
-            >
-              Find Your Riding
-            </a>
-          </div>
+        {/* Continue to summary */}
+        <div className="bg-white rounded-2xl shadow-sm p-6 mb-5">
+          <h3 className="text-lg font-bold text-gray-900 mb-2">Seen enough? Let's wrap this up.</h3>
+          <p className="text-gray-500 text-sm mb-4">Get a plain-language summary of what you learned and your next steps.</p>
+          <button
+            onClick={onContinue}
+            className="w-full py-4 rounded-xl font-semibold text-lg bg-blue-600 text-white hover:bg-blue-700 shadow-md transition-all"
+          >
+            See My Decision Summary →
+          </button>
         </div>
 
         <div className="text-center mb-8">
@@ -838,6 +938,224 @@ function ResultsPage({ answers, selectedIssues, onRestart }) {
             onClick={onRestart}
             className="text-gray-400 hover:text-gray-600 text-sm transition-colors"
           >
+            Start over
+          </button>
+        </div>
+
+        <footer className="text-center py-4 text-sm text-gray-400">
+          Built by Ivana Okpakovwodo · Sources: liberal.ca, conservative.ca, ndp.ca, CBC News, Parliament of Canada
+        </footer>
+      </div>
+    </div>
+  );
+}
+
+function DecisionSummaryPage({ answers, selectedIssues, onRestart }) {
+  const selectedIssueData = issueOptions.filter(i => selectedIssues.includes(i.key));
+
+  const labelMap = {
+    student: {
+      'Yes, college/university': 'college/university student',
+      'In high school': 'high school student',
+      'Recently graduated': 'recent grad',
+      'Not a student': 'non-student'
+    },
+    employment: {
+      'Employed full-time': 'employed full-time',
+      'Employed part-time': 'employed part-time',
+      'Looking for work': 'looking for work',
+      'Not currently working': 'not currently working'
+    },
+    income: {
+      'Under $40k': 'under $40k',
+      '$40k-$75k': '$40k-$75k',
+      '$75k-$120k': '$75k-$120k',
+      'Over $120k': 'over $120k'
+    },
+    housing: {
+      'Renting': 'renter',
+      'Homeowner': 'homeowner',
+      'Living with family': 'living with family',
+      'Looking to buy': 'looking to buy'
+    }
+  };
+
+  // Per-issue who-leans-your-way logic
+  const issueAlignment = {
+    housing: {
+      renting: { liberal: false, conservative: false, ndp: true, note: "NDP was the only party that proposed national rent control." },
+      buying: { liberal: true, conservative: true, ndp: false, note: "Both Liberal and Conservative removed GST on new homes — Conservative went further." },
+      default: { liberal: true, conservative: true, ndp: true, note: "All parties promised major home construction increases." }
+    },
+    education: {
+      student: { liberal: false, conservative: false, ndp: true, note: "NDP was the only party that promised to cancel student debt and pursue free tuition." },
+      default: { liberal: false, conservative: false, ndp: true, note: "NDP had the boldest education platform but lost the election." }
+    },
+    healthcare: {
+      low_income: { liberal: true, conservative: false, ndp: true, note: "Liberal dental expansion is now in effect. NDP promised full pharmacare." },
+      default: { liberal: true, conservative: false, ndp: true, note: "Liberals expanded dental and pharmacare. NDP promised even more. Conservatives proposed nothing new." }
+    },
+    jobs: {
+      low_wage: { liberal: false, conservative: false, ndp: true, note: "NDP's raised tax-free threshold helps low earners most. Liberal cut helps all workers somewhat." },
+      job_seeking: { liberal: true, conservative: false, ndp: true, note: "Liberal tariff revenue goes to affected workers. NDP wanted stronger EI for people between jobs." },
+      default: { liberal: true, conservative: true, ndp: false, note: "Both Liberal and Conservative delivered income tax cuts — Conservative's was larger." }
+    },
+    climate: {
+      low_income: { liberal: false, conservative: false, ndp: true, note: "NDP's free home retrofit program would help low-income Canadians most." },
+      default: { liberal: true, conservative: false, ndp: true, note: "Liberals kept industrial carbon pricing and invested in clean energy. NDP went furthest. Conservatives would have scrapped all carbon rules." }
+    },
+    costoflife: {
+      low_income: { liberal: false, conservative: false, ndp: true, note: "NDP's grocery caps and GST removal from essentials would help low earners most." },
+      renting: { liberal: false, conservative: false, ndp: true, note: "NDP removing GST from heating and internet directly cuts monthly bills for renters." },
+      default: { liberal: true, conservative: true, ndp: false, note: "Both parties cut taxes — Conservative's cut was larger but benefits higher earners more." }
+    },
+    canadaus: {
+      job_seeking: { liberal: true, conservative: false, ndp: true, note: "Liberal tariff revenue goes to workers. NDP wanted stronger EI for displaced workers." },
+      default: { liberal: true, conservative: true, ndp: true, note: "All parties agreed Canada needs to diversify away from US dependence — different strategies." }
+    },
+    privacy: {
+      default: { liberal: false, conservative: false, ndp: false, note: "No party made digital privacy a real priority in 2025. All fell short." }
+    }
+  };
+
+  const getAlignment = (issueKey) => {
+    const issue = issueAlignment[issueKey];
+    if (!issue) return issue?.default;
+    if (issueKey === 'housing' && answers.housing === 'Renting') return issue.renting;
+    if (issueKey === 'housing' && (answers.housing === 'Looking to buy' || answers.housing === 'Living with family')) return issue.buying;
+    if (issueKey === 'education' && (answers.student === 'Yes, college/university' || answers.student === 'In high school' || answers.student === 'Recently graduated')) return issue.student;
+    if (issueKey === 'healthcare' && answers.income === 'Under $40k') return issue.low_income;
+    if (issueKey === 'jobs' && answers.employment === 'Looking for work') return issue.job_seeking;
+    if (issueKey === 'jobs' && (answers.employment === 'Employed part-time' || answers.income === 'Under $40k')) return issue.low_wage;
+    if (issueKey === 'climate' && answers.income === 'Under $40k') return issue.low_income;
+    if (issueKey === 'costoflife' && answers.income === 'Under $40k') return issue.low_income;
+    if (issueKey === 'costoflife' && answers.housing === 'Renting') return issue.renting;
+    if (issueKey === 'canadaus' && answers.employment === 'Looking for work') return issue.job_seeking;
+    return issue.default;
+  };
+
+  const alignments = selectedIssues.map(key => ({
+    key,
+    info: issueOptions.find(i => i.key === key),
+    alignment: getAlignment(key)
+  }));
+
+  const liberalScore = alignments.filter(a => a.alignment?.liberal).length;
+  const conservativeScore = alignments.filter(a => a.alignment?.conservative).length;
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 px-4 py-12">
+      <div className="max-w-2xl mx-auto">
+
+        {/* Header */}
+        <div className="text-center mb-8">
+          <h1 className="text-4xl font-bold text-gray-900 mb-2">Tallied</h1>
+          <div className="flex justify-center gap-2 mt-3 mb-3">
+            {['Profile', 'Priorities', 'Policies', 'Comparison', 'Summary'].map((s, i) => (
+              <div key={s} className="flex items-center gap-1">
+                <div className={`w-2 h-2 rounded-full ${i === 4 ? 'bg-blue-600' : 'bg-blue-300'}`} />
+                <span className={`text-xs hidden sm:inline ${i === 4 ? 'text-blue-600 font-semibold' : 'text-gray-400'}`}>{s}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Intro */}
+        <div className="bg-blue-600 rounded-2xl p-6 mb-6 text-white">
+          <h2 className="text-xl font-bold mb-2">Your Decision Summary</h2>
+          <p className="text-blue-100 text-sm leading-relaxed">
+            Based on your priorities and profile, here's a plain-language summary of what you learned — and what to do next. This isn't "here's who to vote for." It's the information you need to decide for yourself.
+          </p>
+        </div>
+
+        {/* Profile recap */}
+        <div className="bg-white rounded-2xl shadow-sm p-6 mb-5">
+          <h3 className="text-lg font-bold text-gray-900 mb-3">Your profile</h3>
+          <p className="text-gray-600 text-sm">
+            {labelMap.student[answers.student]} · {labelMap.employment[answers.employment]} · {labelMap.income[answers.income]} income · {labelMap.housing[answers.housing]}
+          </p>
+          <p className="text-gray-500 text-sm mt-2">
+            Your top priorities: {selectedIssueData.map(i => `${i.emoji} ${i.label}`).join(', ')}
+          </p>
+        </div>
+
+        {/* Per-issue alignment */}
+        <div className="bg-white rounded-2xl shadow-sm p-6 mb-5">
+          <h3 className="text-lg font-bold text-gray-900 mb-4">On your priorities, here's who leans your way</h3>
+          {alignments.map(({ key, info, alignment }) => (
+            <div key={key} className="mb-5 pb-5 border-b border-gray-100 last:border-0 last:mb-0 last:pb-0">
+              <div className="flex items-center gap-2 mb-2">
+                <span className="text-lg">{info?.emoji}</span>
+                <span className="font-semibold text-gray-900 text-sm">{info?.label}</span>
+              </div>
+              <div className="flex gap-2 mb-2">
+                <span className={`text-xs px-2 py-1 rounded-full font-medium ${alignment?.liberal ? 'bg-red-100 text-red-700' : 'bg-gray-100 text-gray-400 line-through'}`}>
+                  🔴 Carney
+                </span>
+                <span className={`text-xs px-2 py-1 rounded-full font-medium ${alignment?.conservative ? 'bg-blue-100 text-blue-700' : 'bg-gray-100 text-gray-400 line-through'}`}>
+                  🔵 Poilievre
+                </span>
+                <span className={`text-xs px-2 py-1 rounded-full font-medium ${alignment?.ndp ? 'bg-orange-100 text-orange-700' : 'bg-gray-100 text-gray-400 line-through'}`}>
+                  🟠 NDP
+                </span>
+              </div>
+              <p className="text-gray-500 text-xs leading-relaxed">{alignment?.note}</p>
+            </div>
+          ))}
+        </div>
+
+        {/* Overall takeaway */}
+        <div className="bg-gray-50 rounded-2xl p-6 mb-5 border border-gray-200">
+          <h3 className="text-lg font-bold text-gray-900 mb-3">The honest takeaway</h3>
+          <p className="text-gray-600 text-sm leading-relaxed mb-3">
+            Based on your priorities, Carney's positions align on <strong>{liberalScore} of {selectedIssues.length}</strong> issues, and Poilievre's on <strong>{conservativeScore} of {selectedIssues.length}</strong>.
+          </p>
+          <p className="text-gray-500 text-sm leading-relaxed">
+            Politics is about tradeoffs — no candidate perfectly matches anyone. The question isn't who's perfect. It's who's closer to what matters most to you. And that's something only you can decide.
+          </p>
+        </div>
+
+        {/* Next steps */}
+        <div className="bg-white rounded-2xl shadow-sm p-6 mb-5">
+          <h3 className="text-lg font-bold text-gray-900 mb-4">What now?</h3>
+          <div className="space-y-3">
+            <a href="https://www.registertovoteon.ca/" target="_blank" rel="noopener noreferrer"
+              className="flex items-center gap-3 p-3 rounded-xl bg-blue-50 hover:bg-blue-100 transition-colors">
+              <span className="text-xl">✅</span>
+              <div>
+                <p className="font-semibold text-sm text-gray-900">Register to vote (Ontario)</p>
+                <p className="text-xs text-gray-500">Takes 2 minutes — registertovoteon.ca</p>
+              </div>
+            </a>
+            <a href="https://www.elections.ca/content.aspx?section=vot&dir=reg/etr&document=index&lang=e" target="_blank" rel="noopener noreferrer"
+              className="flex items-center gap-3 p-3 rounded-xl bg-blue-50 hover:bg-blue-100 transition-colors">
+              <span className="text-xl">✅</span>
+              <div>
+                <p className="font-semibold text-sm text-gray-900">Register to vote (Federal)</p>
+                <p className="text-xs text-gray-500">elections.ca</p>
+              </div>
+            </a>
+            <a href="https://www.elections.on.ca/en/voting-in-ontario/electoral-districts.html" target="_blank" rel="noopener noreferrer"
+              className="flex items-center gap-3 p-3 rounded-xl bg-gray-50 hover:bg-gray-100 transition-colors">
+              <span className="text-xl">📍</span>
+              <div>
+                <p className="font-semibold text-sm text-gray-900">Find your riding</p>
+                <p className="text-xs text-gray-500">Your local candidate matters too</p>
+              </div>
+            </a>
+            <div className="flex items-center gap-3 p-3 rounded-xl bg-gray-50">
+              <span className="text-xl">📅</span>
+              <div>
+                <p className="font-semibold text-sm text-gray-900">Ontario's next provincial election</p>
+                <p className="text-xs text-gray-500">June 5, 2029 — put it in your calendar</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="text-center mb-8">
+          <button onClick={onRestart}
+            className="text-gray-400 hover:text-gray-600 text-sm transition-colors">
             Start over
           </button>
         </div>
