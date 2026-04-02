@@ -455,185 +455,208 @@ function PoliciesPage({ answers, onComplete }) {
 const candidateComparison = {
   housing: {
     liberal: {
-      what: "Build 500,000 homes per year by doubling construction pace. GST eliminated for first-time buyers on homes under $1M (saves up to $50,000). Government-backed financing for affordable home builders.",
-      source: "liberal.ca/housing-plan",
-      sourceLabel: "Liberal housing plan"
+      bottomLine: "Focused on helping first-time buyers get in the door.",
+      what: "Carney's government removed the GST (a federal sales tax) for first-time homebuyers on homes under $1 million — that saves you up to $50,000 upfront. They also want to build 500,000 new homes per year by getting the government involved in construction again, similar to how Canada built housing after World War II. This is already government policy.",
+      source: "https://www.pm.gc.ca/en/news/news-releases/2025/03/20/prime-minister-mark-carney-will-eliminate-gst-for-first-time-homebuyers",
+      sourceLabel: "PM announcement — GST for first-time buyers"
     },
     conservative: {
-      what: "Build 2.3 million homes over 5 years. GST removed on ALL new homes under $1.3M — not just first-time buyers. Sell federal land to developers. Reward cities that approve 15% more homes annually.",
+      bottomLine: "Went furthest on housing — tax cuts for all buyers, not just first-timers.",
+      what: "Poilievre promised to remove the GST on ALL new homes under $1.3 million — not just for first-time buyers. He also wanted to sell federal government land and buildings to developers to build homes faster, and cut funding to cities that slow down new home approvals. His goal was 2.3 million homes in 5 years.",
       source: "https://www.conservative.ca/poilievre-unveils-his-plan-for-change/",
-      sourceLabel: "Conservative plan"
+      sourceLabel: "Conservative plan for change"
     },
     ndp: {
-      what: "Build 3 million homes by 2030. National rent control required for any province receiving federal housing funding. $16B housing strategy. Protect social housing from corporate landlords.",
+      bottomLine: "Most focused on renters and people who can't afford to buy at all.",
+      what: "The NDP wanted to build 3 million homes by 2030 and make national rent control a condition for any city or province that wants federal housing money. In plain terms: if the federal government gives your city money for housing, that city has to cap how much landlords can raise rent. They also wanted to protect existing social housing from being bought up by large investment companies.",
       source: "https://www.ndp.ca/news/singh-announces-campaign-commitments-first-budget-focused-health-care-affordability-and-housing",
-      sourceLabel: "NDP commitments"
+      sourceLabel: "NDP campaign commitments"
     },
     getPersonalized: (a) => {
-      if (a.housing === 'Renting') return "As a renter, the NDP's national rent control promise matters most to you directly. Liberal and Conservative plans focus on ownership and supply — which helps long-term but doesn't cap what your landlord can charge now.";
-      if (a.housing === 'Looking to buy') return "All three parties removed GST on new homes, but Conservatives went furthest — removing it for everyone, not just first-time buyers. Liberal plan is in effect now. NDP focused more on affordable rentals than ownership.";
-      if (a.housing === 'Living with family') return "If you're planning to move out eventually, the Liberal GST cut (already in effect) saves first-time buyers up to $50,000. Conservatives would have gone further, removing GST for all buyers on homes up to $1.3M.";
-      return "All parties promised major housing construction increases. Liberals are currently in government implementing 500,000 homes/year. NDP's plan was most aggressive at 3M by 2030 with rent controls attached.";
+      if (a.housing === 'Renting') return "As a renter, Carney and Poilievre's plans mostly help people buying homes — not you right now. The NDP's rent control proposal would have had the most direct impact on what you pay monthly. Since NDP lost the election, none of that is happening federally. The rent control that exists is provincial.";
+      if (a.housing === 'Looking to buy') return "The Liberal GST cut is now law — if you buy your first home under $1 million, you save up to $50,000 in tax. Poilievre would have gone further and removed GST for everyone, not just first-timers. NDP focused more on building affordable rentals than helping people buy.";
+      if (a.housing === 'Living with family') return "When you eventually move out, the Liberal GST cut (already in effect) means your first home purchase under $1M comes with up to $50,000 in tax savings. All parties promised to build more homes — which should eventually bring prices down.";
+      return "All parties promised major housing construction. Liberals are now in government implementing their plan. If you're a homeowner, more supply eventually helps the broader market even if it doesn't directly lower your mortgage.";
     }
   },
   education: {
     liberal: {
-      what: "No promises on tuition or student debt in the 2025 platform. Covered apprenticeship training costs up to $8,000. Tax cut saves students who work up to $825/year.",
-      source: "https://liberal.ca/plan/",
-      sourceLabel: "Liberal plan"
+      bottomLine: "Mostly silent on student debt and tuition — this was a weak spot.",
+      what: "Carney's 2025 platform had almost nothing specifically for post-secondary students. No promises to lower tuition, cancel debt, or fix OSAP (that's a provincial issue anyway). The main benefit was a tax cut that saves working Canadians up to $825 a year — helpful if you work while studying, but not transformational for student finances.",
+      source: "https://thegauntlet.ca/2025/04/25/the-liberal-partys-plan-for-students-steady-with-short-reach/",
+      sourceLabel: "The Gauntlet — Liberal plan for students"
     },
     conservative: {
-      what: "Income-contingent repayment for federal student loans — you only repay when earning above a threshold. Interest on student lines of credit made tax-deductible. No tuition promises.",
+      bottomLine: "Made loan repayment more flexible, but didn't cancel debt.",
+      what: "Poilievre promised income-contingent repayment for student loans — meaning you only start paying back your loans once you're earning enough money to afford it. He also wanted to make the interest on student lines of credit tax-deductible, so you'd get some money back at tax time. No promises on tuition or wiping out debt.",
       source: "https://universityaffairs.ca/news/where-do-the-federal-election-candidates-stand-on-postsecondary-education/",
-      sourceLabel: "University Affairs comparison"
+      sourceLabel: "University Affairs — party education platforms"
     },
     ndp: {
-      what: "Cancel student debt. Free tuition at public institutions (longstanding NDP promise). Build affordable student housing. Universal student housing as federal condition for funding.",
+      bottomLine: "Most ambitious for students — free tuition and debt cancellation.",
+      what: "The NDP made the biggest promises: cancel existing student debt entirely, and eventually make tuition free at public colleges and universities. They also wanted federal funding for affordable student housing. These are long-standing NDP commitments. The catch: the NDP lost the 2025 election badly and lost official party status, so none of this is happening.",
       source: "https://www.ndp.ca/news/singh-announces-campaign-commitments-first-budget-focused-health-care-affordability-and-housing",
-      sourceLabel: "NDP commitments"
+      sourceLabel: "NDP campaign commitments"
     },
     getPersonalized: (a) => {
-      if (a.student === 'In high school') return "Honest answer: the federal parties were largely quiet on post-secondary education in 2025. The OSAP cuts you'll face are a provincial Ford government decision, not federal. NDP promised free tuition federally, but they lost official party status in the election.";
-      if (a.student === 'Yes, college/university') return "None of the major federal parties promised to reverse Ontario's OSAP cuts — that's a provincial issue. Federally, NDP promised to cancel student debt and free tuition. Conservatives promised income-contingent repayment. Liberals were mostly silent on student finances.";
-      if (a.student === 'Recently graduated') return "Conservatives' income-contingent repayment plan would have helped recent grads — you'd only repay loans once earning above a set threshold. NDP promised full debt cancellation. Liberals offered little on student debt specifically.";
-      return "The federal parties had limited education platforms in 2025. The big OSAP changes are provincial (Ford government). Federally, NDP had the boldest student promises but lost party status. Conservatives focused on repayment flexibility.";
+      if (a.student === 'In high school') return "Important to know: the OSAP cuts you'll face when you start university are a Ford provincial government decision — the federal parties don't control OSAP. Federally, NDP promised the most for students (free tuition, cancel debt) but lost the election. Liberals and Conservatives had very little for students specifically.";
+      if (a.student === 'Yes, college/university') return "None of the federal parties promised to fix Ontario's OSAP cuts — that's on the Ford government, not Ottawa. Federally, NDP promised full debt cancellation and free tuition but lost the election. Conservatives offered more flexible loan repayment. Liberals were largely quiet on student finances.";
+      if (a.student === 'Recently graduated') return "Conservatives' flexible repayment plan would have helped you most — paying back loans only once you earn enough. NDP promised full cancellation. Liberals offered little. Since Liberals won, your federal student loan situation stays as-is.";
+      return "Federal parties had limited education platforms in 2025. The OSAP cuts are provincial. Federally, NDP had the boldest student promises but lost. The Liberal government in place offers a modest tax cut but nothing specific for student debt or tuition.";
     }
   },
   healthcare: {
     liberal: {
-      what: "Expand dental coverage to Canadians aged 18-64 (saves ~$800/person). $4B for local health clinics. Pharmacare covering insulin and contraception. $52M for internationally trained health professionals.",
-      source: "https://liberal.ca/cstrong/build/",
-      sourceLabel: "Liberal build plan"
+      bottomLine: "Expanding what's already covered — dental and some prescriptions.",
+      what: "Carney's government is expanding dental care coverage to Canadians aged 18 to 64. That means if you don't have dental benefits through work or school, you can now access government-covered dental care — saving around $800 per person per year. They're also covering insulin and birth control through pharmacare, and investing $4 billion in building more local health clinics to reduce wait times.",
+      source: "https://liberal.ca/mark-carneys-liberals-take-action-to-make-life-more-affordable/",
+      sourceLabel: "Liberal affordability announcement"
     },
     conservative: {
-      what: "No major new healthcare spending in 2025 platform. Focus on efficiency and reducing wait times through system reform rather than new investment. Opposed pharmacare expansion.",
+      bottomLine: "No new healthcare spending — focused on fixing the system, not expanding it.",
+      what: "Poilievre's platform didn't promise major new healthcare programs or funding. His focus was on reducing government spending overall and letting the system become more efficient. He opposed expanding pharmacare. In practice, this would have meant no new benefits for most Canadians, but also no new taxes to pay for them.",
       source: "https://www.conservative.ca/poilievre-unveils-his-plan-for-change/",
-      sourceLabel: "Conservative plan"
+      sourceLabel: "Conservative plan for change"
     },
     ndp: {
-      what: "Every Canadian a family doctor by 2030. Universal pharmacare within 4 years covering all essential medicines. Mental health coverage expansion. Stop US corporations from buying Canadian health facilities.",
+      bottomLine: "Most ambitious — wanted every Canadian covered for doctor, dental, and prescriptions.",
+      what: "The NDP promised the biggest expansion of Canadian healthcare since Medicare was created. Every Canadian would have a family doctor by 2030. All prescriptions — not just insulin and birth control — would eventually be covered for free. Mental health therapy and counselling would be covered too. They also wanted to stop US companies from buying Canadian hospitals or clinics.",
       source: "https://www.ndp.ca/news/singh-announces-campaign-commitments-first-budget-focused-health-care-affordability-and-housing",
-      sourceLabel: "NDP commitments"
+      sourceLabel: "NDP campaign commitments"
     },
     getPersonalized: (a) => {
-      if (a.student === 'Yes, college/university' || a.student === 'In high school') return "The Liberal dental expansion to ages 18-64 is the most immediate healthcare change affecting you — it's now government policy. NDP promised to go further with full pharmacare. Conservatives planned no major new health spending.";
-      if (a.income === 'Under $40k') return "Liberal dental expansion (now in effect) could save you ~$800/year if you access it. NDP's universal pharmacare would have been bigger for lower-income Canadians who currently pay out of pocket for prescriptions. Conservatives offered nothing new on healthcare costs.";
-      if (a.employment === 'Looking for work' || a.employment === 'Not currently working') return "Without employer benefits, healthcare costs fall entirely on you. Liberal dental expansion to 18-64 is now in effect. NDP's pharmacare promise would have helped most — full prescription coverage for everyone regardless of employment.";
-      return "Liberals (now in government) are expanding dental care to ages 18-64. NDP had the most ambitious healthcare platform — universal pharmacare, mental health coverage, guaranteed family doctor access. Conservatives planned no major new healthcare investment.";
+      if (a.student === 'Yes, college/university' || a.student === 'In high school') return "The Liberal dental expansion to ages 18-64 is already happening — if you don't have dental coverage through school or a parent's plan, you may now qualify. NDP promised to go much further with full pharmacare and mental health coverage, but they lost the election.";
+      if (a.income === 'Under $40k' || a.employment === 'Looking for work' || a.employment === 'Not currently working') return "Without employer benefits, you pay out of pocket for dental and prescriptions. The Liberal dental expansion (now in effect) directly helps you. NDP's full pharmacare would have helped even more — free prescriptions regardless of income or job. Conservatives offered nothing new here.";
+      return "Liberals are expanding dental care to ages 18-64 and covering insulin and birth control. NDP wanted to go further — cover all prescriptions and guarantee everyone a family doctor. Conservatives planned no new healthcare programs.";
     }
   },
   jobs: {
     liberal: {
-      what: "Middle class tax cut saving dual-income families up to $825/year (in effect since Canada Day 2025). Every dollar from US retaliatory tariffs directed to affected workers. EI modernization for gig workers.",
-      source: "https://liberal.ca/cstrong/build/",
-      sourceLabel: "Liberal build plan"
+      bottomLine: "Small tax cut for workers, focused on protecting jobs from US tariffs.",
+      what: "Carney cut income taxes slightly for the middle class — saving a household with two working adults up to $825 a year. That's roughly $70 a month. He also promised that every dollar Canada collects from retaliatory tariffs on US goods goes directly to support Canadian workers and businesses affected by the trade war. Employment Insurance (EI — the program that pays you when you lose your job) is being updated to better cover gig workers and freelancers.",
+      source: "https://liberal.ca/mark-carneys-liberals-take-action-to-make-life-more-affordable/",
+      sourceLabel: "Liberal affordability announcement"
     },
     conservative: {
-      what: "Larger income tax cut saving average worker $900/year, families $1,800/year. Cut government spending by $56B. Resource extraction boom to create jobs. Remove what Poilievre calls 'anti-development' laws.",
+      bottomLine: "Bigger tax cut, betting on oil and resource jobs to grow the economy.",
+      what: "Poilievre promised a larger income tax cut — saving the average worker $900 a year, and families with two incomes $1,800 a year. He planned to fund this by cutting government spending and growing the economy through more oil, mining, and natural resource extraction. His argument: more resource jobs = more tax revenue = lower taxes for everyone. Critics argued this mainly helps higher earners and depends on oil prices staying high.",
       source: "https://www.conservative.ca/poilievre-unveils-his-plan-for-change/",
-      sourceLabel: "Conservative plan"
+      sourceLabel: "Conservative plan for change"
     },
     ndp: {
-      what: "Raise basic personal income threshold to $19,500 — meaning workers earn more before paying any tax. Remove GST from essentials permanently. Expand EI for gig workers and self-employed. $20/hr federal minimum wage.",
+      bottomLine: "Best for low-income workers and people between jobs.",
+      what: "The NDP wanted to raise the basic personal amount — the amount of money you can earn before paying any federal income tax at all — from about $16,000 to $19,500. For a minimum wage worker, this would mean paying little to no federal income tax. They also wanted to make Employment Insurance easier to qualify for, extend how long you can receive it, and expand it to cover gig workers and freelancers who currently get nothing when they lose work.",
       source: "https://www.ndp.ca/news/singh-announces-campaign-commitments-first-budget-focused-health-care-affordability-and-housing",
-      sourceLabel: "NDP commitments"
+      sourceLabel: "NDP campaign commitments"
     },
     getPersonalized: (a) => {
-      if (a.employment === 'Looking for work') return "Conservatives bet on resource sector job creation. Liberals directed tariff revenue to displaced workers. NDP focused on EI access — lowering the hours required to qualify and extending coverage duration, which matters most if you're between jobs.";
-      if (a.employment === 'Employed part-time' || a.income === 'Under $40k') return "NDP's plan to raise the basic income threshold to $19,500 means you'd pay zero federal tax until earning that amount — the biggest direct benefit for lower-wage workers. Liberal tax cut helps but is smaller at lower incomes. Conservative cut was larger but benefits higher earners more.";
-      if (a.student === 'Yes, college/university' || a.student === 'In high school') return "For student jobs, NDP's raised tax-free threshold ($19,500) would have meant most student workers pay little to no federal tax. Liberal cut (now in effect) saves working students some money. Conservative cut was bigger but you'd need to be earning more to feel it.";
-      return "Liberal tax cut (up to $825/family) is now in effect since Canada Day 2025. Conservative promised bigger cuts ($1,800/family) funded by spending reductions. NDP focused on raising the threshold so lower earners pay nothing, plus stronger EI.";
+      if (a.employment === 'Looking for work') return "NDP's EI improvements would have helped you most — easier to qualify, longer duration, higher payments. Liberal EI modernization is happening but more slowly. Conservative plan focused on creating new jobs through resource extraction, not supporting people between jobs.";
+      if (a.employment === 'Employed part-time' || a.income === 'Under $40k') return "NDP's plan to raise the tax-free threshold to $19,500 would have been the biggest benefit for you — most part-time and minimum wage workers would pay little to no federal income tax. Liberal tax cut helps a bit. Conservative cut is larger but you need to earn more to feel it.";
+      if (a.student === 'Yes, college/university' || a.student === 'In high school') return "NDP's higher tax-free threshold ($19,500) would mean most student jobs pay zero federal income tax. Liberal cut (now in effect) saves working students something. Conservative cut is bigger but mainly benefits people earning above average — most students aren't there yet.";
+      return "Liberal tax cut (up to $825/family) is now law. Conservative promised bigger cuts ($1,800/family) paid for by spending cuts and resource revenue. NDP focused on making sure low earners pay nothing and people between jobs are properly supported.";
     }
   },
   climate: {
     liberal: {
-      what: "Consumer carbon tax cancelled March 2025 (already done). Industrial carbon pricing kept — big polluters still pay. Clean energy investment. Greener Homes grants. EV subsidies for lower-income households.",
+      bottomLine: "Cancelled the gas price tax but kept rules for big polluters.",
+      what: "Carney cancelled the consumer carbon tax — the fee that was added to gas, home heating, and other fuels — in March 2025. You no longer pay that. But big industrial companies like oil refineries and factories still have to pay for their pollution. The government is also offering money to help Canadians buy more energy-efficient appliances, electric vehicles, and home upgrades — though you have to apply for these grants.",
       source: "https://liberal.ca/cstrong/build/",
-      sourceLabel: "Liberal build plan"
+      sourceLabel: "Liberal build plan — climate section"
     },
     conservative: {
-      what: "Would cancel ALL carbon pricing including industrial. Technology-only approach — tax credits for businesses that cut emissions. More pipelines, more oil and gas production. No cap on energy sector emissions.",
-      source: "https://www.conservative.ca/poilievre-unveils-his-plan-for-change/",
-      sourceLabel: "Conservative plan"
+      bottomLine: "Would have scrapped all carbon rules and focused on oil and gas growth.",
+      what: "Poilievre wanted to cancel not just the consumer carbon tax (which Carney already did) but all carbon pricing — including the rules that big companies follow. His approach: instead of charging polluters, give them tax credits if they choose to reduce emissions voluntarily. He also wanted to build more pipelines and expand oil and gas production. Critics say this approach doesn't actually reduce emissions; supporters say it keeps energy cheaper.",
+      source: "https://www.conservative.ca/poilievre-announces-new-canada-first-economic-action-plan/",
+      sourceLabel: "Conservative Canada First Economic Action Plan"
     },
     ndp: {
-      what: "Keep industrial carbon tax on big polluters. End $18B in annual fossil fuel subsidies. Retrofit 3 million homes with free energy upgrades for low-income households. $5,000 EV rebate (doubled if Canadian-made).",
+      bottomLine: "Strongest on climate — make polluters pay and help households go green for free.",
+      what: "The NDP wanted to keep charging big polluters for their emissions AND stop giving oil and gas companies $18 billion in government subsidies every year. They also had the most ambitious program to help regular people: free home energy upgrades (insulation, heat pumps) for low-income households, potentially saving up to $4,500 a year on energy bills. They also brought back the $5,000 rebate for buying an electric vehicle.",
       source: "https://www.ndp.ca/news/singh-announces-campaign-commitments-first-budget-focused-health-care-affordability-and-housing",
-      sourceLabel: "NDP commitments"
+      sourceLabel: "NDP campaign commitments"
     },
     getPersonalized: (a) => {
-      if (a.income === 'Under $40k') return "NDP's free home retrofit program for low-income households is the most direct benefit — could cut your energy bills by up to $4,500/year. Liberal green grants also target lower-income households. Conservative plan had no targeted benefits for lower-income Canadians on climate.";
-      if (a.housing === 'Homeowner') return "Liberal Greener Homes grants help homeowners retrofit. NDP offered the same plus free retrofits for lower-income owners. Conservative plan had the least support for home energy upgrades — relying on technology and market solutions instead.";
-      if (a.student === 'In high school' || a.student === 'Yes, college/university') return "This is your generation's defining issue. Liberals cancelled the consumer carbon tax but kept industrial pricing and clean energy investment. NDP kept more of the framework and cut fossil fuel subsidies. Conservatives would have removed all carbon pricing and expanded oil and gas.";
-      return "Liberals (now in government) cancelled consumer carbon tax but kept industrial pricing. NDP wanted to keep industrial pricing AND end fossil fuel subsidies. Conservatives wanted to scrap all carbon pricing and pursue a technology-only approach — no price on pollution at any level.";
+      if (a.income === 'Under $40k') return "NDP's free home retrofit for low-income households would have been the biggest direct benefit — cutting your energy bills by up to $4,500/year with no upfront cost. Liberal green grants exist but require you to pay first and apply for reimbursement. Conservative plan had nothing targeted at lower-income Canadians on climate.";
+      if (a.housing === 'Renting') return "As a renter you don't control your heating system or appliances, so most green home grants don't apply to you. The consumer carbon tax cancellation (already done by Carney) saves you a bit on gas. NDP's EV rebate would have helped if you buy a car. Honestly climate policy affects renters more through future extreme weather costs than immediate benefits.";
+      if (a.student === 'In high school' || a.student === 'Yes, college/university') return "This is your generation's issue more than any other. Liberals cancelled the consumer tax but kept industrial rules. NDP kept the most climate action and cut oil subsidies. Conservatives would have removed all carbon rules and expanded fossil fuels. The differences between parties here are significant and long-lasting.";
+      return "Liberals cancelled consumer carbon tax (done) but kept industrial pricing. NDP would have kept industrial pricing AND cut fossil fuel subsidies AND provided home retrofit grants. Conservatives wanted to remove all carbon pricing entirely and grow oil and gas — the most different from the other two.";
     }
   },
   costoflife: {
     liberal: {
-      what: "Middle class tax cut up to $825/year (in effect). Carbon tax cancellation saves ~18 cents/litre on gas. GST off first-time home purchases under $1M. Dental care expansion saving ~$800/year for eligible Canadians.",
-      source: "https://liberal.ca/cstrong/build/",
-      sourceLabel: "Liberal build plan"
+      bottomLine: "Tax cut, cheaper gas, and dental care — modest but real.",
+      what: "Carney's government delivered three main cost-of-living wins: a small income tax cut (up to $825/year for a two-income family), the cancellation of the carbon tax which saves about 18 cents per litre of gas, and expanding dental coverage so more Canadians don't have to pay out of pocket for basic dental work. These are already in effect.",
+      source: "https://liberal.ca/mark-carneys-liberals-take-action-to-make-life-more-affordable/",
+      sourceLabel: "Liberal affordability announcement"
     },
     conservative: {
-      what: "Larger tax cut — $900/worker, $1,800/family. Cancel ALL carbon pricing. Freeze excise tax on alcohol. Cut government deficit by 70%. No GST on new homes under $1.3M for any buyer.",
+      bottomLine: "Bigger tax cut — but mostly benefits people who already earn decent wages.",
+      what: "Poilievre promised a larger income tax cut — saving workers $900/year and two-income families $1,800/year — by cutting government spending. He also wanted to cancel all carbon pricing (saving more on gas than Carney did) and freeze the tax on alcohol. The bigger tax cut sounds great, but economists noted it benefits higher earners more since it's a flat rate cut — if you don't earn much, you don't save much.",
       source: "https://www.conservative.ca/poilievre-unveils-his-plan-for-change/",
-      sourceLabel: "Conservative plan"
+      sourceLabel: "Conservative plan for change"
     },
     ndp: {
-      what: "Emergency price caps on grocery staples like pasta, frozen vegetables, infant formula. Remove GST from essentials permanently — groceries, heating, internet, diapers. Wealth tax on households over $10M to fund it.",
+      bottomLine: "Targeted the actual things eating up your budget — groceries, internet, heat.",
+      what: "The NDP's approach was different: instead of income tax cuts (which help more if you earn more), they wanted to directly cap prices on grocery staples and permanently remove the GST from things everyone buys — groceries, home heating bills, internet plans, diapers. For someone spending most of their income on basics, this would have helped more than a tax cut. Funded by a new tax on households worth over $10 million.",
       source: "https://www.ndp.ca/news/singh-announces-campaign-commitments-first-budget-focused-health-care-affordability-and-housing",
-      sourceLabel: "NDP commitments"
+      sourceLabel: "NDP campaign commitments"
     },
     getPersonalized: (a) => {
-      if (a.income === 'Under $40k') return "NDP's grocery price caps and permanent GST removal from essentials would have helped lower-income Canadians most — the things you spend the highest share of income on. Liberal dental expansion (now in effect) also directly reduces costs. Conservative tax cuts help more at higher income levels.";
-      if (a.housing === 'Renting') return "Rent is your biggest cost and none of the federal parties directly capped it — that's provincial. But NDP's GST removal from heating and internet bills would have reduced your monthly costs. Liberal tax cut helps a bit. NDP grocery caps would have been the most immediate relief on day-to-day spending.";
-      if (a.student === 'Yes, college/university' || a.student === 'In high school') return "NDP removing GST from internet and grocery bills would have directly helped students on tight budgets. Liberal tax cut helps working students. Conservative tax cut is larger but you need to be earning enough to feel it — most students don't earn enough to benefit significantly.";
-      return "Liberals (now in government) delivered tax cuts and cancelled the carbon tax. Conservatives promised bigger tax cuts and further carbon pricing removal. NDP focused on capping prices directly — groceries, essentials — rather than cutting taxes, targeting people who spend most of their income on basics.";
+      if (a.income === 'Under $40k') return "NDP's approach would have helped you most — capping grocery prices and removing tax from your internet and heating bills hits your biggest expenses directly. Tax cuts are less useful when you don't earn much. Liberal dental expansion also helps if you have no coverage. Conservative tax cut is larger but you'd need to earn more to feel it.";
+      if (a.housing === 'Renting') return "Your biggest costs are rent, groceries, and utilities. No federal party capped rent — that's provincial. But NDP removing GST from heating and internet would have directly cut your monthly bills. Liberal tax cut puts a bit back in your pocket. Conservative cut is larger but mostly benefits higher earners.";
+      if (a.student === 'Yes, college/university' || a.student === 'In high school') return "As a student, your money goes to food, phone bills, and transit. NDP's GST removal from grocery and internet bills would have helped directly. Liberal tax cut helps if you work. Conservative tax cut is bigger but you'd need to be earning a real salary to benefit much.";
+      return "Liberal delivered modest tax cut and cheaper gas. Conservative promised bigger tax cut paid for by spending cuts. NDP focused on directly reducing the cost of groceries, heat and internet — a different philosophy that benefits people who spend most of their income on basics.";
     }
   },
   canadaus: {
     liberal: {
-      what: "Retaliatory tariffs on US goods. Every dollar collected from Canadian counter-tariffs directed to affected workers. Diversify trade away from US. Negotiate from a position of sovereignty, not dependence.",
-      source: "https://liberal.ca/cstrong/build/",
-      sourceLabel: "Liberal build plan"
+      bottomLine: "Fighting back against the US while protecting Canadian workers.",
+      what: "When the US put tariffs (extra taxes) on Canadian steel, aluminum and cars, Carney responded by putting matching tariffs on US goods coming into Canada. Every dollar Canada collects from those tariffs is being directed to Canadian workers and businesses affected by the trade war — like auto workers in Ontario. The longer-term goal is to make Canada less dependent on the US by building better trade relationships with Europe and Asia.",
+      source: "https://www.canada.ca/en/department-finance/news/2025/03/canada-responds-to-unjustified-us-tariffs-on-canadian-steel-and-aluminum-products.html",
+      sourceLabel: "Canada.ca — response to US tariffs"
     },
     conservative: {
-      what: "Renegotiate CUSMA (Canada-US trade deal) early. Remove internal Canadian trade barriers so provinces trade freely with each other. Resource extraction boom to reduce reliance on US market.",
+      bottomLine: "Renegotiate the deal and grow our own economy so we need the US less.",
+      what: "Poilievre's plan was to renegotiate Canada's trade deal with the US (called CUSMA) early, before it was due for review in 2026. He also wanted to remove trade barriers between Canadian provinces — right now it's actually easier for Ontario to trade with the US than with Alberta in some industries. His long-term strategy: grow Canada's oil and resource sector so we generate enough wealth to be less dependent on any single trading partner.",
       source: "https://www.conservative.ca/poilievre-unveils-his-plan-for-change/",
-      sourceLabel: "Conservative plan"
+      sourceLabel: "Conservative plan for change"
     },
     ndp: {
-      what: "No trade concessions on healthcare — Canadian health system stays off the table in any deal. Improve EI for workers displaced by tariffs. 'Build Canadian, Buy Canadian' plan for strategic industries.",
+      bottomLine: "Protect workers first — and don't trade away Canadian healthcare to get a deal.",
+      what: "The NDP's main positions: whatever deal Canada makes with the US, Canadian healthcare must stay completely off the table — no allowing US companies to run Canadian hospitals as part of any trade agreement. They also wanted to make Employment Insurance easier to access for workers who lose jobs because of tariffs, and invest in Canadian-made products through a 'Buy Canadian' strategy.",
       source: "https://www.ndp.ca/news/singh-announces-campaign-commitments-first-budget-focused-health-care-affordability-and-housing",
-      sourceLabel: "NDP commitments"
+      sourceLabel: "NDP campaign commitments"
     },
     getPersonalized: (a) => {
-      if (a.employment === 'Looking for work') return "The tariff situation is actively shrinking Ontario's job market. Liberals (now in government) are directing tariff revenues to displaced workers. NDP focused on strengthening EI for those who lose jobs. Conservative plan was more focused on long-term trade renegotiation and resource jobs — less immediate relief.";
-      if (a.income === 'Under $40k' || a.employment === 'Employed part-time') return "Tariffs raise prices on goods made with Canadian steel and aluminum — cars, appliances, building materials. NDP's 'Buy Canadian' approach would have supported domestic jobs. Liberal government is currently using tariff revenues to protect workers. All parties agreed Canada needs to diversify away from US dependence.";
-      if (a.student === 'In high school' || a.student === 'Yes, college/university') return "By the time you enter the job market, Canada's trade relationship with the US will look very different. Liberals are actively diversifying trade. NDP wanted stronger worker protections and a domestic production focus. Conservatives focused on renegotiating the trade deal and resource development.";
-      return "Liberals (now in government) responded with retaliatory tariffs and worker support funds. Conservatives planned early CUSMA renegotiation and a resource boom strategy. NDP focused on worker protections and keeping healthcare out of trade negotiations — all three parties agreed Canada needs less US dependence.";
+      if (a.employment === 'Looking for work') return "The tariff situation is directly reducing job opportunities in Ontario right now — the province's financial watchdog projects 119,200 fewer jobs by 2026. Liberal government is directing tariff revenues to displaced workers. NDP wanted stronger EI for job losses. Conservative plan was more about long-term economic growth than immediate job protection.";
+      if (a.income === 'Under $40k' || a.employment === 'Employed part-time') return "Tariffs make everyday goods more expensive — things made with Canadian steel and aluminum like cars, appliances, and construction materials all cost more. Liberal government is using tariff revenue to support affected workers. NDP's 'Buy Canadian' approach would support domestic jobs. All parties agreed Canada needs to rely on the US less.";
+      if (a.student === 'In high school' || a.student === 'Yes, college/university') return "The job market you graduate into will be shaped by how Canada handles this trade war. Liberals are actively building new trade relationships with Europe and Asia. Conservatives wanted to grow the resource sector as Canada's economic base. NDP focused on protecting workers during the transition. The differences matter for what kinds of jobs will exist.";
+      return "Liberals are retaliating against US tariffs and directing the revenue to affected workers while diversifying trade. Conservatives planned to renegotiate the trade deal and grow resource exports. NDP focused on worker protections and keeping healthcare out of any trade negotiations.";
     }
   },
   privacy: {
     liberal: {
-      what: "Bill C-27 (Digital Charter) remains in Parliament — not yet passed. Liberal platform did not include major new digital privacy commitments in 2025. Committed to regulating AI through existing frameworks.",
+      bottomLine: "Introduced a privacy law in 2022 but hasn't passed it yet.",
+      what: "The Liberals introduced Bill C-27 — a law that would give Canadians the right to see what data companies hold on them, delete it, and understand when AI is making decisions about their lives. But they introduced it in 2022 and it still hasn't passed into law by 2026. Their 2025 election platform made no new digital privacy promises. They're committed to AI regulation but haven't done much concrete yet.",
       source: "https://www.parl.ca/legisinfo/en/bill/44-1/c-27",
-      sourceLabel: "Parliament of Canada - Bill C-27"
+      sourceLabel: "Parliament of Canada — Bill C-27 status"
     },
     conservative: {
-      what: "Focused on online harms legislation — criminalizing cyberbullying, CSAM, and non-consensual intimate images. No specific stance on Bill C-27 or broader data privacy reform in 2025 platform.",
+      bottomLine: "Focused on specific online harms — not broad privacy rights.",
+      what: "Poilievre's platform focused on making specific online harms illegal — things like cyberbullying, sharing someone's private photos without consent, and child sexual abuse material. These are already illegal in many cases, but he wanted stronger criminal enforcement. He didn't take a position on Bill C-27 or broader questions about who owns your data and how companies use it.",
       source: "https://pollenize.org/en/elections/canada-2025/pierre-poilievre/",
-      sourceLabel: "Pollenize Conservative platform summary"
+      sourceLabel: "Pollenize — Conservative platform summary"
     },
     ndp: {
-      what: "Crackdown on misinformation and hate online. Protect democracy from AI-driven interference. Foreign agent registry. No specific Bill C-27 stance — but strongest on tech accountability generally.",
+      bottomLine: "Most vocal on tech accountability, but no specific data privacy law.",
+      what: "The NDP were the most outspoken about tech companies having too much power — they wanted to crack down on AI-driven misinformation, regulate social media platforms more strongly, and create a foreign agent registry to stop foreign interference in Canadian democracy. They didn't take a specific position on Bill C-27 but were generally in favour of stronger tech accountability.",
       source: "https://www.ndp.ca/news/singh-announces-campaign-commitments-first-budget-focused-health-care-affordability-and-housing",
-      sourceLabel: "NDP commitments"
+      sourceLabel: "NDP campaign commitments"
     },
     getPersonalized: (a) => {
-      if (a.student === 'In high school') return "Honest answer: digital privacy was not a major campaign issue for any party in 2025. Bill C-27 is still sitting in Parliament. NDP was strongest on tech accountability generally. If this issue matters to you, none of the parties gave it the attention it deserves — which is itself worth knowing.";
-      if (a.student === 'Yes, college/university') return "None of the major parties made digital privacy a centrepiece in 2025. Bill C-27 — which would give you the right to delete your data and understand AI decisions about you — is still not law. NDP was most vocal on tech accountability. Conservatives focused on criminalizing specific online harms rather than broad privacy reform.";
-      return "This is an area where all parties fell short in 2025. Bill C-27, Canada's proposed digital privacy overhaul, is still in Parliament. NDP was strongest on tech accountability. Conservatives focused on specific online harms. Liberals haven't moved the bill forward despite introducing it in 2022. If you care about digital rights, no party made this a priority.";
+      if (a.student === 'In high school') return "Honest answer: no party made your digital privacy a real priority in 2025. Bill C-27 — which would let you delete your data from TikTok, Instagram and other platforms — has been sitting in Parliament since 2022 without passing. NDP was loudest on tech accountability but didn't win. If this matters to you, it's worth knowing that none of the parties treated it seriously.";
+      if (a.student === 'Yes, college/university') return "None of the major parties made digital privacy a centrepiece in 2025. The law that would give you rights over your data (Bill C-27) is still not passed. NDP was most vocal about tech accountability and AI. Conservatives focused on specific crimes online. Liberals introduced the bill but haven't moved it forward in 4 years.";
+      return "All three parties fell short on digital privacy in 2025. Bill C-27 gives Canadians important rights — know what data is held about you, delete it, understand AI decisions — but it's still not law. NDP strongest on tech accountability generally. Conservatives focused on criminal harms. Liberals stalled on the bill they introduced.";
     }
   }
 };
@@ -721,6 +744,7 @@ function ResultsPage({ answers, selectedIssues, onRestart }) {
                   <span className="text-sm font-bold text-gray-900">🔴 Mark Carney — Liberal</span>
                   <span className="text-xs bg-red-100 text-red-700 px-2 py-0.5 rounded-full">Current PM</span>
                 </div>
+                <p className="text-xs font-semibold text-gray-500 italic mb-2">{comparison.liberal.bottomLine}</p>
                 <p className="text-gray-700 text-sm leading-relaxed mb-2">{comparison.liberal.what}</p>
                 <a href={comparison.liberal.source} target="_blank" rel="noopener noreferrer"
                   className="text-xs text-red-500 hover:underline">
@@ -734,6 +758,7 @@ function ResultsPage({ answers, selectedIssues, onRestart }) {
                   <span className="text-sm font-bold text-gray-900">🔵 Pierre Poilievre — Conservative</span>
                   <span className="text-xs bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full">Opposition Leader</span>
                 </div>
+                <p className="text-xs font-semibold text-gray-500 italic mb-2">{comparison.conservative.bottomLine}</p>
                 <p className="text-gray-700 text-sm leading-relaxed mb-2">{comparison.conservative.what}</p>
                 <a href={comparison.conservative.source} target="_blank" rel="noopener noreferrer"
                   className="text-xs text-blue-500 hover:underline">
@@ -748,6 +773,7 @@ function ResultsPage({ answers, selectedIssues, onRestart }) {
                     <span className="text-sm font-bold text-gray-900">🟠 NDP — New Democrats</span>
                     <span className="text-xs bg-orange-100 text-orange-700 px-2 py-0.5 rounded-full">Lost party status 2025</span>
                   </div>
+                  <p className="text-xs font-semibold text-gray-500 italic mb-2">{comparison.ndp.bottomLine}</p>
                   <p className="text-gray-700 text-sm leading-relaxed mb-2">{comparison.ndp.what}</p>
                   <a href={comparison.ndp.source} target="_blank" rel="noopener noreferrer"
                     className="text-xs text-orange-500 hover:underline">
