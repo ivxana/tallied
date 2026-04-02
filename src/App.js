@@ -184,7 +184,10 @@ function App() {
       <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex flex-col">
         <div className="flex-1 flex items-center justify-center px-4 py-16">
           <div className="max-w-2xl w-full text-center">
-            <h1 className="text-7xl font-bold text-gray-900 mb-3">Tallied</h1>
+            <h1 className="text-7xl font-bold text-gray-900 mb-2">Tallied</h1>
+            <p className="text-sm font-semibold text-blue-400 uppercase tracking-widest mb-3">
+              Politics, Personalized
+            </p>
             <p className="text-xl text-blue-600 font-semibold mb-10">
               This affects you. Get tallied.
             </p>
