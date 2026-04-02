@@ -444,7 +444,207 @@ function PoliciesPage({ answers, onComplete }) {
   );
 }
 
+// ─── Candidate comparison data ───────────────────────────────────────────────
+// Sources:
+//   Liberal: liberal.ca/plan, liberal.ca/housing-plan, liberal.ca/cstrong/build, pm.gc.ca
+//   Conservative: conservative.ca/poilievre-unveils-his-plan-for-change, conservative.ca
+//   NDP: ndp.ca/news/singh-announces-campaign-commitments, cp24.com NDP platform April 2025
+//   All party positions reflect official 2025 federal election platforms.
+//   Carney won the April 2025 election; some Liberal promises are now in effect.
+
+const candidateComparison = {
+  housing: {
+    liberal: {
+      what: "Build 500,000 homes per year by doubling construction pace. GST eliminated for first-time buyers on homes under $1M (saves up to $50,000). Government-backed financing for affordable home builders.",
+      source: "liberal.ca/housing-plan",
+      sourceLabel: "Liberal housing plan"
+    },
+    conservative: {
+      what: "Build 2.3 million homes over 5 years. GST removed on ALL new homes under $1.3M — not just first-time buyers. Sell federal land to developers. Reward cities that approve 15% more homes annually.",
+      source: "https://www.conservative.ca/poilievre-unveils-his-plan-for-change/",
+      sourceLabel: "Conservative plan"
+    },
+    ndp: {
+      what: "Build 3 million homes by 2030. National rent control required for any province receiving federal housing funding. $16B housing strategy. Protect social housing from corporate landlords.",
+      source: "https://www.ndp.ca/news/singh-announces-campaign-commitments-first-budget-focused-health-care-affordability-and-housing",
+      sourceLabel: "NDP commitments"
+    },
+    getPersonalized: (a) => {
+      if (a.housing === 'Renting') return "As a renter, the NDP's national rent control promise matters most to you directly. Liberal and Conservative plans focus on ownership and supply — which helps long-term but doesn't cap what your landlord can charge now.";
+      if (a.housing === 'Looking to buy') return "All three parties removed GST on new homes, but Conservatives went furthest — removing it for everyone, not just first-time buyers. Liberal plan is in effect now. NDP focused more on affordable rentals than ownership.";
+      if (a.housing === 'Living with family') return "If you're planning to move out eventually, the Liberal GST cut (already in effect) saves first-time buyers up to $50,000. Conservatives would have gone further, removing GST for all buyers on homes up to $1.3M.";
+      return "All parties promised major housing construction increases. Liberals are currently in government implementing 500,000 homes/year. NDP's plan was most aggressive at 3M by 2030 with rent controls attached.";
+    }
+  },
+  education: {
+    liberal: {
+      what: "No promises on tuition or student debt in the 2025 platform. Covered apprenticeship training costs up to $8,000. Tax cut saves students who work up to $825/year.",
+      source: "https://liberal.ca/plan/",
+      sourceLabel: "Liberal plan"
+    },
+    conservative: {
+      what: "Income-contingent repayment for federal student loans — you only repay when earning above a threshold. Interest on student lines of credit made tax-deductible. No tuition promises.",
+      source: "https://universityaffairs.ca/news/where-do-the-federal-election-candidates-stand-on-postsecondary-education/",
+      sourceLabel: "University Affairs comparison"
+    },
+    ndp: {
+      what: "Cancel student debt. Free tuition at public institutions (longstanding NDP promise). Build affordable student housing. Universal student housing as federal condition for funding.",
+      source: "https://www.ndp.ca/news/singh-announces-campaign-commitments-first-budget-focused-health-care-affordability-and-housing",
+      sourceLabel: "NDP commitments"
+    },
+    getPersonalized: (a) => {
+      if (a.student === 'In high school') return "Honest answer: the federal parties were largely quiet on post-secondary education in 2025. The OSAP cuts you'll face are a provincial Ford government decision, not federal. NDP promised free tuition federally, but they lost official party status in the election.";
+      if (a.student === 'Yes, college/university') return "None of the major federal parties promised to reverse Ontario's OSAP cuts — that's a provincial issue. Federally, NDP promised to cancel student debt and free tuition. Conservatives promised income-contingent repayment. Liberals were mostly silent on student finances.";
+      if (a.student === 'Recently graduated') return "Conservatives' income-contingent repayment plan would have helped recent grads — you'd only repay loans once earning above a set threshold. NDP promised full debt cancellation. Liberals offered little on student debt specifically.";
+      return "The federal parties had limited education platforms in 2025. The big OSAP changes are provincial (Ford government). Federally, NDP had the boldest student promises but lost party status. Conservatives focused on repayment flexibility.";
+    }
+  },
+  healthcare: {
+    liberal: {
+      what: "Expand dental coverage to Canadians aged 18-64 (saves ~$800/person). $4B for local health clinics. Pharmacare covering insulin and contraception. $52M for internationally trained health professionals.",
+      source: "https://liberal.ca/cstrong/build/",
+      sourceLabel: "Liberal build plan"
+    },
+    conservative: {
+      what: "No major new healthcare spending in 2025 platform. Focus on efficiency and reducing wait times through system reform rather than new investment. Opposed pharmacare expansion.",
+      source: "https://www.conservative.ca/poilievre-unveils-his-plan-for-change/",
+      sourceLabel: "Conservative plan"
+    },
+    ndp: {
+      what: "Every Canadian a family doctor by 2030. Universal pharmacare within 4 years covering all essential medicines. Mental health coverage expansion. Stop US corporations from buying Canadian health facilities.",
+      source: "https://www.ndp.ca/news/singh-announces-campaign-commitments-first-budget-focused-health-care-affordability-and-housing",
+      sourceLabel: "NDP commitments"
+    },
+    getPersonalized: (a) => {
+      if (a.student === 'Yes, college/university' || a.student === 'In high school') return "The Liberal dental expansion to ages 18-64 is the most immediate healthcare change affecting you — it's now government policy. NDP promised to go further with full pharmacare. Conservatives planned no major new health spending.";
+      if (a.income === 'Under $40k') return "Liberal dental expansion (now in effect) could save you ~$800/year if you access it. NDP's universal pharmacare would have been bigger for lower-income Canadians who currently pay out of pocket for prescriptions. Conservatives offered nothing new on healthcare costs.";
+      if (a.employment === 'Looking for work' || a.employment === 'Not currently working') return "Without employer benefits, healthcare costs fall entirely on you. Liberal dental expansion to 18-64 is now in effect. NDP's pharmacare promise would have helped most — full prescription coverage for everyone regardless of employment.";
+      return "Liberals (now in government) are expanding dental care to ages 18-64. NDP had the most ambitious healthcare platform — universal pharmacare, mental health coverage, guaranteed family doctor access. Conservatives planned no major new healthcare investment.";
+    }
+  },
+  jobs: {
+    liberal: {
+      what: "Middle class tax cut saving dual-income families up to $825/year (in effect since Canada Day 2025). Every dollar from US retaliatory tariffs directed to affected workers. EI modernization for gig workers.",
+      source: "https://liberal.ca/cstrong/build/",
+      sourceLabel: "Liberal build plan"
+    },
+    conservative: {
+      what: "Larger income tax cut saving average worker $900/year, families $1,800/year. Cut government spending by $56B. Resource extraction boom to create jobs. Remove what Poilievre calls 'anti-development' laws.",
+      source: "https://www.conservative.ca/poilievre-unveils-his-plan-for-change/",
+      sourceLabel: "Conservative plan"
+    },
+    ndp: {
+      what: "Raise basic personal income threshold to $19,500 — meaning workers earn more before paying any tax. Remove GST from essentials permanently. Expand EI for gig workers and self-employed. $20/hr federal minimum wage.",
+      source: "https://www.ndp.ca/news/singh-announces-campaign-commitments-first-budget-focused-health-care-affordability-and-housing",
+      sourceLabel: "NDP commitments"
+    },
+    getPersonalized: (a) => {
+      if (a.employment === 'Looking for work') return "Conservatives bet on resource sector job creation. Liberals directed tariff revenue to displaced workers. NDP focused on EI access — lowering the hours required to qualify and extending coverage duration, which matters most if you're between jobs.";
+      if (a.employment === 'Employed part-time' || a.income === 'Under $40k') return "NDP's plan to raise the basic income threshold to $19,500 means you'd pay zero federal tax until earning that amount — the biggest direct benefit for lower-wage workers. Liberal tax cut helps but is smaller at lower incomes. Conservative cut was larger but benefits higher earners more.";
+      if (a.student === 'Yes, college/university' || a.student === 'In high school') return "For student jobs, NDP's raised tax-free threshold ($19,500) would have meant most student workers pay little to no federal tax. Liberal cut (now in effect) saves working students some money. Conservative cut was bigger but you'd need to be earning more to feel it.";
+      return "Liberal tax cut (up to $825/family) is now in effect since Canada Day 2025. Conservative promised bigger cuts ($1,800/family) funded by spending reductions. NDP focused on raising the threshold so lower earners pay nothing, plus stronger EI.";
+    }
+  },
+  climate: {
+    liberal: {
+      what: "Consumer carbon tax cancelled March 2025 (already done). Industrial carbon pricing kept — big polluters still pay. Clean energy investment. Greener Homes grants. EV subsidies for lower-income households.",
+      source: "https://liberal.ca/cstrong/build/",
+      sourceLabel: "Liberal build plan"
+    },
+    conservative: {
+      what: "Would cancel ALL carbon pricing including industrial. Technology-only approach — tax credits for businesses that cut emissions. More pipelines, more oil and gas production. No cap on energy sector emissions.",
+      source: "https://www.conservative.ca/poilievre-unveils-his-plan-for-change/",
+      sourceLabel: "Conservative plan"
+    },
+    ndp: {
+      what: "Keep industrial carbon tax on big polluters. End $18B in annual fossil fuel subsidies. Retrofit 3 million homes with free energy upgrades for low-income households. $5,000 EV rebate (doubled if Canadian-made).",
+      source: "https://www.ndp.ca/news/singh-announces-campaign-commitments-first-budget-focused-health-care-affordability-and-housing",
+      sourceLabel: "NDP commitments"
+    },
+    getPersonalized: (a) => {
+      if (a.income === 'Under $40k') return "NDP's free home retrofit program for low-income households is the most direct benefit — could cut your energy bills by up to $4,500/year. Liberal green grants also target lower-income households. Conservative plan had no targeted benefits for lower-income Canadians on climate.";
+      if (a.housing === 'Homeowner') return "Liberal Greener Homes grants help homeowners retrofit. NDP offered the same plus free retrofits for lower-income owners. Conservative plan had the least support for home energy upgrades — relying on technology and market solutions instead.";
+      if (a.student === 'In high school' || a.student === 'Yes, college/university') return "This is your generation's defining issue. Liberals cancelled the consumer carbon tax but kept industrial pricing and clean energy investment. NDP kept more of the framework and cut fossil fuel subsidies. Conservatives would have removed all carbon pricing and expanded oil and gas.";
+      return "Liberals (now in government) cancelled consumer carbon tax but kept industrial pricing. NDP wanted to keep industrial pricing AND end fossil fuel subsidies. Conservatives wanted to scrap all carbon pricing and pursue a technology-only approach — no price on pollution at any level.";
+    }
+  },
+  costoflife: {
+    liberal: {
+      what: "Middle class tax cut up to $825/year (in effect). Carbon tax cancellation saves ~18 cents/litre on gas. GST off first-time home purchases under $1M. Dental care expansion saving ~$800/year for eligible Canadians.",
+      source: "https://liberal.ca/cstrong/build/",
+      sourceLabel: "Liberal build plan"
+    },
+    conservative: {
+      what: "Larger tax cut — $900/worker, $1,800/family. Cancel ALL carbon pricing. Freeze excise tax on alcohol. Cut government deficit by 70%. No GST on new homes under $1.3M for any buyer.",
+      source: "https://www.conservative.ca/poilievre-unveils-his-plan-for-change/",
+      sourceLabel: "Conservative plan"
+    },
+    ndp: {
+      what: "Emergency price caps on grocery staples like pasta, frozen vegetables, infant formula. Remove GST from essentials permanently — groceries, heating, internet, diapers. Wealth tax on households over $10M to fund it.",
+      source: "https://www.ndp.ca/news/singh-announces-campaign-commitments-first-budget-focused-health-care-affordability-and-housing",
+      sourceLabel: "NDP commitments"
+    },
+    getPersonalized: (a) => {
+      if (a.income === 'Under $40k') return "NDP's grocery price caps and permanent GST removal from essentials would have helped lower-income Canadians most — the things you spend the highest share of income on. Liberal dental expansion (now in effect) also directly reduces costs. Conservative tax cuts help more at higher income levels.";
+      if (a.housing === 'Renting') return "Rent is your biggest cost and none of the federal parties directly capped it — that's provincial. But NDP's GST removal from heating and internet bills would have reduced your monthly costs. Liberal tax cut helps a bit. NDP grocery caps would have been the most immediate relief on day-to-day spending.";
+      if (a.student === 'Yes, college/university' || a.student === 'In high school') return "NDP removing GST from internet and grocery bills would have directly helped students on tight budgets. Liberal tax cut helps working students. Conservative tax cut is larger but you need to be earning enough to feel it — most students don't earn enough to benefit significantly.";
+      return "Liberals (now in government) delivered tax cuts and cancelled the carbon tax. Conservatives promised bigger tax cuts and further carbon pricing removal. NDP focused on capping prices directly — groceries, essentials — rather than cutting taxes, targeting people who spend most of their income on basics.";
+    }
+  },
+  canadaus: {
+    liberal: {
+      what: "Retaliatory tariffs on US goods. Every dollar collected from Canadian counter-tariffs directed to affected workers. Diversify trade away from US. Negotiate from a position of sovereignty, not dependence.",
+      source: "https://liberal.ca/cstrong/build/",
+      sourceLabel: "Liberal build plan"
+    },
+    conservative: {
+      what: "Renegotiate CUSMA (Canada-US trade deal) early. Remove internal Canadian trade barriers so provinces trade freely with each other. Resource extraction boom to reduce reliance on US market.",
+      source: "https://www.conservative.ca/poilievre-unveils-his-plan-for-change/",
+      sourceLabel: "Conservative plan"
+    },
+    ndp: {
+      what: "No trade concessions on healthcare — Canadian health system stays off the table in any deal. Improve EI for workers displaced by tariffs. 'Build Canadian, Buy Canadian' plan for strategic industries.",
+      source: "https://www.ndp.ca/news/singh-announces-campaign-commitments-first-budget-focused-health-care-affordability-and-housing",
+      sourceLabel: "NDP commitments"
+    },
+    getPersonalized: (a) => {
+      if (a.employment === 'Looking for work') return "The tariff situation is actively shrinking Ontario's job market. Liberals (now in government) are directing tariff revenues to displaced workers. NDP focused on strengthening EI for those who lose jobs. Conservative plan was more focused on long-term trade renegotiation and resource jobs — less immediate relief.";
+      if (a.income === 'Under $40k' || a.employment === 'Employed part-time') return "Tariffs raise prices on goods made with Canadian steel and aluminum — cars, appliances, building materials. NDP's 'Buy Canadian' approach would have supported domestic jobs. Liberal government is currently using tariff revenues to protect workers. All parties agreed Canada needs to diversify away from US dependence.";
+      if (a.student === 'In high school' || a.student === 'Yes, college/university') return "By the time you enter the job market, Canada's trade relationship with the US will look very different. Liberals are actively diversifying trade. NDP wanted stronger worker protections and a domestic production focus. Conservatives focused on renegotiating the trade deal and resource development.";
+      return "Liberals (now in government) responded with retaliatory tariffs and worker support funds. Conservatives planned early CUSMA renegotiation and a resource boom strategy. NDP focused on worker protections and keeping healthcare out of trade negotiations — all three parties agreed Canada needs less US dependence.";
+    }
+  },
+  privacy: {
+    liberal: {
+      what: "Bill C-27 (Digital Charter) remains in Parliament — not yet passed. Liberal platform did not include major new digital privacy commitments in 2025. Committed to regulating AI through existing frameworks.",
+      source: "https://www.parl.ca/legisinfo/en/bill/44-1/c-27",
+      sourceLabel: "Parliament of Canada - Bill C-27"
+    },
+    conservative: {
+      what: "Focused on online harms legislation — criminalizing cyberbullying, CSAM, and non-consensual intimate images. No specific stance on Bill C-27 or broader data privacy reform in 2025 platform.",
+      source: "https://pollenize.org/en/elections/canada-2025/pierre-poilievre/",
+      sourceLabel: "Pollenize Conservative platform summary"
+    },
+    ndp: {
+      what: "Crackdown on misinformation and hate online. Protect democracy from AI-driven interference. Foreign agent registry. No specific Bill C-27 stance — but strongest on tech accountability generally.",
+      source: "https://www.ndp.ca/news/singh-announces-campaign-commitments-first-budget-focused-health-care-affordability-and-housing",
+      sourceLabel: "NDP commitments"
+    },
+    getPersonalized: (a) => {
+      if (a.student === 'In high school') return "Honest answer: digital privacy was not a major campaign issue for any party in 2025. Bill C-27 is still sitting in Parliament. NDP was strongest on tech accountability generally. If this issue matters to you, none of the parties gave it the attention it deserves — which is itself worth knowing.";
+      if (a.student === 'Yes, college/university') return "None of the major parties made digital privacy a centrepiece in 2025. Bill C-27 — which would give you the right to delete your data and understand AI decisions about you — is still not law. NDP was most vocal on tech accountability. Conservatives focused on criminalizing specific online harms rather than broad privacy reform.";
+      return "This is an area where all parties fell short in 2025. Bill C-27, Canada's proposed digital privacy overhaul, is still in Parliament. NDP was strongest on tech accountability. Conservatives focused on specific online harms. Liberals haven't moved the bill forward despite introducing it in 2022. If you care about digital rights, no party made this a priority.";
+    }
+  }
+};
+
 function ResultsPage({ answers, selectedIssues, onRestart }) {
+  const [showNDP, setShowNDP] = useState(false);
+
+  const selectedIssueLabels = issueOptions
+    .filter(i => selectedIssues.includes(i.key))
+    .map(i => i.label);
+
   const labelMap = {
     student: {
       'Yes, college/university': 'college/university student',
@@ -472,76 +672,113 @@ function ResultsPage({ answers, selectedIssues, onRestart }) {
     }
   };
 
-  const selectedPolicies = policies.filter(p => selectedIssues.includes(p.issueKey));
-  const selectedIssueLabels = issueOptions
-    .filter(i => selectedIssues.includes(i.key))
-    .map(i => i.label);
-
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 px-4 py-12">
       <div className="max-w-2xl mx-auto">
+
+        {/* Header */}
         <div className="text-center mb-8">
           <h1 className="text-4xl font-bold text-gray-900 mb-2">Tallied</h1>
           <p className="text-gray-600 mb-1">
-            Step 3 of 3 - Your priorities: <span className="font-semibold text-blue-600">{selectedIssueLabels.join(', ')}</span>
+            Your priorities: <span className="font-semibold text-blue-600">{selectedIssueLabels.join(', ')}</span>
           </p>
           <p className="text-sm text-gray-400">
-            Showing results for a {labelMap.student[answers.student]}, {labelMap.employment[answers.employment]}, {labelMap.income[answers.income]}, {labelMap.housing[answers.housing]}
+            Personalized for a {labelMap.student[answers.student]}, {labelMap.employment[answers.employment]}, {labelMap.income[answers.income]}, {labelMap.housing[answers.housing]}
           </p>
         </div>
 
-        <div className="bg-yellow-50 border border-yellow-200 rounded-2xl p-4 mb-6 text-center">
-          <p className="text-yellow-800 font-medium text-sm">
-            Coming soon: See how Carney vs Poilievre would address these exact issues for someone like you.
+        {/* Disclaimer */}
+        <div className="bg-blue-50 border border-blue-200 rounded-2xl p-4 mb-6">
+          <p className="text-blue-800 text-sm text-center">
+            These are official 2025 federal election platform positions. Carney won and is now PM — Liberal promises marked ✓ are in effect. All positions sourced from party websites and CBC News.
           </p>
         </div>
 
-        <div className="bg-green-50 border border-green-200 rounded-2xl p-4 mb-6 text-center">
-          <p className="text-green-800 font-medium">
-            Ontario's next provincial election is June 5, 2029 - voter registration is free and takes 2 minutes
-          </p>
+        {/* Candidate comparison cards */}
+        {selectedIssues.map(issueKey => {
+          const comparison = candidateComparison[issueKey];
+          const issueInfo = issueOptions.find(i => i.key === issueKey);
+          if (!comparison || !issueInfo) return null;
+
+          return (
+            <div key={issueKey} className="bg-white rounded-2xl shadow-sm p-6 mb-6">
+
+              {/* Issue header */}
+              <div className="flex items-center gap-2 mb-4">
+                <span className="text-2xl">{issueInfo.emoji}</span>
+                <h2 className="text-xl font-bold text-gray-900">{issueInfo.label}</h2>
+              </div>
+
+              {/* Personalized impact */}
+              <div className="bg-blue-50 rounded-xl p-4 mb-5">
+                <p className="text-xs font-semibold text-blue-600 uppercase tracking-wide mb-2">What this means for you</p>
+                <p className="text-gray-800 text-sm leading-relaxed">{comparison.getPersonalized(answers)}</p>
+              </div>
+
+              {/* Liberal */}
+              <div className="border-l-4 border-red-400 pl-4 mb-4">
+                <div className="flex items-center gap-2 mb-1">
+                  <span className="text-sm font-bold text-gray-900">🔴 Mark Carney — Liberal</span>
+                  <span className="text-xs bg-red-100 text-red-700 px-2 py-0.5 rounded-full">Current PM</span>
+                </div>
+                <p className="text-gray-700 text-sm leading-relaxed mb-2">{comparison.liberal.what}</p>
+                <a href={comparison.liberal.source} target="_blank" rel="noopener noreferrer"
+                  className="text-xs text-red-500 hover:underline">
+                  Source: {comparison.liberal.sourceLabel} ↗
+                </a>
+              </div>
+
+              {/* Conservative */}
+              <div className="border-l-4 border-blue-500 pl-4 mb-4">
+                <div className="flex items-center gap-2 mb-1">
+                  <span className="text-sm font-bold text-gray-900">🔵 Pierre Poilievre — Conservative</span>
+                  <span className="text-xs bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full">Opposition Leader</span>
+                </div>
+                <p className="text-gray-700 text-sm leading-relaxed mb-2">{comparison.conservative.what}</p>
+                <a href={comparison.conservative.source} target="_blank" rel="noopener noreferrer"
+                  className="text-xs text-blue-500 hover:underline">
+                  Source: {comparison.conservative.sourceLabel} ↗
+                </a>
+              </div>
+
+              {/* NDP toggle */}
+              {showNDP && (
+                <div className="border-l-4 border-orange-400 pl-4 mb-4">
+                  <div className="flex items-center gap-2 mb-1">
+                    <span className="text-sm font-bold text-gray-900">🟠 NDP — New Democrats</span>
+                    <span className="text-xs bg-orange-100 text-orange-700 px-2 py-0.5 rounded-full">Lost party status 2025</span>
+                  </div>
+                  <p className="text-gray-700 text-sm leading-relaxed mb-2">{comparison.ndp.what}</p>
+                  <a href={comparison.ndp.source} target="_blank" rel="noopener noreferrer"
+                    className="text-xs text-orange-500 hover:underline">
+                    Source: {comparison.ndp.sourceLabel} ↗
+                  </a>
+                </div>
+              )}
+
+            </div>
+          );
+        })}
+
+        {/* NDP toggle button */}
+        <div className="text-center mb-6">
+          <button
+            onClick={() => setShowNDP(!showNDP)}
+            className="text-sm font-medium text-gray-500 hover:text-gray-800 underline transition-colors"
+          >
+            {showNDP ? 'Hide NDP positions ↑' : 'Curious about other parties? See NDP positions ↓'}
+          </button>
+          {showNDP && (
+            <p className="text-xs text-gray-400 mt-2 max-w-sm mx-auto">
+              The NDP lost official party status in the April 2025 election. Jagmeet Singh resigned; Avi Lewis became leader in March 2026. These are the 2025 platform positions.
+            </p>
+          )}
         </div>
 
-        <h2 className="text-xl font-bold text-gray-900 mb-4">Your Selected Issues - Deep Dive</h2>
-
-        {selectedPolicies.map(policy => (
-          <div key={policy.id} className="bg-white rounded-2xl shadow-sm p-8 mb-5">
-            <div className="flex items-start justify-between mb-3">
-              <span
-                className="text-xs font-semibold px-3 py-1 rounded-full"
-                style={{ backgroundColor: policy.tagColor, color: policy.tagText }}
-              >
-                {policy.tag}
-              </span>
-              <span className="text-sm text-gray-400">{policy.year}</span>
-            </div>
-            <h3 className="text-xl font-bold text-gray-900 mb-3">{policy.title}</h3>
-            <p className="text-gray-600 text-sm leading-relaxed mb-4">{policy.plain}</p>
-            <div className="bg-blue-50 rounded-xl p-4 mb-4">
-              <p className="text-xs font-semibold text-blue-600 uppercase tracking-wide mb-2">
-                How this affects you
-              </p>
-              <p className="text-gray-800 text-sm leading-relaxed">
-                {policy.getImpact(answers)}
-              </p>
-            </div>
-            <div className="flex items-center justify-between">
-              <a
-                href={policy.link}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-blue-600 text-sm font-medium hover:underline"
-              >
-                {policy.linkLabel}
-              </a>
-              <p className="text-xs text-gray-400">Source: {policy.source}</p>
-            </div>
-          </div>
-        ))}
-
+        {/* Action section */}
         <div className="bg-white rounded-2xl shadow-sm p-8 mb-5">
           <h3 className="text-xl font-bold text-gray-900 mb-2">Ready to do something about it?</h3>
-          <p className="text-gray-500 text-sm mb-5">Ontario's next election is June 5, 2029. Registration takes 2 minutes.</p>
+          <p className="text-gray-500 text-sm mb-5">Ontario's next provincial election is June 5, 2029. Federal elections happen at least every 5 years. Registration takes 2 minutes.</p>
           <div className="grid grid-cols-1 gap-3">
             <a
               href="https://www.registertovoteon.ca/"
@@ -549,13 +786,21 @@ function ResultsPage({ answers, selectedIssues, onRestart }) {
               rel="noopener noreferrer"
               className="block w-full text-center bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-xl transition-colors"
             >
-              Register to Vote
+              Register to Vote (Ontario)
+            </a>
+            <a
+              href="https://www.elections.ca/content.aspx?section=vot&dir=reg/etr&document=index&lang=e"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="block w-full text-center bg-white hover:bg-gray-50 text-blue-600 font-semibold py-3 px-6 rounded-xl transition-colors border-2 border-blue-200"
+            >
+              Register to Vote (Federal)
             </a>
             <a
               href="https://www.elections.on.ca/en/voting-in-ontario/electoral-districts.html"
               target="_blank"
               rel="noopener noreferrer"
-              className="block w-full text-center bg-white hover:bg-gray-50 text-blue-600 font-semibold py-3 px-6 rounded-xl transition-colors border-2 border-blue-200"
+              className="block w-full text-center bg-white hover:bg-gray-50 text-gray-600 font-semibold py-3 px-6 rounded-xl transition-colors border-2 border-gray-200"
             >
               Find Your Riding
             </a>
@@ -572,7 +817,7 @@ function ResultsPage({ answers, selectedIssues, onRestart }) {
         </div>
 
         <footer className="text-center py-4 text-sm text-gray-400">
-          Built by Ivana Okpakovwodo - {new Date().getFullYear()}
+          Built by Ivana Okpakovwodo · Sources: liberal.ca, conservative.ca, ndp.ca, CBC News, Parliament of Canada
         </footer>
       </div>
     </div>
