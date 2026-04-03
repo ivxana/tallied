@@ -1111,8 +1111,30 @@ function DecisionSummaryPage({ answers, selectedIssues, onRestart }) {
         <div className="bg-gray-50 rounded-2xl p-6 mb-5 border border-gray-200">
           <h3 className="text-lg font-bold text-gray-900 mb-3">The honest takeaway</h3>
           <p className="text-gray-600 text-sm leading-relaxed mb-3">
-            Based on your priorities, Carney's positions align on <strong>{liberalScore} of {selectedIssues.length}</strong> issues, and Poilievre's on <strong>{conservativeScore} of {selectedIssues.length}</strong>.
+            Based on your priorities and situation:
           </p>
+          <div className="space-y-2 mb-4">
+            <div className="flex items-center gap-3">
+              <span className="text-sm">🔴</span>
+              <p className="text-sm text-gray-700">
+                <strong>Carney</strong> - {liberalScore === 0
+                  ? "None of his positions align with your priorities as someone in your situation. That doesn't mean he's wrong - it means your specific circumstances aren't who his platform was built around."
+                  : liberalScore === selectedIssues.length
+                  ? `His positions align with all ${selectedIssues.length} of your priorities.`
+                  : `His positions align with ${liberalScore} of your ${selectedIssues.length} priorities.`}
+              </p>
+            </div>
+            <div className="flex items-center gap-3">
+              <span className="text-sm">🔵</span>
+              <p className="text-sm text-gray-700">
+                <strong>Poilievre</strong> - {conservativeScore === 0
+                  ? "None of his positions align with your priorities as someone in your situation. That doesn't mean he's wrong - it means your specific circumstances aren't who his platform was built around."
+                  : conservativeScore === selectedIssues.length
+                  ? `His positions align with all ${selectedIssues.length} of your priorities.`
+                  : `His positions align with ${conservativeScore} of your ${selectedIssues.length} priorities.`}
+              </p>
+            </div>
+          </div>
           <p className="text-gray-500 text-sm leading-relaxed">
             Politics is about tradeoffs - no candidate perfectly matches anyone. The question isn't who's perfect. It's who's closer to what matters most to you. And that's something only you can decide.
           </p>
