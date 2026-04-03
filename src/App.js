@@ -277,7 +277,7 @@ function App() {
               Get Started
             </button>
             <p className="text-sm text-gray-400 mt-6">
-              Already know what you want to ask? <button onClick={() => { setUserAnswers({student:'Not a student',employment:'Not currently working',income:'Under $40k',housing:'Renting'}); setCurrentStep('chat'); }} className="text-blue-500 underline font-medium">Talk to our AI civic expert or the candidates directly</button>
+              Already know what you want to ask? <button onClick={() => setCurrentStep('chat')} className="text-blue-500 underline font-medium">Talk to our AI civic expert or the candidates directly</button>
             </p>
           </div>
         </div>
@@ -1324,11 +1324,11 @@ function ChatPage({ answers, selectedIssues, onBack, onRestart }) {
   const [loadingMode, setLoadingMode] = useState(null);
   const messagesEndRef = React.useRef(null);
 
-  const selectedIssueLabels = issueOptions
-    .filter(i => selectedIssues.includes(i.key))
-    .map(i => i.label).join(', ');
+  const selectedIssueLabels = selectedIssues && selectedIssues.length > 0
+    ? issueOptions.filter(i => selectedIssues.includes(i.key)).map(i => i.label).join(', ')
+    : 'Not selected yet';
 
-  const profileSummary = `${answers.student}, ${answers.employment}, ${answers.income} income, ${answers.housing}`;
+  const profileSummary = answers ? `${answers.student}, ${answers.employment}, ${answers.income} income, ${answers.housing}` : 'Not provided';
 
   const systemPrompts = {
     carney: `You are an AI simulation of Mark Carney based on his verified 2025 Liberal Party platform. You are NOT the real Mark Carney. Speak in first person, warmly and clearly. You are talking to a Canadian voter - do not assume it is their first time voting.
@@ -1342,8 +1342,10 @@ RULES:
 - If someone asks how they can verify what you say: tell them to check the source links you provide and visit liberal.ca directly
 - Do NOT use em dashes (-) in your responses. Use a regular hyphen (-) or a new sentence instead
 - Do NOT use emojis
-- Do NOT use markdown stars or bold formatting - write in clean plain paragraphs
-- Format longer responses with short paragraphs separated by line breaks, not bullet points unless listing truly parallel items
+- Do NOT use markdown stars or bold formatting
+- Separate each paragraph with a blank line so they render cleanly
+- For lists use a hyphen (-) at the start of each item on its own line
+- Keep each paragraph to 2-3 sentences max
 - Keep responses focused - 2-4 short paragraphs max
 - Never make up policies or numbers
 - If asked casual things like "uh" or "can you simplify" - respond naturally and helpfully
@@ -1373,8 +1375,10 @@ RULES:
 - If someone asks how they can verify what you say: tell them to check the source links and visit conservative.ca directly
 - Do NOT use em dashes (-) in your responses. Use a regular hyphen (-) or a new sentence instead
 - Do NOT use emojis
-- Do NOT use markdown stars or bold formatting - write in clean plain paragraphs
-- Format longer responses with short paragraphs separated by line breaks, not bullet points unless listing truly parallel items
+- Do NOT use markdown stars or bold formatting
+- Separate each paragraph with a blank line so they render cleanly
+- For lists use a hyphen (-) at the start of each item on its own line
+- Keep each paragraph to 2-3 sentences max
 - Keep responses focused - 2-4 short paragraphs max
 - Never make up policies or numbers
 - If asked casual things like "uh" or "can you simplify" - respond naturally and helpfully
@@ -1401,8 +1405,10 @@ RULES:
 - If asked who to vote for: "That is genuinely not my place to say - my job is to give you the information so you can decide for yourself"
 - Do NOT use em dashes (-). Use a regular hyphen (-) or a new sentence instead
 - Do NOT use emojis
-- Do NOT use markdown stars or bold formatting - write in clean plain paragraphs
-- Format longer responses with short paragraphs, or a short bulleted list only when comparing multiple things
+- Do NOT use markdown stars or bold formatting
+- Separate each paragraph with a blank line so they render cleanly
+- For lists use a hyphen (-) at the start of each item on its own line
+- Keep each paragraph to 2-3 sentences max
 - Keep responses focused - 2-4 paragraphs max
 - If you cite a specific fact, end with: SOURCES: [Label](URL) | [Label](URL)
 - When explaining a topic, end with a "Learn more" link to a credible source like elections.ca, parl.ca, or canada.ca when relevant
@@ -1453,18 +1459,31 @@ Priority issues: ${selectedIssueLabels}`
 
   // Parse sources from response
   const parseResponse = (text) => {
-    const sourceMatch = text.match(/SOURCES:\s*(.+)$/s);
-    if (!sourceMatch) return { text: text.trim(), sources: [] };
+    // Extract SOURCES block at end
+    const sourceMatch = text.match(/SOURCES:([\s\S]+)$/m);
+    const mainText = sourceMatch
+      ? text.replace(/SOURCES:[\s\S]+$/m, '').trim()
+      : text.trim();
 
-    const mainText = text.replace(/SOURCES:\s*(.+)$/s, '').trim();
-    const sourcesRaw = sourceMatch[1];
     const sources = [];
-    const linkRegex = /\[([^\]]+)\]\(([^)]+)\)/g;
-    let match;
-    while ((match = linkRegex.exec(sourcesRaw)) !== null) {
-      sources.push({ label: match[1], url: match[2] });
+    // Parse sources from SOURCES block
+    if (sourceMatch) {
+      const sourcesRaw = sourceMatch[1];
+      const linkRegex = /\[([^\]]+)\]\(([^)]+)\)/g;
+      let match;
+      while ((match = linkRegex.exec(sourcesRaw)) !== null) {
+        sources.push({ label: match[1], url: match[2] });
+      }
     }
-    return { text: mainText, sources };
+    // Also find any inline [Label](URL) links remaining in body and convert to sources
+    const inlineRegex = /\[([^\]]+)\]\(([^)]+)\)/g;
+    let inlineMatch;
+    const cleanBody = mainText.replace(/\[([^\]]+)\]\(([^)]+)\)/g, (_, label, url) => {
+      sources.push({ label, url });
+      return label; // replace with just the label text in body
+    });
+
+    return { text: cleanBody.trim(), sources };
   };
 
   const sendMessage = async () => {
@@ -1604,9 +1623,14 @@ Priority issues: ${selectedIssueLabels}`
                   ? 'bg-blue-600 text-white rounded-2xl rounded-tr-sm p-4'
                   : `${config.bubbleColor} rounded-2xl rounded-tl-sm p-4`
               }`}>
-                <p className={`text-sm leading-relaxed ${msg.role === 'user' ? 'text-white' : 'text-gray-800'}`}>
-                  {msg.role === 'assistant' ? renderMarkdown(msg.content) : msg.content}
-                </p>
+                <div className={`text-sm leading-relaxed ${msg.role === 'user' ? 'text-white' : 'text-gray-800'}`}>
+                  {msg.role === 'assistant'
+                    ? renderMarkdown(msg.content).split('\n').filter(l => l.trim()).map((line, li) => (
+                        <p key={li} className="mb-2 last:mb-0">{line}</p>
+                      ))
+                    : <p>{msg.content}</p>
+                  }
+                </div>
                 {msg.sources && msg.sources.length > 0 && (
                   <div className="mt-3 pt-2 border-t border-gray-200">
                     <p className="text-xs text-gray-500 mb-1 font-semibold">Sources:</p>
