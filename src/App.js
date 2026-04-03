@@ -267,11 +267,27 @@ function App() {
       <DecisionSummaryPage
         answers={userAnswers}
         selectedIssues={selectedIssues}
+        onChat={() => setCurrentStep('chat')}
         onRestart={() => {
           setCurrentStep('landing');
           setSelectedIssues([]);
           setUserAnswers(null);
         }}
+      />
+    );
+  }
+
+  if (currentStep === 'chat') {
+    return (
+      <ChatPage
+        answers={userAnswers}
+        selectedIssues={selectedIssues}
+        onRestart={() => {
+          setCurrentStep('landing');
+          setSelectedIssues([]);
+          setUserAnswers(null);
+        }}
+        onBack={() => setCurrentStep('summary')}
       />
     );
   }
@@ -953,7 +969,7 @@ function ResultsPage({ answers, selectedIssues, onContinue, onRestart }) {
   );
 }
 
-function DecisionSummaryPage({ answers, selectedIssues, onRestart }) {
+function DecisionSummaryPage({ answers, selectedIssues, onChat, onRestart }) {
   const selectedIssueData = issueOptions.filter(i => selectedIssues.includes(i.key));
 
   const labelMap = {
@@ -1178,6 +1194,30 @@ function DecisionSummaryPage({ answers, selectedIssues, onRestart }) {
           </div>
         </div>
 
+        {/* Chat CTA */}
+        <div className="bg-white rounded-2xl shadow-sm p-6 mb-5">
+          <h3 className="text-lg font-bold text-gray-900 mb-2">Still have questions?</h3>
+          <p className="text-gray-500 text-sm mb-4">Talk directly to the candidates or ask a neutral expert. All responses are based on verified platform positions and sourced.</p>
+          <div className="grid grid-cols-1 gap-3">
+            <button onClick={onChat}
+              className="flex items-center gap-3 p-4 rounded-xl bg-blue-600 hover:bg-blue-700 transition-colors text-white text-left">
+              <span className="text-2xl">💬</span>
+              <div>
+                <p className="font-semibold text-sm">Talk to the candidates</p>
+                <p className="text-xs text-blue-200">Ask Carney or Poilievre your questions directly</p>
+              </div>
+            </button>
+            <button onClick={onChat}
+              className="flex items-center gap-3 p-4 rounded-xl bg-gray-50 hover:bg-gray-100 transition-colors text-left border-2 border-gray-200">
+              <span className="text-2xl">🎓</span>
+              <div>
+                <p className="font-semibold text-sm text-gray-900">Ask a neutral expert</p>
+                <p className="text-xs text-gray-500">How does the political system work? What does this policy mean?</p>
+              </div>
+            </button>
+          </div>
+        </div>
+
         <div className="text-center mb-8">
           <button onClick={onRestart}
             className="text-gray-400 hover:text-gray-600 text-sm transition-colors">
@@ -1188,6 +1228,339 @@ function DecisionSummaryPage({ answers, selectedIssues, onRestart }) {
         <footer className="text-center py-4 text-sm text-gray-400">
           Built by Ivana Okpakovwodo · Sources: liberal.ca, conservative.ca, ndp.ca, CBC News, Parliament of Canada
         </footer>
+      </div>
+    </div>
+  );
+}
+
+
+function ChatPage({ answers, selectedIssues, onBack, onRestart }) {
+  const [mode, setMode] = useState('carney'); // 'carney' | 'poilievre' | 'expert'
+  const [messages, setMessages] = useState({
+    carney: [],
+    poilievre: [],
+    expert: []
+  });
+  const [input, setInput] = useState('');
+  const [loading, setLoading] = useState(false);
+  const messagesEndRef = React.useRef(null);
+
+  const selectedIssueLabels = issueOptions
+    .filter(i => selectedIssues.includes(i.key))
+    .map(i => i.label).join(', ');
+
+  const profileSummary = `${answers.student}, ${answers.employment}, ${answers.income} income, ${answers.housing}`;
+
+  const systemPrompts = {
+    carney: `You are Mark Carney, leader of the Liberal Party of Canada and current Prime Minister, speaking directly to a young first-time voter. Respond in first person as Mark Carney would - warm, measured, economically focused, optimistic about Canada's future.
+
+CRITICAL RULES:
+- Only make claims grounded in the verified 2025 Liberal Party platform
+- Never tell the user who to vote for
+- Never attack other parties personally - you can contrast policies but stay respectful
+- If asked something outside your platform, say "That's not something I've made a specific commitment on, but here's my general thinking..."
+- If you make a specific factual claim (a number, a promise, a policy detail), end your response with a SOURCES section formatted exactly like this:
+  SOURCES: [Label](URL) | [Label](URL)
+- Only include sources when you make specific verifiable claims. Don't include sources for general statements or opinions.
+- Keep responses concise - 3-5 sentences max unless the question genuinely requires more
+- Never make up policies or numbers not in your actual platform
+- If asked something inappropriate or off-topic, redirect warmly: "That's outside what I can speak to as a candidate, but I'd love to talk about what I'm proposing for [relevant issue]"
+
+The user's profile: ${profileSummary}
+Their priority issues: ${selectedIssueLabels}
+
+Key verified Liberal platform positions you can speak to:
+- Housing: 500,000 homes/year, GST off for first-time buyers under $1M (saves up to $50,000) - source: pm.gc.ca
+- Tax: Middle class tax cut saving dual-income families up to $825/year, in effect since Canada Day 2025 - source: liberal.ca
+- Climate: Cancelled consumer carbon tax March 2025, kept industrial pricing, clean energy investment - source: liberal.ca
+- Healthcare: Expanding dental to ages 18-64, pharmacare for insulin and contraception, $4B for clinics - source: liberal.ca
+- Trade: Retaliatory tariffs on US goods, every dollar to affected workers, diversifying trade - source: canada.ca
+- Education: Covered apprenticeship training up to $8,000. No specific post-secondary tuition promises in 2025 platform.`,
+
+    poilievre: `You are Pierre Poilievre, leader of the Conservative Party of Canada and Official Opposition Leader, speaking directly to a young first-time voter. Respond in first person as Pierre Poilievre would - direct, energetic, frustrated with the status quo, focused on affordability and freedom.
+
+CRITICAL RULES:
+- Only make claims grounded in the verified 2025 Conservative Party platform
+- Never tell the user who to vote for
+- Never make personal attacks - you can strongly contrast policies but stay on substance
+- If asked something outside your platform, say "That's not something I made a specific commitment on, but here's what I believe..."
+- If you make a specific factual claim (a number, a promise, a policy detail), end your response with a SOURCES section formatted exactly like this:
+  SOURCES: [Label](URL) | [Label](URL)
+- Only include sources when you make specific verifiable claims. Don't include sources for general statements or opinions.
+- Keep responses concise - 3-5 sentences max unless the question genuinely requires more
+- Never make up policies or numbers not in your actual platform
+- If asked something inappropriate or off-topic, redirect: "I'd rather talk about what actually matters to Canadians - like [relevant issue]"
+
+The user's profile: ${profileSummary}
+Their priority issues: ${selectedIssueLabels}
+
+Key verified Conservative platform positions you can speak to:
+- Housing: 2.3 million homes in 5 years, GST off ALL new homes under $1.3M, sell federal land, reward cities that approve 15% more homes - source: conservative.ca
+- Tax: Income tax cut saving average worker $900/year, families $1,800/year - source: conservative.ca
+- Climate: Cancel ALL carbon pricing including industrial, technology-only approach, more pipelines - source: conservative.ca
+- Healthcare: No major new spending, focus on efficiency - source: conservative.ca
+- Trade: Early CUSMA renegotiation, remove internal trade barriers, resource boom - source: conservative.ca
+- Education: Income-contingent student loan repayment, interest on student lines of credit tax-deductible - source: universityaffairs.ca`,
+
+    expert: `You are a neutral, non-partisan Canadian civic education expert. Your job is to help young first-time voters understand how Canadian politics, government, and policy actually works. You are like a knowledgeable friend who explains things clearly without any political agenda.
+
+CRITICAL RULES:
+- Be completely neutral - never express a preference for any party or candidate
+- Explain things in plain language a 17-year-old can understand
+- If asked who to vote for, say "That's genuinely not my place to say - my job is to give you the information so you can decide for yourself"
+- If you cite a specific fact or statistic, end your response with a SOURCES section formatted exactly like this:
+  SOURCES: [Label](URL) | [Label](URL)
+- Only include sources for specific verifiable claims, not general explanations
+- Keep responses concise - 3-5 sentences max unless genuinely needed
+- Topics you can help with: how voting works, what ridings are, how Parliament works, what bills are, how policies become law, Canadian political history, what different parties generally believe, how to register to vote, what's been in the news recently
+- If asked something you genuinely don't know or that requires very recent information, say so honestly
+
+The user's profile: ${profileSummary}
+Their priority issues: ${selectedIssueLabels}`
+  };
+
+  const modeConfig = {
+    carney: {
+      label: 'Mark Carney',
+      emoji: '🔴',
+      badge: 'Liberal - Current PM',
+      badgeColor: 'bg-red-100 text-red-700',
+      bubbleColor: 'bg-red-50 border border-red-100',
+      placeholder: 'Ask Mark Carney anything about his platform...',
+      intro: "Hi, I'm Mark Carney. I'm here to answer your questions about what I'm proposing for Canada. Ask me anything about my platform - housing, healthcare, climate, the economy. What's on your mind?"
+    },
+    poilievre: {
+      label: 'Pierre Poilievre',
+      emoji: '🔵',
+      badge: 'Conservative - Opposition',
+      badgeColor: 'bg-blue-100 text-blue-700',
+      bubbleColor: 'bg-blue-50 border border-blue-100',
+      placeholder: 'Ask Pierre Poilievre anything about his platform...',
+      intro: "Hey, I'm Pierre Poilievre. I believe Canadians deserve real answers, not political spin. Ask me anything about what I'd do differently - on housing, jobs, affordability, whatever matters to you."
+    },
+    expert: {
+      label: 'Civic Expert',
+      emoji: '🎓',
+      badge: 'Neutral & Non-partisan',
+      badgeColor: 'bg-green-100 text-green-700',
+      bubbleColor: 'bg-green-50 border border-green-100',
+      placeholder: 'Ask anything about how Canadian politics works...',
+      intro: "Hi! I'm here to help you understand Canadian politics and how government works - no spin, no agenda. Ask me anything: how voting works, what a riding is, what bills mean, how policies become law, or anything you've been wondering about. There are no dumb questions here."
+    }
+  };
+
+  const config = modeConfig[mode];
+  const currentMessages = messages[mode];
+
+  React.useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [messages, mode]);
+
+  // Parse sources from response
+  const parseResponse = (text) => {
+    const sourceMatch = text.match(/SOURCES:\s*(.+)$/s);
+    if (!sourceMatch) return { text: text.trim(), sources: [] };
+
+    const mainText = text.replace(/SOURCES:\s*(.+)$/s, '').trim();
+    const sourcesRaw = sourceMatch[1];
+    const sources = [];
+    const linkRegex = /\[([^\]]+)\]\(([^)]+)\)/g;
+    let match;
+    while ((match = linkRegex.exec(sourcesRaw)) !== null) {
+      sources.push({ label: match[1], url: match[2] });
+    }
+    return { text: mainText, sources };
+  };
+
+  const sendMessage = async () => {
+    if (!input.trim() || loading) return;
+
+    const userMessage = { role: 'user', content: input.trim() };
+    const updatedMessages = [...currentMessages, userMessage];
+
+    setMessages(prev => ({ ...prev, [mode]: updatedMessages }));
+    setInput('');
+    setLoading(true);
+
+    try {
+      const response = await fetch('https://api.anthropic.com/v1/messages', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          model: 'claude-sonnet-4-20250514',
+          max_tokens: 1000,
+          system: systemPrompts[mode],
+          messages: updatedMessages
+        })
+      });
+
+      const data = await response.json();
+      const raw = data.content?.[0]?.text || "I'm sorry, I couldn't generate a response. Please try again.";
+      const parsed = parseResponse(raw);
+
+      const assistantMessage = {
+        role: 'assistant',
+        content: parsed.text,
+        sources: parsed.sources
+      };
+
+      setMessages(prev => ({
+        ...prev,
+        [mode]: [...updatedMessages, assistantMessage]
+      }));
+    } catch (err) {
+      setMessages(prev => ({
+        ...prev,
+        [mode]: [...updatedMessages, {
+          role: 'assistant',
+          content: "Sorry, something went wrong. Please try again.",
+          sources: []
+        }]
+      }));
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleKeyDown = (e) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      sendMessage();
+    }
+  };
+
+  const switchMode = (newMode) => {
+    setMode(newMode);
+  };
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex flex-col">
+
+      {/* Header */}
+      <div className="bg-white border-b border-gray-200 px-4 py-3">
+        <div className="max-w-2xl mx-auto">
+          <div className="flex items-center justify-between mb-3">
+            <button onClick={onBack} className="text-blue-600 text-sm font-medium">
+              ← Back
+            </button>
+            <h1 className="text-lg font-bold text-gray-900">Tallied</h1>
+            <button onClick={onRestart} className="text-gray-400 text-xs">
+              Start over
+            </button>
+          </div>
+
+          {/* Mode switcher */}
+          <div className="grid grid-cols-3 gap-2">
+            {Object.entries(modeConfig).map(([key, cfg]) => (
+              <button
+                key={key}
+                onClick={() => switchMode(key)}
+                className={`py-2 px-2 rounded-xl text-xs font-semibold transition-all border-2 ${
+                  mode === key
+                    ? 'bg-blue-600 text-white border-blue-600'
+                    : 'bg-gray-50 text-gray-600 border-transparent hover:border-blue-200'
+                }`}
+              >
+                {cfg.emoji} {cfg.label}
+              </button>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* Badge */}
+      <div className="max-w-2xl mx-auto w-full px-4 pt-3">
+        <div className="flex items-center gap-2">
+          <span className={`text-xs font-semibold px-3 py-1 rounded-full ${config.badgeColor}`}>
+            {config.badge}
+          </span>
+          {mode !== 'expert' && (
+            <span className="text-xs text-gray-400">Responses based on verified 2025 platform positions only</span>
+          )}
+        </div>
+      </div>
+
+      {/* Messages */}
+      <div className="flex-1 overflow-y-auto px-4 py-4">
+        <div className="max-w-2xl mx-auto space-y-4">
+
+          {/* Intro message */}
+          <div className={`rounded-2xl rounded-tl-sm p-4 max-w-xs ${config.bubbleColor}`}>
+            <p className="text-gray-800 text-sm leading-relaxed">{config.intro}</p>
+          </div>
+
+          {/* Conversation */}
+          {currentMessages.map((msg, i) => (
+            <div key={i} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
+              <div className={`max-w-xs lg:max-w-md ${
+                msg.role === 'user'
+                  ? 'bg-blue-600 text-white rounded-2xl rounded-tr-sm p-4'
+                  : `${config.bubbleColor} rounded-2xl rounded-tl-sm p-4`
+              }`}>
+                <p className={`text-sm leading-relaxed ${msg.role === 'user' ? 'text-white' : 'text-gray-800'}`}>
+                  {msg.content}
+                </p>
+                {msg.sources && msg.sources.length > 0 && (
+                  <div className="mt-3 pt-2 border-t border-gray-200">
+                    <p className="text-xs text-gray-500 mb-1 font-semibold">Sources:</p>
+                    <div className="flex flex-wrap gap-1">
+                      {msg.sources.map((src, si) => (
+                        <a
+                          key={si}
+                          href={src.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-xs bg-white px-2 py-1 rounded-lg text-blue-600 hover:underline border border-blue-100"
+                        >
+                          {src.label} ↗
+                        </a>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+          ))}
+
+          {/* Loading */}
+          {loading && (
+            <div className={`rounded-2xl rounded-tl-sm p-4 max-w-xs ${config.bubbleColor}`}>
+              <div className="flex gap-1 items-center">
+                <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{animationDelay: '0ms'}} />
+                <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{animationDelay: '150ms'}} />
+                <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{animationDelay: '300ms'}} />
+              </div>
+            </div>
+          )}
+
+          <div ref={messagesEndRef} />
+        </div>
+      </div>
+
+      {/* Input */}
+      <div className="bg-white border-t border-gray-200 px-4 py-3">
+        <div className="max-w-2xl mx-auto flex gap-2">
+          <input
+            type="text"
+            value={input}
+            onChange={e => setInput(e.target.value)}
+            onKeyDown={handleKeyDown}
+            placeholder={config.placeholder}
+            className="flex-1 border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-blue-400"
+            disabled={loading}
+          />
+          <button
+            onClick={sendMessage}
+            disabled={!input.trim() || loading}
+            className={`px-4 py-3 rounded-xl font-semibold text-sm transition-all ${
+              input.trim() && !loading
+                ? 'bg-blue-600 text-white hover:bg-blue-700'
+                : 'bg-gray-100 text-gray-400 cursor-not-allowed'
+            }`}
+          >
+            Send
+          </button>
+        </div>
       </div>
     </div>
   );
