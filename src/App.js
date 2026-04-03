@@ -223,15 +223,6 @@ function NavBar({ currentStep, onNavigate }) {
   );
 }
 
-function renderMarkdown(text) {
-  if (!text) return '';
-  return text
-    .replace(/[*][*]([^*]+)[*][*]/g, '$1')
-    .replace(/[*]([^*]+)[*]/g, '$1')
-    .replace(/^[#]{1,3}\s+/gm, '')
-    .trim();
-}
-
 function App() {
   const [currentStep, setCurrentStep] = useState('landing');
   const [userAnswers, setUserAnswers] = useState(null);
