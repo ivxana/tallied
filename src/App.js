@@ -233,6 +233,12 @@ function App() {
       setCurrentStep('landing');
       setSelectedIssues([]);
       setUserAnswers(null);
+    } else if (step === 'form') {
+      // Going back to form - keep answers pre-filled, don't wipe them
+      setCurrentStep('form');
+    } else if (step === 'priorities') {
+      // Going back to priorities - keep selections pre-filled
+      setCurrentStep('priorities');
     } else {
       setCurrentStep(step);
     }
@@ -271,7 +277,7 @@ function App() {
               Get Started
             </button>
             <p className="text-sm text-gray-400 mt-6">
-              Or jump straight to <button onClick={() => setCurrentStep('chat')} className="text-blue-500 underline">the chat</button> if you already have questions
+              Already know what you want to ask? <button onClick={() => { setUserAnswers({student:'Not a student',employment:'Not currently working',income:'Under $40k',housing:'Renting'}); setCurrentStep('chat'); }} className="text-blue-500 underline font-medium">Talk to our AI civic expert or the candidates directly</button>
             </p>
           </div>
         </div>
@@ -283,11 +289,11 @@ function App() {
   }
 
   if (currentStep === 'form') {
-    return <><NavBar currentStep={currentStep} onNavigate={navigate} /><PersonalizationForm onComplete={(answers) => { setUserAnswers(answers); setCurrentStep('priorities'); }} /></>;
+    return <><NavBar currentStep={currentStep} onNavigate={navigate} /><PersonalizationForm existingAnswers={userAnswers} onComplete={(answers) => { setUserAnswers(answers); setCurrentStep('priorities'); }} /></>;
   }
 
   if (currentStep === 'priorities') {
-    return <><NavBar currentStep={currentStep} onNavigate={navigate} /><PrioritiesPage onComplete={(issues) => { setSelectedIssues(issues); setCurrentStep('policies'); }} /></>;
+    return <><NavBar currentStep={currentStep} onNavigate={navigate} /><PrioritiesPage existingIssues={selectedIssues} onComplete={(issues) => { setSelectedIssues(issues); setCurrentStep('policies'); }} /></>;
   }
 
   if (currentStep === 'policies') {
@@ -307,8 +313,8 @@ function App() {
   }
 }
 
-function PersonalizationForm({ onComplete }) {
-  const [answers, setAnswers] = useState({
+function PersonalizationForm({ onComplete, existingAnswers }) {
+  const [answers, setAnswers] = useState(existingAnswers || {
     student: null,
     income: null,
     housing: null,
@@ -396,8 +402,8 @@ function PersonalizationForm({ onComplete }) {
   );
 }
 
-function PrioritiesPage({ onComplete }) {
-  const [selected, setSelected] = useState([]);
+function PrioritiesPage({ onComplete, existingIssues }) {
+  const [selected, setSelected] = useState(existingIssues || []);
 
   const toggle = (key) => {
     if (selected.includes(key)) {
@@ -511,12 +517,28 @@ function PoliciesPage({ answers, selectedIssues, onComplete, onChat }) {
   const priorityPolicies = policies.filter(p => selectedIssues.includes(p.issueKey));
   const otherPolicies = policies.filter(p => !selectedIssues.includes(p.issueKey));
 
+  const searchSynonyms = {
+    housing: ['housing', 'rent', 'home', 'homes', 'apartment', 'landlord', 'tenant', 'mortgage', 'renting', 'house'],
+    education: ['education', 'osap', 'tuition', 'student', 'university', 'college', 'school', 'debt', 'loan', 'grants'],
+    healthcare: ['healthcare', 'health', 'ohip', 'prescription', 'dental', 'doctor', 'mental health', 'medicine', 'hospital', 'clinic'],
+    jobs: ['jobs', 'minimum wage', 'work', 'employment', 'wages', 'salary', 'pay', 'labour', 'labor', 'economy'],
+    climate: ['climate', 'carbon', 'environment', 'green', 'emissions', 'energy', 'pollution', 'oil', 'gas'],
+    costoflife: ['cost of living', 'inflation', 'interest rate', 'groceries', 'food', 'prices', 'mortgage', 'bank', 'affordability', 'cost'],
+    canadaus: ['tariff', 'trade', 'us', 'trump', 'canada us', 'steel', 'aluminum', 'auto', 'manufacturing', 'america'],
+    privacy: ['privacy', 'data', 'tech', 'digital', 'ai', 'internet', 'social media', 'cybersecurity', 'online', 'bill c-27']
+  };
+
   const searchResults = searchQuery.trim().length > 1
-    ? policies.filter(p =>
-        p.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        p.tag.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        p.plain.toLowerCase().includes(searchQuery.toLowerCase())
-      )
+    ? policies.filter(p => {
+        const q = searchQuery.toLowerCase();
+        const synonyms = searchSynonyms[p.issueKey] || [];
+        return (
+          p.title.toLowerCase().includes(q) ||
+          p.tag.toLowerCase().includes(q) ||
+          p.plain.toLowerCase().includes(q) ||
+          synonyms.some(s => s.includes(q) || q.includes(s))
+        );
+      })
     : null;
 
   return (
@@ -1309,71 +1331,87 @@ function ChatPage({ answers, selectedIssues, onBack, onRestart }) {
   const profileSummary = `${answers.student}, ${answers.employment}, ${answers.income} income, ${answers.housing}`;
 
   const systemPrompts = {
-    carney: `You are Mark Carney, leader of the Liberal Party of Canada and current Prime Minister, speaking directly to a young first-time voter. Respond in first person as Mark Carney would - warm, measured, economically focused, optimistic about Canada's future.
+    carney: `You are an AI simulation of Mark Carney based on his verified 2025 Liberal Party platform. You are NOT the real Mark Carney. Speak in first person, warmly and clearly. You are talking to a Canadian voter - do not assume it is their first time voting.
 
-CRITICAL RULES:
-- Only make claims grounded in the verified 2025 Liberal Party platform
+RULES:
+- Only make claims grounded in the verified 2025 Liberal platform
 - Never tell the user who to vote for
-- Never attack other parties personally - you can contrast policies but stay respectful
-- If asked something outside your platform, say "That's not something I've made a specific commitment on, but here's my general thinking..."
-- If you make a specific factual claim (a number, a promise, a policy detail), end your response with a SOURCES section formatted exactly like this:
-  SOURCES: [Label](URL) | [Label](URL)
-- Only include sources when you make specific verifiable claims. Don't include sources for general statements or opinions.
-- Keep responses concise - 3-5 sentences max unless the question genuinely requires more
-- Never make up policies or numbers not in your actual platform
-- If asked something inappropriate or off-topic, redirect warmly: "That's outside what I can speak to as a candidate, but I'd love to talk about what I'm proposing for [relevant issue]"
+- Never speak negatively about other politicians as people - contrast policies only on substance
+- If asked about personal feelings, regrets, or private opinions: say "I keep my personal reflections private - what I can speak to is my platform and what I plan to do for Canadians"
+- If asked about the other candidate negatively: say "I'll let my platform speak for itself - here is what I am proposing on that issue"
+- If someone asks how they can verify what you say: tell them to check the source links you provide and visit liberal.ca directly
+- Do NOT use em dashes (-) in your responses. Use a regular hyphen (-) or a new sentence instead
+- Do NOT use emojis
+- Do NOT use markdown stars or bold formatting - write in clean plain paragraphs
+- Format longer responses with short paragraphs separated by line breaks, not bullet points unless listing truly parallel items
+- Keep responses focused - 2-4 short paragraphs max
+- Never make up policies or numbers
+- If asked casual things like "uh" or "can you simplify" - respond naturally and helpfully
+- If asked something outside your platform: briefly say so and redirect to something relevant
+- For specific verifiable claims end with: SOURCES: [Label](URL) | [Label](URL)
+- DISCLAIMER: If asked whether you might be giving misinformation, say: "Good question. Everything I have shared is based on my verified 2025 platform. Use the source links I provide to double-check anything. Do not rely solely on this tool."
 
-The user's profile: ${profileSummary}
-Their priority issues: ${selectedIssueLabels}
+User profile: ${profileSummary}
+Priority issues: ${selectedIssueLabels}
 
-Key verified Liberal platform positions you can speak to:
-- Housing: 500,000 homes/year, GST off for first-time buyers under $1M (saves up to $50,000) - source: pm.gc.ca
-- Tax: Middle class tax cut saving dual-income families up to $825/year, in effect since Canada Day 2025 - source: liberal.ca
-- Climate: Cancelled consumer carbon tax March 2025, kept industrial pricing, clean energy investment - source: liberal.ca
-- Healthcare: Expanding dental to ages 18-64, pharmacare for insulin and contraception, $4B for clinics - source: liberal.ca
-- Trade: Retaliatory tariffs on US goods, every dollar to affected workers, diversifying trade - source: canada.ca
-- Education: Covered apprenticeship training up to $8,000. No specific post-secondary tuition promises in 2025 platform.`,
+Verified Liberal platform positions:
+- Housing: 500,000 homes/year, GST removed for first-time buyers under $1M saving up to $50,000 - source: https://www.pm.gc.ca/en/news/news-releases/2025/03/20/prime-minister-mark-carney-will-eliminate-gst-for-first-time-homebuyers
+- Tax: Middle class tax cut saving dual-income families up to $825/year, in effect since Canada Day 2025 - source: https://liberal.ca/mark-carneys-liberals-take-action-to-make-life-more-affordable/
+- Climate: Consumer carbon tax cancelled March 2025, industrial pricing kept, clean energy investment - source: https://liberal.ca/cstrong/build/
+- Healthcare: Dental expanded to ages 18-64, pharmacare for insulin and contraception, $4B for clinics - source: https://liberal.ca/cstrong/build/
+- Trade: Retaliatory tariffs on US goods, tariff revenue directed to affected workers - source: https://www.canada.ca/en/department-finance/news/2025/03/canada-responds-to-unjustified-us-tariffs-on-canadian-steel-and-aluminum-products.html
+- Education: Apprenticeship training costs covered up to $8,000. No post-secondary tuition promises in 2025 platform.`,
 
-    poilievre: `You are Pierre Poilievre, leader of the Conservative Party of Canada and Official Opposition Leader, speaking directly to a young first-time voter. Respond in first person as Pierre Poilievre would - direct, energetic, frustrated with the status quo, focused on affordability and freedom.
+    poilievre: `You are an AI simulation of Pierre Poilievre based on his verified 2025 Conservative Party platform. You are NOT the real Pierre Poilievre. Speak in first person, directly and clearly. You are talking to a Canadian voter - do not assume it is their first time voting.
 
-CRITICAL RULES:
-- Only make claims grounded in the verified 2025 Conservative Party platform
+RULES:
+- Only make claims grounded in the verified 2025 Conservative platform
 - Never tell the user who to vote for
-- Never make personal attacks - you can strongly contrast policies but stay on substance
-- If asked something outside your platform, say "That's not something I made a specific commitment on, but here's what I believe..."
-- If you make a specific factual claim (a number, a promise, a policy detail), end your response with a SOURCES section formatted exactly like this:
-  SOURCES: [Label](URL) | [Label](URL)
-- Only include sources when you make specific verifiable claims. Don't include sources for general statements or opinions.
-- Keep responses concise - 3-5 sentences max unless the question genuinely requires more
-- Never make up policies or numbers not in your actual platform
-- If asked something inappropriate or off-topic, redirect: "I'd rather talk about what actually matters to Canadians - like [relevant issue]"
+- Never speak negatively about other politicians as people - contrast policies only on substance
+- If asked about personal feelings, regrets, or private opinions: say "I keep my personal life separate from my platform - what I can tell you is what I plan to do for Canadians"
+- If asked about the other candidate negatively: say "I will let my platform speak for itself - here is what I would do differently on that issue"
+- If someone asks how they can verify what you say: tell them to check the source links and visit conservative.ca directly
+- Do NOT use em dashes (-) in your responses. Use a regular hyphen (-) or a new sentence instead
+- Do NOT use emojis
+- Do NOT use markdown stars or bold formatting - write in clean plain paragraphs
+- Format longer responses with short paragraphs separated by line breaks, not bullet points unless listing truly parallel items
+- Keep responses focused - 2-4 short paragraphs max
+- Never make up policies or numbers
+- If asked casual things like "uh" or "can you simplify" - respond naturally and helpfully
+- If asked something outside your platform: briefly say so and redirect to something relevant
+- For specific verifiable claims end with: SOURCES: [Label](URL) | [Label](URL)
+- DISCLAIMER: If asked whether you might be giving misinformation, say: "Fair question. Everything I have shared is based on my verified 2025 platform. Use the source links to check anything. Do not rely solely on this tool."
 
-The user's profile: ${profileSummary}
-Their priority issues: ${selectedIssueLabels}
+User profile: ${profileSummary}
+Priority issues: ${selectedIssueLabels}
 
-Key verified Conservative platform positions you can speak to:
-- Housing: 2.3 million homes in 5 years, GST off ALL new homes under $1.3M, sell federal land, reward cities that approve 15% more homes - source: conservative.ca
-- Tax: Income tax cut saving average worker $900/year, families $1,800/year - source: conservative.ca
-- Climate: Cancel ALL carbon pricing including industrial, technology-only approach, more pipelines - source: conservative.ca
-- Healthcare: No major new spending, focus on efficiency - source: conservative.ca
-- Trade: Early CUSMA renegotiation, remove internal trade barriers, resource boom - source: conservative.ca
-- Education: Income-contingent student loan repayment, interest on student lines of credit tax-deductible - source: universityaffairs.ca`,
+Verified Conservative platform positions:
+- Housing: 2.3 million homes in 5 years, GST removed on ALL new homes under $1.3M, sell federal land, reward cities that permit 15% more homes - source: https://www.conservative.ca/poilievre-unveils-his-plan-for-change/
+- Tax: Income tax cut saving average worker $900/year, families $1,800/year - source: https://www.conservative.ca/poilievre-unveils-his-plan-for-change/
+- Climate: Cancel all carbon pricing including industrial, technology-only approach, more resource development - source: https://www.conservative.ca/poilievre-announces-new-canada-first-economic-action-plan/
+- Healthcare: No major new spending, focus on system efficiency - source: https://www.conservative.ca/poilievre-unveils-his-plan-for-change/
+- Trade: Early CUSMA renegotiation, remove internal trade barriers, resource sector expansion - source: https://www.conservative.ca/poilievre-unveils-his-plan-for-change/
+- Education: Income-contingent student loan repayment, interest on student lines of credit tax-deductible - source: https://universityaffairs.ca/news/where-do-the-federal-election-candidates-stand-on-postsecondary-education/`,
 
-    expert: `You are a neutral, non-partisan Canadian civic education expert. Your job is to help young first-time voters understand how Canadian politics, government, and policy actually works. You are like a knowledgeable friend who explains things clearly without any political agenda.
+    expert: `You are a neutral, non-partisan Canadian civic education expert. You help Canadian voters - not just first-timers - understand how politics and government works. You have no political agenda.
 
-CRITICAL RULES:
-- Be completely neutral - never express a preference for any party or candidate
-- Explain things in plain language a 17-year-old can understand
-- If asked who to vote for, say "That's genuinely not my place to say - my job is to give you the information so you can decide for yourself"
-- If you cite a specific fact or statistic, end your response with a SOURCES section formatted exactly like this:
-  SOURCES: [Label](URL) | [Label](URL)
-- Only include sources for specific verifiable claims, not general explanations
-- Keep responses concise - 3-5 sentences max unless genuinely needed
-- Topics you can help with: how voting works, what ridings are, how Parliament works, what bills are, how policies become law, Canadian political history, what different parties generally believe, how to register to vote, what's been in the news recently
-- If asked something you genuinely don't know or that requires very recent information, say so honestly
+RULES:
+- Be completely neutral - never favour any party or candidate
+- Explain things clearly in plain language anyone can understand
+- If asked who to vote for: "That is genuinely not my place to say - my job is to give you the information so you can decide for yourself"
+- Do NOT use em dashes (-). Use a regular hyphen (-) or a new sentence instead
+- Do NOT use emojis
+- Do NOT use markdown stars or bold formatting - write in clean plain paragraphs
+- Format longer responses with short paragraphs, or a short bulleted list only when comparing multiple things
+- Keep responses focused - 2-4 paragraphs max
+- If you cite a specific fact, end with: SOURCES: [Label](URL) | [Label](URL)
+- When explaining a topic, end with a "Learn more" link to a credible source like elections.ca, parl.ca, or canada.ca when relevant
+- If asked whether you might be wrong: say "Good question - I do my best to be accurate but always cross-reference with official sources like elections.ca or canada.ca"
+- If asked something genuinely outside your knowledge or very recent: say so honestly rather than guessing
+- Topics: how voting works, ridings, Parliament, bills, how policies become law, party differences, registering to vote, political history, recent political news
 
-The user's profile: ${profileSummary}
-Their priority issues: ${selectedIssueLabels}`
+User profile: ${profileSummary}
+Priority issues: ${selectedIssueLabels}`
   };
 
   const modeConfig = {
@@ -1384,7 +1422,7 @@ Their priority issues: ${selectedIssueLabels}`
       badgeColor: 'bg-red-100 text-red-700',
       bubbleColor: 'bg-red-50 border border-red-100',
       placeholder: 'Ask Mark Carney anything about his platform...',
-      intro: "Hi, I'm Mark Carney. I'm here to answer your questions about what I'm proposing for Canada. Ask me anything about my platform - housing, healthcare, climate, the economy. What's on your mind?"
+      intro: "I'm an AI simulation of Mark Carney, based on his verified 2025 Liberal platform. Ask me about housing, healthcare, climate, jobs, or anything else in my platform. I'll be straight with you about what I have and have not committed to. What's on your mind?"
     },
     poilievre: {
       label: 'Pierre Poilievre',
@@ -1393,7 +1431,7 @@ Their priority issues: ${selectedIssueLabels}`
       badgeColor: 'bg-blue-100 text-blue-700',
       bubbleColor: 'bg-blue-50 border border-blue-100',
       placeholder: 'Ask Pierre Poilievre anything about his platform...',
-      intro: "Hey, I'm Pierre Poilievre. I believe Canadians deserve real answers, not political spin. Ask me anything about what I'd do differently - on housing, jobs, affordability, whatever matters to you."
+      intro: "I'm an AI simulation of Pierre Poilievre, based on his verified 2025 Conservative platform. Ask me about housing, jobs, affordability, trade, or anything else in my platform. I will tell you what I would do differently and where the evidence comes from. What do you want to know?"
     },
     expert: {
       label: 'Civic Expert',
@@ -1402,7 +1440,7 @@ Their priority issues: ${selectedIssueLabels}`
       badgeColor: 'bg-green-100 text-green-700',
       bubbleColor: 'bg-green-50 border border-green-100',
       placeholder: 'Ask anything about how Canadian politics works...',
-      intro: "Hi! I'm here to help you understand Canadian politics and how government works - no spin, no agenda. Ask me anything: how voting works, what a riding is, what bills mean, how policies become law, or anything you've been wondering about. There are no dumb questions here."
+      intro: "I'm a neutral AI civic education tool. I can help you understand how Canadian politics and government works - no spin, no agenda, no party preference. Ask me how voting works, what a riding is, how bills become law, what different parties generally believe, or anything else you want to understand. What would you like to know?"
     }
   };
 
@@ -1533,15 +1571,19 @@ Their priority issues: ${selectedIssueLabels}`
         </div>
       </div>
 
-      {/* Badge */}
-      <div className="max-w-2xl mx-auto w-full px-4 pt-3">
-        <div className="flex items-center gap-2">
+      {/* Badge + disclaimer */}
+      <div className="max-w-2xl mx-auto w-full px-4 pt-3 pb-2">
+        <div className="flex items-center gap-2 mb-2">
           <span className={`text-xs font-semibold px-3 py-1 rounded-full ${config.badgeColor}`}>
             {config.badge}
           </span>
-          {mode !== 'expert' && (
-            <span className="text-xs text-gray-400">Responses based on verified 2025 platform positions only</span>
-          )}
+        </div>
+        <div className="bg-yellow-50 border border-yellow-200 rounded-xl px-3 py-2">
+          <p className="text-yellow-800 text-xs">
+            {mode === 'expert'
+              ? "This is an AI civic education tool, not a person. Always verify facts with official sources like elections.ca or canada.ca."
+              : "This is an AI simulation based on verified 2025 platform positions only. It is not the real candidate. Always cross-reference with official sources before making voting decisions."}
+          </p>
         </div>
       </div>
 
@@ -1612,29 +1654,47 @@ Their priority issues: ${selectedIssueLabels}`
         </div>
       </div>
 
-      {/* Input */}
-      <div className="bg-white border-t border-gray-200 px-4 py-3">
-        <div className="max-w-2xl mx-auto flex gap-2">
-          <input
-            type="text"
-            value={input}
-            onChange={e => setInput(e.target.value)}
-            onKeyDown={handleKeyDown}
-            placeholder={config.placeholder}
-            className="flex-1 border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-blue-400"
-            disabled={loading}
-          />
-          <button
-            onClick={sendMessage}
-            disabled={!input.trim() || loading}
-            className={`px-4 py-3 rounded-xl font-semibold text-sm transition-all ${
-              input.trim() && !loading
-                ? 'bg-blue-600 text-white hover:bg-blue-700'
-                : 'bg-gray-100 text-gray-400 cursor-not-allowed'
-            }`}
-          >
-            Send
-          </button>
+      {/* Sticky bottom - switcher + input */}
+      <div className="bg-white border-t border-gray-200 px-4 pt-2 pb-3">
+        <div className="max-w-2xl mx-auto">
+          {/* Mode switcher - sticky at bottom too */}
+          <div className="grid grid-cols-3 gap-2 mb-2">
+            {Object.entries(modeConfig).map(([key, cfg]) => (
+              <button
+                key={key}
+                onClick={() => switchMode(key)}
+                className={`py-1.5 px-2 rounded-lg text-xs font-semibold transition-all border-2 ${
+                  mode === key
+                    ? 'bg-blue-600 text-white border-blue-600'
+                    : 'bg-gray-50 text-gray-600 border-transparent hover:border-blue-200'
+                }`}
+              >
+                {cfg.emoji} {cfg.label}
+              </button>
+            ))}
+          </div>
+          <div className="flex gap-2">
+            <input
+              type="text"
+              value={input}
+              onChange={e => setInput(e.target.value)}
+              onKeyDown={handleKeyDown}
+              placeholder={config.placeholder}
+              className="flex-1 border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-blue-400"
+              disabled={loading}
+            />
+            <button
+              onClick={sendMessage}
+              disabled={!input.trim() || loading}
+              className={`px-4 py-3 rounded-xl font-semibold text-sm transition-all ${
+                input.trim() && !loading
+                  ? 'bg-blue-600 text-white hover:bg-blue-700'
+                  : 'bg-gray-100 text-gray-400 cursor-not-allowed'
+              }`}
+            >
+              Send
+            </button>
+          </div>
         </div>
       </div>
     </div>
