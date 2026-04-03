@@ -174,10 +174,78 @@ const issueOptions = [
   { key: 'privacy', label: 'Privacy & Tech', emoji: '🔒', description: 'Data rights, AI, digital safety' },
 ];
 
+// Strip markdown bold/italic stars and render plain text
+function renderMarkdown(text) {
+  if (!text) return '';
+  return text
+    .replace(/\*\*([^*]+)\*\*/g, '$1')
+    .replace(/\*([^*]+)\*/g, '$1')
+    .replace(/^#{1,3}\s+/gm, '')
+    .trim();
+}
+
+// Persistent nav bar shown on all steps after landing
+function NavBar({ currentStep, onNavigate }) {
+  const steps = [
+    { key: 'form', label: 'Profile' },
+    { key: 'priorities', label: 'Priorities' },
+    { key: 'policies', label: 'Policies' },
+    { key: 'results', label: 'Comparison' },
+    { key: 'summary', label: 'Summary' },
+    { key: 'chat', label: 'Chat' },
+  ];
+  const order = steps.map(s => s.key);
+  const currentIdx = order.indexOf(currentStep);
+
+  return (
+    <div className="bg-white border-b border-gray-100 px-4 py-2 sticky top-0 z-10">
+      <div className="max-w-2xl mx-auto flex items-center justify-between">
+        <button onClick={() => onNavigate('landing')} className="text-lg font-bold text-gray-900">Tallied</button>
+        <div className="flex gap-1">
+          {steps.map((s, i) => (
+            <button
+              key={s.key}
+              onClick={() => i <= currentIdx && onNavigate(s.key)}
+              className={`text-xs px-2 py-1 rounded-lg transition-all ${
+                s.key === currentStep
+                  ? 'bg-blue-600 text-white font-semibold'
+                  : i < currentIdx
+                  ? 'text-blue-500 hover:bg-blue-50 cursor-pointer'
+                  : 'text-gray-300 cursor-not-allowed'
+              }`}
+            >
+              {s.label}
+            </button>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function renderMarkdown(text) {
+  if (!text) return '';
+  return text
+    .replace(/[*][*]([^*]+)[*][*]/g, '$1')
+    .replace(/[*]([^*]+)[*]/g, '$1')
+    .replace(/^[#]{1,3}\s+/gm, '')
+    .trim();
+}
+
 function App() {
   const [currentStep, setCurrentStep] = useState('landing');
   const [userAnswers, setUserAnswers] = useState(null);
   const [selectedIssues, setSelectedIssues] = useState([]);
+
+  const navigate = (step) => {
+    if (step === 'landing') {
+      setCurrentStep('landing');
+      setSelectedIssues([]);
+      setUserAnswers(null);
+    } else {
+      setCurrentStep(step);
+    }
+  };
 
   if (currentStep === 'landing') {
     return (
@@ -191,10 +259,15 @@ function App() {
             <p className="text-xl text-blue-600 font-semibold mb-10">
               This affects you. Get tallied.
             </p>
-            <div className="bg-white rounded-2xl shadow-sm p-6 mb-10 text-left">
+            <div className="bg-white rounded-2xl shadow-sm p-6 mb-6 text-left">
               <p className="text-4xl font-bold text-gray-900 mb-2">57%</p>
               <p className="text-gray-600 leading-relaxed">
                 That's the share of eligible Ontario voters who didn't cast a ballot in 2022 - the highest abstention rate in provincial history. Meanwhile the policies they skipped voting on affect your rent, your tuition, and your healthcare.
+              </p>
+            </div>
+            <div className="bg-blue-50 border border-blue-200 rounded-2xl p-4 mb-6 text-left">
+              <p className="text-blue-800 text-sm">
+                <span className="font-semibold">Built for Ontario residents.</span> Tallied covers both provincial policies and federal decisions that directly affect life in Ontario. It is not a national tool and does not cover all Canadian provinces.
               </p>
             </div>
             <p className="text-lg text-gray-500 mb-10">
@@ -206,6 +279,9 @@ function App() {
             >
               Get Started
             </button>
+            <p className="text-sm text-gray-400 mt-6">
+              Or jump straight to <button onClick={() => setCurrentStep('chat')} className="text-blue-500 underline">the chat</button> if you already have questions
+            </p>
           </div>
         </div>
         <footer className="text-center py-6 text-sm text-gray-400">
@@ -216,80 +292,27 @@ function App() {
   }
 
   if (currentStep === 'form') {
-    return (
-      <PersonalizationForm
-        onComplete={(answers) => {
-          setUserAnswers(answers);
-          setCurrentStep('priorities');
-        }}
-      />
-    );
+    return <><NavBar currentStep={currentStep} onNavigate={navigate} /><PersonalizationForm onComplete={(answers) => { setUserAnswers(answers); setCurrentStep('priorities'); }} /></>;
   }
 
   if (currentStep === 'priorities') {
-    return (
-      <PrioritiesPage
-        onComplete={(issues) => {
-          setSelectedIssues(issues);
-          setCurrentStep('policies');
-        }}
-      />
-    );
+    return <><NavBar currentStep={currentStep} onNavigate={navigate} /><PrioritiesPage onComplete={(issues) => { setSelectedIssues(issues); setCurrentStep('policies'); }} /></>;
   }
 
   if (currentStep === 'policies') {
-    return (
-      <PoliciesPage
-        answers={userAnswers}
-        selectedIssues={selectedIssues}
-        onComplete={() => setCurrentStep('results')}
-      />
-    );
+    return <><NavBar currentStep={currentStep} onNavigate={navigate} /><PoliciesPage answers={userAnswers} selectedIssues={selectedIssues} onComplete={() => setCurrentStep('results')} onChat={() => setCurrentStep('chat')} /></>;
   }
 
   if (currentStep === 'results') {
-    return (
-      <ResultsPage
-        answers={userAnswers}
-        selectedIssues={selectedIssues}
-        onContinue={() => setCurrentStep('summary')}
-        onRestart={() => {
-          setCurrentStep('landing');
-          setSelectedIssues([]);
-          setUserAnswers(null);
-        }}
-      />
-    );
+    return <><NavBar currentStep={currentStep} onNavigate={navigate} /><ResultsPage answers={userAnswers} selectedIssues={selectedIssues} onContinue={() => setCurrentStep('summary')} onChat={() => setCurrentStep('chat')} onRestart={() => navigate('landing')} /></>;
   }
 
   if (currentStep === 'summary') {
-    return (
-      <DecisionSummaryPage
-        answers={userAnswers}
-        selectedIssues={selectedIssues}
-        onChat={() => setCurrentStep('chat')}
-        onRestart={() => {
-          setCurrentStep('landing');
-          setSelectedIssues([]);
-          setUserAnswers(null);
-        }}
-      />
-    );
+    return <><NavBar currentStep={currentStep} onNavigate={navigate} /><DecisionSummaryPage answers={userAnswers} selectedIssues={selectedIssues} onChat={() => setCurrentStep('chat')} onRestart={() => navigate('landing')} /></>;
   }
 
   if (currentStep === 'chat') {
-    return (
-      <ChatPage
-        answers={userAnswers}
-        selectedIssues={selectedIssues}
-        onRestart={() => {
-          setCurrentStep('landing');
-          setSelectedIssues([]);
-          setUserAnswers(null);
-        }}
-        onBack={() => setCurrentStep('summary')}
-      />
-    );
+    return <><NavBar currentStep={currentStep} onNavigate={navigate} /><ChatPage answers={userAnswers} selectedIssues={selectedIssues} onRestart={() => navigate('landing')} onBack={() => setCurrentStep('summary')} /></>;
   }
 }
 
@@ -490,11 +513,20 @@ function PolicyCard({ policy, answers }) {
   );
 }
 
-function PoliciesPage({ answers, selectedIssues, onComplete }) {
+function PoliciesPage({ answers, selectedIssues, onComplete, onChat }) {
   const [showAll, setShowAll] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
 
   const priorityPolicies = policies.filter(p => selectedIssues.includes(p.issueKey));
   const otherPolicies = policies.filter(p => !selectedIssues.includes(p.issueKey));
+
+  const searchResults = searchQuery.trim().length > 1
+    ? policies.filter(p =>
+        p.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        p.tag.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        p.plain.toLowerCase().includes(searchQuery.toLowerCase())
+      )
+    : null;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 px-4 py-12">
@@ -520,14 +552,40 @@ function PoliciesPage({ answers, selectedIssues, onComplete }) {
           </p>
         </div>
 
-        {/* Priority policies */}
-        <h3 className="text-lg font-bold text-gray-700 mb-4">📌 Your Priority Issues</h3>
-        {priorityPolicies.map(policy => (
-          <PolicyCard key={policy.id} policy={policy} answers={answers} />
-        ))}
+        {/* Search */}
+        <div className="bg-white rounded-2xl shadow-sm p-4 mb-5">
+          <input
+            type="text"
+            value={searchQuery}
+            onChange={e => setSearchQuery(e.target.value)}
+            placeholder="Search policies... (e.g. housing, OSAP, climate)"
+            className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-blue-400"
+          />
+          {searchQuery.trim().length > 1 && searchResults.length === 0 && (
+            <p className="text-gray-400 text-sm mt-3 text-center">No results for "{searchQuery}" - Tallied currently covers 8 issues. Try: housing, education, healthcare, jobs, climate, cost of living, trade, or privacy.</p>
+          )}
+        </div>
 
-        {/* Explore all toggle */}
-        {!showAll ? (
+        {/* Search results */}
+        {searchResults && searchResults.length > 0 ? (
+          <>
+            <h3 className="text-lg font-bold text-gray-700 mb-4">🔍 Search Results</h3>
+            {searchResults.map(policy => (
+              <PolicyCard key={policy.id} policy={policy} answers={answers} />
+            ))}
+          </>
+        ) : !searchQuery && (
+          <>
+            {/* Priority policies */}
+            <h3 className="text-lg font-bold text-gray-700 mb-4">📌 Your Priority Issues</h3>
+            {priorityPolicies.map(policy => (
+              <PolicyCard key={policy.id} policy={policy} answers={answers} />
+            ))}
+          </>
+        )}
+
+        {/* Explore all toggle - only show when not searching */}
+        {!searchQuery && (!showAll ? (
           <button
             onClick={() => setShowAll(true)}
             className="w-full py-4 rounded-xl font-medium text-gray-600 bg-white border-2 border-gray-200 hover:border-blue-300 transition-all mb-6"
@@ -547,7 +605,7 @@ function PoliciesPage({ answers, selectedIssues, onComplete }) {
               Show less ↑
             </button>
           </>
-        )}
+        ))}
 
         {/* Continue signpost */}
         <div className="bg-white rounded-2xl shadow-sm p-6 mb-5">
@@ -784,7 +842,7 @@ const candidateComparison = {
   }
 };
 
-function ResultsPage({ answers, selectedIssues, onContinue, onRestart }) {
+function ResultsPage({ answers, selectedIssues, onContinue, onChat, onRestart }) {
   const [showNDP, setShowNDP] = useState(false);
 
   const selectedIssueLabels = issueOptions
@@ -946,9 +1004,15 @@ function ResultsPage({ answers, selectedIssues, onContinue, onRestart }) {
           <p className="text-gray-500 text-sm mb-4">Get a plain-language summary of what you learned and your next steps.</p>
           <button
             onClick={onContinue}
-            className="w-full py-4 rounded-xl font-semibold text-lg bg-blue-600 text-white hover:bg-blue-700 shadow-md transition-all"
+            className="w-full py-4 rounded-xl font-semibold text-lg bg-blue-600 text-white hover:bg-blue-700 shadow-md transition-all mb-3"
           >
             See My Decision Summary →
+          </button>
+          <button
+            onClick={onChat}
+            className="w-full py-3 rounded-xl font-medium text-gray-600 bg-gray-50 hover:bg-gray-100 border-2 border-gray-200 transition-all"
+          >
+            💬 Have questions? Talk to the candidates or a civic expert
           </button>
         </div>
 
@@ -1243,6 +1307,8 @@ function ChatPage({ answers, selectedIssues, onBack, onRestart }) {
   });
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
+  const [loadingError, setLoadingError] = useState(null);
+  const [loadingMode, setLoadingMode] = useState(null);
   const messagesEndRef = React.useRef(null);
 
   const selectedIssueLabels = issueOptions
@@ -1378,23 +1444,38 @@ Their priority issues: ${selectedIssueLabels}`
     const userMessage = { role: 'user', content: input.trim() };
     const updatedMessages = [...currentMessages, userMessage];
 
+    // Only store user message - don't store failed responses in history
     setMessages(prev => ({ ...prev, [mode]: updatedMessages }));
     setInput('');
     setLoading(true);
+    setLoadingMode(mode);
+    setLoadingError(null);
 
     try {
-    const response = await fetch('/api/chat', {
-  method: 'POST',
-  headers: { 'Content-Type': 'application/json' },
-  body: JSON.stringify({
-    system: systemPrompts[mode],
-    messages: updatedMessages
-  })
-});
+      // Only send role+content to API (strip sources field)
+      const apiMessages = updatedMessages.map(m => ({ role: m.role, content: m.content }));
+
+      const response = await fetch('/api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          system: systemPrompts[mode],
+          messages: apiMessages
+        })
+      });
 
       const data = await response.json();
-      const raw = data.content?.[0]?.text || "I'm sorry, I couldn't generate a response. Please try again.";
-      const parsed = parseResponse(raw);
+      const rawText = data.content?.[0]?.text;
+
+      if (!rawText) {
+        // API error - show toast but DON'T add to history so conversation stays alive
+        setLoadingError("Couldn't get a response - please try again");
+        setLoading(false);
+        return;
+      }
+
+      const cleaned = renderMarkdown(rawText);
+      const parsed = parseResponse(cleaned);
 
       const assistantMessage = {
         role: 'assistant',
@@ -1406,15 +1487,10 @@ Their priority issues: ${selectedIssueLabels}`
         ...prev,
         [mode]: [...updatedMessages, assistantMessage]
       }));
+      setLoadingError(null);
     } catch (err) {
-      setMessages(prev => ({
-        ...prev,
-        [mode]: [...updatedMessages, {
-          role: 'assistant',
-          content: "Sorry, something went wrong. Please try again.",
-          sources: []
-        }]
-      }));
+      // Network error - don't corrupt history
+      setLoadingError("Network error - please check your connection and try again");
     } finally {
       setLoading(false);
     }
@@ -1496,7 +1572,7 @@ Their priority issues: ${selectedIssueLabels}`
                   : `${config.bubbleColor} rounded-2xl rounded-tl-sm p-4`
               }`}>
                 <p className={`text-sm leading-relaxed ${msg.role === 'user' ? 'text-white' : 'text-gray-800'}`}>
-                  {msg.content}
+                  {msg.role === 'assistant' ? renderMarkdown(msg.content) : msg.content}
                 </p>
                 {msg.sources && msg.sources.length > 0 && (
                   <div className="mt-3 pt-2 border-t border-gray-200">
@@ -1520,13 +1596,23 @@ Their priority issues: ${selectedIssueLabels}`
             </div>
           ))}
 
-          {/* Loading */}
-          {loading && (
+          {/* Loading - only show for active mode */}
+          {loading && loadingMode === mode && (
             <div className={`rounded-2xl rounded-tl-sm p-4 max-w-xs ${config.bubbleColor}`}>
               <div className="flex gap-1 items-center">
                 <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{animationDelay: '0ms'}} />
                 <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{animationDelay: '150ms'}} />
                 <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{animationDelay: '300ms'}} />
+              </div>
+            </div>
+          )}
+
+          {/* Error toast - doesn't block conversation */}
+          {loadingError && (
+            <div className="flex justify-center">
+              <div className="bg-red-50 border border-red-200 rounded-xl px-4 py-2 flex items-center gap-2">
+                <p className="text-red-600 text-xs">{loadingError}</p>
+                <button onClick={() => setLoadingError(null)} className="text-red-400 text-xs">✕</button>
               </div>
             </div>
           )}
