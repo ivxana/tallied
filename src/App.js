@@ -1476,8 +1476,6 @@ Priority issues: ${selectedIssueLabels}`
       }
     }
     // Also find any inline [Label](URL) links remaining in body and convert to sources
-    const inlineRegex = /\[([^\]]+)\]\(([^)]+)\)/g;
-    let inlineMatch;
     const cleanBody = mainText.replace(/\[([^\]]+)\]\(([^)]+)\)/g, (_, label, url) => {
       sources.push({ label, url });
       return label; // replace with just the label text in body
