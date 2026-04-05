@@ -264,7 +264,7 @@ function App() {
   // Inject Google Fonts
   React.useEffect(() => {
     const style = document.createElement('style');
-    style.textContent = '@keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } } @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } } @keyframes popIn { 0% { transform: scale(0.95); } 60% { transform: scale(1.02); } 100% { transform: scale(1); } } .tl-fade { animation: fadeUp 0.5s ease both; } .tl-fade-1 { animation: fadeUp 0.5s ease 0.1s both; } .tl-fade-2 { animation: fadeUp 0.5s ease 0.2s both; } .tl-fade-3 { animation: fadeUp 0.5s ease 0.3s both; } .tl-fade-4 { animation: fadeUp 0.5s ease 0.4s both; } .tl-fade-5 { animation: fadeUp 0.5s ease 0.5s both; } .tl-card:hover { border-color: #7EB3FF !important; transform: translateY(-3px); box-shadow: 0 8px 24px rgba(126,179,255,0.18) !important; background: #FAFCFF !important; } .tl-card { transition: all 0.2s ease; } .tl-btn:hover { transform: translateY(-1px); opacity: 0.92; } .tl-btn { transition: all 0.15s ease; } .tl-ic { transition: all 0.2s ease; } .tl-ic:hover { border-color: #7EB3FF !important; background: #F2F7FF !important; transform: translateY(-2px); box-shadow: 0 4px 14px rgba(126,179,255,0.15); } .tl-ic-sel { transition: all 0.2s ease; animation: popIn 0.25s ease; } .tl-ic-sel:hover { background: #FFE4EA !important; transform: translateY(-2px); box-shadow: 0 4px 14px rgba(192,57,90,0.12); } '
+    style.textContent = '@keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } } @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } } @keyframes popIn { 0% { transform: scale(0.95); } 60% { transform: scale(1.02); } 100% { transform: scale(1); } } .tl-fade { animation: fadeUp 0.7s ease both; } .tl-fade-1 { animation: fadeUp 0.7s ease 0.25s both; } .tl-fade-2 { animation: fadeUp 0.7s ease 0.5s both; } .tl-fade-3 { animation: fadeUp 0.7s ease 0.75s both; } .tl-fade-4 { animation: fadeUp 0.7s ease 1.0s both; } .tl-fade-5 { animation: fadeUp 0.7s ease 1.25s both; } .tl-card { transition: all 0.2s ease; background: white; } .tl-card:hover { border-color: #7EB3FF !important; transform: translateY(-3px); box-shadow: 0 8px 24px rgba(126,179,255,0.15) !important; background: #F5F9FF !important; } .tl-btn:hover { transform: translateY(-1px); opacity: 0.92; } .tl-btn { transition: all 0.15s ease; } .tl-ic { transition: all 0.2s ease; } .tl-ic:hover { border-color: #7EB3FF !important; background: #F2F7FF !important; transform: translateY(-2px); box-shadow: 0 4px 14px rgba(126,179,255,0.15) !important; } .tl-ic-sel { transition: all 0.2s ease; animation: popIn 0.25s ease; } .tl-ic-sel:hover { background: #FFE4EA !important; transform: translateY(-2px); box-shadow: 0 4px 14px rgba(192,57,90,0.12); } '
     document.head.appendChild(style);
     const link = document.createElement('link');
     link.href = 'https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;1,400&family=Inter:wght@400;500;600&display=swap';
@@ -707,7 +707,7 @@ function PoliciesPage({ answers, selectedIssues, onComplete, onChat }) {
           </button>
         ) : (
           <>
-            <h3 className="text-lg font-bold text-gray-700 mb-4 mt-2">🗂 Other Issues</h3>
+            <h3 className="text-lg font-bold text-gray-700 mb-4 mt-2"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#7EB3FF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg> Other Issues</h3>
             {otherPolicies.map(policy => (
               <PolicyCard key={policy.id} policy={policy} answers={answers} />
             ))}
@@ -1008,7 +1008,7 @@ function ResultsPage({ answers, selectedIssues, onContinue, onChat, onRestart })
             Your priorities: <span className="font-semibold text-blue-600">{selectedIssueLabels.join(', ')}</span>
           </p>
           <p className="text-sm text-gray-400">
-            Personalized for a {labelMap.student[answers.student]}, {labelMap.employment[answers.employment]}, {labelMap.income[answers.income]}, {labelMap.housing[answers.housing]}
+            Personalized for: {[labelMap.student[answers.student], labelMap.employment[answers.employment], labelMap.income[answers.income], labelMap.housing[answers.housing]].filter(Boolean).join(' - ')}
           </p>
         </div>
 
@@ -1267,7 +1267,7 @@ function DecisionSummaryPage({ answers, selectedIssues, onChat, onRestart }) {
         <div className="bg-white rounded-2xl shadow-sm p-6 mb-5">
           <h3 className="text-lg font-bold text-gray-900 mb-3">Your profile</h3>
           <p className="text-gray-600 text-sm">
-            {labelMap.student[answers.student]} · {labelMap.employment[answers.employment]} · {labelMap.income[answers.income]} income · {labelMap.housing[answers.housing]}
+            {[labelMap.student[answers.student], labelMap.employment[answers.employment], labelMap.income[answers.income] + ' income', labelMap.housing[answers.housing]].filter(Boolean).join(' · ')}
           </p>
           <p className="text-gray-500 text-sm mt-2">
             Your top priorities: {selectedIssueData.map(i => i.label).join(', ')}
@@ -1690,7 +1690,7 @@ Priority issues: ${selectedIssueLabels}`
 
           {/* Intro message */}
           <div className={`rounded-2xl rounded-tl-sm p-4 max-w-xs ${config.bubbleColor}`}>
-            <p className="text-gray-800 text-sm leading-relaxed">{config.intro}</p>
+            <p style={{ fontFamily: "'Lora', Georgia, serif", fontSize: '15px', color: '#111', lineHeight: 1.75 }}>{config.intro}</p>
           </div>
 
           {/* Conversation */}
