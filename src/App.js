@@ -417,7 +417,7 @@ function PersonalizationForm({ onComplete, existingAnswers }) {
     {
       key: 'student',
       question: 'What is your current student status?',
-      options: ['Yes, college/university', 'In high school', 'Recently graduated', 'Not a student']
+      options: ['College/university', 'In high school', 'Recently graduated', 'Not a student']
     },
     {
       key: 'employment',
