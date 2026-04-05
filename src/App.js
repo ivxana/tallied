@@ -264,7 +264,7 @@ function App() {
   // Inject Google Fonts
   React.useEffect(() => {
     const style = document.createElement('style');
-    style.textContent = '@keyframes fadeUp { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: translateY(0); } } .tl-fade { animation: fadeUp 0.5s ease both; } .tl-fade-1 { animation: fadeUp 0.5s ease 0.1s both; } .tl-fade-2 { animation: fadeUp 0.5s ease 0.2s both; } .tl-fade-3 { animation: fadeUp 0.5s ease 0.3s both; } .tl-fade-4 { animation: fadeUp 0.5s ease 0.4s both; }';
+    style.textContent = '@keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } } @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } } @keyframes popIn { 0% { transform: scale(0.95); } 60% { transform: scale(1.02); } 100% { transform: scale(1); } } .tl-fade { animation: fadeUp 0.5s ease both; } .tl-fade-1 { animation: fadeUp 0.5s ease 0.1s both; } .tl-fade-2 { animation: fadeUp 0.5s ease 0.2s both; } .tl-fade-3 { animation: fadeUp 0.5s ease 0.3s both; } .tl-fade-4 { animation: fadeUp 0.5s ease 0.4s both; } .tl-fade-5 { animation: fadeUp 0.5s ease 0.5s both; } .tl-card:hover { border-color: #7EB3FF !important; transform: translateY(-3px); box-shadow: 0 8px 24px rgba(126,179,255,0.18) !important; background: #FAFCFF !important; } .tl-card { transition: all 0.2s ease; } .tl-btn:hover { transform: translateY(-1px); opacity: 0.92; } .tl-btn { transition: all 0.15s ease; } .tl-ic { transition: all 0.2s ease; } .tl-ic:hover { border-color: #7EB3FF !important; background: #F2F7FF !important; transform: translateY(-2px); box-shadow: 0 4px 14px rgba(126,179,255,0.15); } .tl-ic-sel { transition: all 0.2s ease; animation: popIn 0.25s ease; } .tl-ic-sel:hover { background: #FFE4EA !important; transform: translateY(-2px); box-shadow: 0 4px 14px rgba(192,57,90,0.12); } '
     document.head.appendChild(style);
     const link = document.createElement('link');
     link.href = 'https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;1,400&family=Inter:wght@400;500;600&display=swap';
@@ -297,7 +297,7 @@ function App() {
           <div style={{ maxWidth: '700px', width: '100%' }}>
 
             {/* Logo hero */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: '14px', marginBottom: '8px' }}>
+            <div className="tl-fade" style={{ display: 'flex', alignItems: 'center', gap: '14px', marginBottom: '8px' }}>
               <TalliedLogo size={56} />
               <div>
                 <h1 style={{ fontFamily: "'Lora', Georgia, serif", fontSize: '54px', fontWeight: 500, color: '#111', lineHeight: 1, letterSpacing: '-0.01em' }}>Tallied</h1>
@@ -306,12 +306,12 @@ function App() {
             </div>
 
             {/* Tagline */}
-            <p style={{ fontFamily: "'Lora', Georgia, serif", fontSize: '15px', color: '#7EB3FF', fontWeight: 500, fontStyle: 'italic', marginBottom: '20px', marginLeft: '70px' }}>
+            <p className="tl-fade-1" style={{ fontFamily: "'Lora', Georgia, serif", fontSize: '15px', color: '#7EB3FF', fontWeight: 500, fontStyle: 'italic', marginBottom: '20px', marginLeft: '70px' }}>
               This affects you. Get tallied.
             </p>
 
             {/* Issue pills */}
-            <div style={{ display: 'flex', gap: '8px', marginBottom: '20px', flexWrap: 'wrap' }}>
+            <div className="tl-fade-2" style={{ display: 'flex', gap: '8px', marginBottom: '20px', flexWrap: 'wrap' }}>
               {[
                 { key: 'housing', label: 'Housing', rose: false },
                 { key: 'healthcare', label: 'Healthcare', rose: true },
@@ -353,7 +353,7 @@ function App() {
             {/* CTA */}
             <button
               onClick={() => setCurrentStep('form')}
-              style={{ width: '100%', background: '#7EB3FF', color: 'white', borderRadius: '14px', padding: '16px', fontFamily: "'Lora', Georgia, serif", fontSize: '15px', fontWeight: 500, border: 'none', cursor: 'pointer', marginBottom: '10px' }}
+              className="tl-btn tl-fade-5" style={{ width: '100%', background: '#7EB3FF', color: 'white', borderRadius: '14px', padding: '16px', fontFamily: "'Lora', Georgia, serif", fontSize: '15px', fontWeight: 500, border: 'none', cursor: 'pointer', marginBottom: '10px' }}
             >
               Get Started
             </button>
@@ -464,7 +464,7 @@ function PersonalizationForm({ onComplete, existingAnswers }) {
                   onClick={() => setAnswers({ ...answers, [key]: option })}
                   className={`py-3 px-4 rounded-xl font-medium text-sm transition-all border-2 ${
                     answers[key] === option
-                      ? 'bg-blue-600 text-white border-blue-600'
+                      ? 'text-white border-transparent'
                       : 'bg-gray-50 text-gray-700 border-transparent hover:border-blue-200'
                   }`}
                 >
@@ -728,7 +728,7 @@ function PoliciesPage({ answers, selectedIssues, onComplete, onChat }) {
           </p>
           <button
             onClick={onComplete}
-            className="w-full py-4 rounded-xl font-semibold text-lg bg-blue-600 text-white hover:bg-blue-700 shadow-md transition-all"
+            className="w-full py-4 rounded-xl font-semibold text-lg text-white transition-all" style={{ background: '#7EB3FF' }}
           >
             Compare Candidates on My Priorities →
           </button>
@@ -1117,7 +1117,7 @@ function ResultsPage({ answers, selectedIssues, onContinue, onChat, onRestart })
           <p className="text-gray-500 text-sm mb-4">Get a plain-language summary of what you learned and your next steps.</p>
           <button
             onClick={onContinue}
-            className="w-full py-4 rounded-xl font-semibold text-lg bg-blue-600 text-white hover:bg-blue-700 shadow-md transition-all mb-3"
+            className="w-full py-4 rounded-xl font-semibold text-lg text-white transition-all mb-3" style={{ background: '#7EB3FF' }}
           >
             See My Decision Summary →
           </button>
@@ -1656,7 +1656,7 @@ Priority issues: ${selectedIssueLabels}`
                 onClick={() => switchMode(key)}
                 className={`py-2 px-2 rounded-xl text-xs font-semibold transition-all border-2 ${
                   mode === key
-                    ? 'bg-blue-600 text-white border-blue-600'
+                    ? 'text-white border-transparent'
                     : 'bg-gray-50 text-gray-600 border-transparent hover:border-blue-200'
                 }`}
               >
@@ -1767,7 +1767,7 @@ Priority issues: ${selectedIssueLabels}`
                 onClick={() => switchMode(key)}
                 className={`py-1.5 px-2 rounded-lg text-xs font-semibold transition-all border-2 ${
                   mode === key
-                    ? 'bg-blue-600 text-white border-blue-600'
+                    ? 'text-white border-transparent'
                     : 'bg-gray-50 text-gray-600 border-transparent hover:border-blue-200'
                 }`}
               >
@@ -1791,7 +1791,7 @@ Priority issues: ${selectedIssueLabels}`
               disabled={!input.trim() || loading}
               className={`px-4 py-3 rounded-xl font-semibold text-sm transition-all ${
                 input.trim() && !loading
-                  ? 'bg-blue-600 text-white hover:bg-blue-700'
+                  ? 'text-white'
                   : 'bg-gray-100 text-gray-400 cursor-not-allowed'
               }`}
             >
