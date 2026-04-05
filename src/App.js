@@ -440,7 +440,7 @@ function PersonalizationForm({ onComplete, existingAnswers }) {
   const answeredCount = [answers.student, answers.employment, answers.income, answers.housing].filter(Boolean).length;
 
   return (
-    <div className="min-h-screen" style={{ background: '#FEFEFE' px-4 py-12">
+    <div className="min-h-screen" style={{ background: '#FEFEFE' }} px-4 py-12">
       <div className="max-w-2xl mx-auto">
         <div className="text-center mb-10">
           <h1 className="text-4xl font-bold text-gray-900 mb-2">Tallied</h1>
@@ -506,7 +506,7 @@ function PrioritiesPage({ onComplete, existingIssues }) {
   };
 
   return (
-    <div className="min-h-screen" style={{ background: '#FEFEFE' px-4 py-12">
+    <div className="min-h-screen" style={{ background: '#FEFEFE' }} px-4 py-12">
       <div className="max-w-2xl mx-auto">
         {/* Progress */}
         <div className="text-center mb-8">
@@ -640,7 +640,7 @@ function PoliciesPage({ answers, selectedIssues, onComplete, onChat }) {
     : null;
 
   return (
-    <div className="min-h-screen" style={{ background: '#FEFEFE' px-4 py-12">
+    <div className="min-h-screen" style={{ background: '#FEFEFE' }} px-4 py-12">
       <div className="max-w-2xl mx-auto">
         {/* Progress */}
         <div className="text-center mb-8">
@@ -991,7 +991,7 @@ function ResultsPage({ answers, selectedIssues, onContinue, onChat, onRestart })
   };
 
   return (
-    <div className="min-h-screen" style={{ background: '#FEFEFE' px-4 py-12">
+    <div className="min-h-screen" style={{ background: '#FEFEFE' }} px-4 py-12">
       <div className="max-w-2xl mx-auto">
 
         {/* Header */}
@@ -1240,7 +1240,7 @@ function DecisionSummaryPage({ answers, selectedIssues, onChat, onRestart }) {
 
 
   return (
-    <div className="min-h-screen" style={{ background: '#FEFEFE' px-4 py-12">
+    <div className="min-h-screen" style={{ background: '#FEFEFE' }} px-4 py-12">
       <div className="max-w-2xl mx-auto">
 
         {/* Header */}
@@ -1634,7 +1634,7 @@ Priority issues: ${selectedIssueLabels}`
   };
 
   return (
-    <div className="min-h-screen" style={{ background: '#FEFEFE' flex flex-col">
+    <div className="min-h-screen" style={{ background: '#FEFEFE' }} flex flex-col">
 
       {/* Header */}
       <div className="bg-white border-b border-gray-200 px-4 py-3">
@@ -1807,7 +1807,7 @@ Priority issues: ${selectedIssueLabels}`
 
 function PrivacyPage({ onBack }) {
   return (
-    <div className="min-h-screen" style={{ background: '#FEFEFE' px-4 py-12">
+    <div className="min-h-screen" style={{ background: '#FEFEFE' }} px-4 py-12">
       <div className="max-w-2xl mx-auto">
         <button onClick={onBack} className="text-blue-600 text-sm font-medium mb-6 block">
           - Back
