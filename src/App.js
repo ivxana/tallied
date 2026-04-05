@@ -320,7 +320,7 @@ function App() {
               ].map(p => (
                 <div key={p.key} style={{
                   background: p.rose ? '#FFF0F3' : '#F0F5FF',
-                  border: \`0.5px solid \${p.rose ? '#FFCDD6' : '#D8E6FF'}\`,
+                  border: p.rose ? '0.5px solid #FFCDD6' : '0.5px solid #D8E6FF',
                   borderRadius: '20px', padding: '6px 12px',
                   fontFamily: "'Inter', sans-serif", fontSize: '11px', fontWeight: 500,
                   color: p.rose ? '#C0395A' : '#3A6FD8',
