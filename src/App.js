@@ -576,7 +576,7 @@ function PrioritiesPage({ onComplete, existingIssues }) {
 
 function PolicyCard({ policy, answers }) {
   return (
-    <div className="bg-white rounded-2xl shadow-sm p-6 mb-5">
+    <div className="bg-white rounded-2xl p-6 mb-5" style={{border:"0.5px solid #EEEEEE",transition:"all 0.2s ease"}} onMouseEnter={e=>{e.currentTarget.style.border="1.5px solid #7EB3FF";e.currentTarget.style.transform="translateY(-3px)";e.currentTarget.style.boxShadow="0 8px 24px rgba(126,179,255,0.15)";e.currentTarget.style.background="#F5F9FF";}} onMouseLeave={e=>{e.currentTarget.style.border="0.5px solid #EEEEEE";e.currentTarget.style.transform="";e.currentTarget.style.boxShadow="";e.currentTarget.style.background="white";}}>
       <div className="flex items-start justify-between mb-3">
         <span
           className="text-xs font-semibold px-3 py-1 rounded-full"
@@ -679,7 +679,7 @@ function PoliciesPage({ answers, selectedIssues, onComplete, onChat }) {
         {/* Search results */}
         {searchResults && searchResults.length > 0 ? (
           <>
-            <h3 className="text-lg font-bold text-gray-700 mb-4">🔍 Search Results</h3>
+            <h3 className="text-lg font-bold text-gray-700 mb-4">Search Results</h3>
             {searchResults.map(policy => (
               <PolicyCard key={policy.id} policy={policy} answers={answers} />
             ))}
@@ -721,7 +721,7 @@ function PoliciesPage({ answers, selectedIssues, onComplete, onChat }) {
         ))}
 
         {/* Continue signpost */}
-        <div className="bg-white rounded-2xl shadow-sm p-6 mb-5">
+        <div className="bg-white rounded-2xl p-6 mb-5" style={{border:"0.5px solid #EEEEEE",transition:"all 0.2s ease"}} onMouseEnter={e=>{e.currentTarget.style.border="1.5px solid #7EB3FF";e.currentTarget.style.transform="translateY(-3px)";e.currentTarget.style.boxShadow="0 8px 24px rgba(126,179,255,0.15)";e.currentTarget.style.background="#F5F9FF";}} onMouseLeave={e=>{e.currentTarget.style.border="0.5px solid #EEEEEE";e.currentTarget.style.transform="";e.currentTarget.style.boxShadow="";e.currentTarget.style.background="white";}}>
           <h3 className="text-lg font-bold text-gray-900 mb-2">Ready to compare candidates?</h3>
           <p className="text-gray-500 text-sm mb-5">
             Now that you understand how policies have affected people like you, let's see what Carney and Poilievre actually plan to do about your top priorities.
@@ -1112,7 +1112,7 @@ function ResultsPage({ answers, selectedIssues, onContinue, onChat, onRestart })
         </div>
 
         {/* Continue to summary */}
-        <div className="bg-white rounded-2xl shadow-sm p-6 mb-5">
+        <div className="bg-white rounded-2xl p-6 mb-5" style={{border:"0.5px solid #EEEEEE",transition:"all 0.2s ease"}} onMouseEnter={e=>{e.currentTarget.style.border="1.5px solid #7EB3FF";e.currentTarget.style.transform="translateY(-3px)";e.currentTarget.style.boxShadow="0 8px 24px rgba(126,179,255,0.15)";e.currentTarget.style.background="#F5F9FF";}} onMouseLeave={e=>{e.currentTarget.style.border="0.5px solid #EEEEEE";e.currentTarget.style.transform="";e.currentTarget.style.boxShadow="";e.currentTarget.style.background="white";}}>
           <h3 className="text-lg font-bold text-gray-900 mb-2">Seen enough? Let's wrap this up.</h3>
           <p className="text-gray-500 text-sm mb-4">Get a plain-language summary of what you learned and your next steps.</p>
           <button
@@ -1264,7 +1264,7 @@ function DecisionSummaryPage({ answers, selectedIssues, onChat, onRestart }) {
         </div>
 
         {/* Profile recap */}
-        <div className="bg-white rounded-2xl shadow-sm p-6 mb-5">
+        <div className="bg-white rounded-2xl p-6 mb-5" style={{border:"0.5px solid #EEEEEE",transition:"all 0.2s ease"}} onMouseEnter={e=>{e.currentTarget.style.border="1.5px solid #7EB3FF";e.currentTarget.style.transform="translateY(-3px)";e.currentTarget.style.boxShadow="0 8px 24px rgba(126,179,255,0.15)";e.currentTarget.style.background="#F5F9FF";}} onMouseLeave={e=>{e.currentTarget.style.border="0.5px solid #EEEEEE";e.currentTarget.style.transform="";e.currentTarget.style.boxShadow="";e.currentTarget.style.background="white";}}>
           <h3 className="text-lg font-bold text-gray-900 mb-3">Your profile</h3>
           <p className="text-gray-600 text-sm">
             {[labelMap.student[answers.student], labelMap.employment[answers.employment], labelMap.income[answers.income] + ' income', labelMap.housing[answers.housing]].filter(Boolean).join(' · ')}
@@ -1275,7 +1275,7 @@ function DecisionSummaryPage({ answers, selectedIssues, onChat, onRestart }) {
         </div>
 
         {/* Per-issue tradeoffs - no scoring, just information */}
-        <div className="bg-white rounded-2xl shadow-sm p-6 mb-5">
+        <div className="bg-white rounded-2xl p-6 mb-5" style={{border:"0.5px solid #EEEEEE",transition:"all 0.2s ease"}} onMouseEnter={e=>{e.currentTarget.style.border="1.5px solid #7EB3FF";e.currentTarget.style.transform="translateY(-3px)";e.currentTarget.style.boxShadow="0 8px 24px rgba(126,179,255,0.15)";e.currentTarget.style.background="#F5F9FF";}} onMouseLeave={e=>{e.currentTarget.style.border="0.5px solid #EEEEEE";e.currentTarget.style.transform="";e.currentTarget.style.boxShadow="";e.currentTarget.style.background="white";}}>
           <h3 className="text-lg font-bold text-gray-900 mb-2">How each candidate approaches your priorities</h3>
           <p className="text-gray-500 text-sm mb-5">Based on their verified 2025 platform positions. No ranking - just the tradeoffs.</p>
           {alignments.map(({ key, info, alignment }) => (
@@ -1313,7 +1313,7 @@ function DecisionSummaryPage({ answers, selectedIssues, onChat, onRestart }) {
         </div>
 
         {/* Next steps */}
-        <div className="bg-white rounded-2xl shadow-sm p-6 mb-5">
+        <div className="bg-white rounded-2xl p-6 mb-5" style={{border:"0.5px solid #EEEEEE",transition:"all 0.2s ease"}} onMouseEnter={e=>{e.currentTarget.style.border="1.5px solid #7EB3FF";e.currentTarget.style.transform="translateY(-3px)";e.currentTarget.style.boxShadow="0 8px 24px rgba(126,179,255,0.15)";e.currentTarget.style.background="#F5F9FF";}} onMouseLeave={e=>{e.currentTarget.style.border="0.5px solid #EEEEEE";e.currentTarget.style.transform="";e.currentTarget.style.boxShadow="";e.currentTarget.style.background="white";}}>
           <h3 className="text-lg font-bold text-gray-900 mb-4">What now?</h3>
           <div className="space-y-3">
             <a href="https://www.registertovoteon.ca/" target="_blank" rel="noopener noreferrer"
@@ -1341,7 +1341,7 @@ function DecisionSummaryPage({ answers, selectedIssues, onChat, onRestart }) {
               </div>
             </a>
             <div className="flex items-center gap-3 p-3 rounded-xl bg-gray-50">
-              <span className="text-xl">📅</span>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#7EB3FF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" x2="16" y1="2" y2="6"/><line x1="8" x2="8" y1="2" y2="6"/><line x1="3" x2="21" y1="10" y2="10"/></svg>
               <div>
                 <p className="font-semibold text-sm text-gray-900">Ontario's next provincial election</p>
                 <p className="text-xs text-gray-500">June 5, 2029 - put it in your calendar</p>
@@ -1351,7 +1351,7 @@ function DecisionSummaryPage({ answers, selectedIssues, onChat, onRestart }) {
         </div>
 
         {/* Chat CTA */}
-        <div className="bg-white rounded-2xl shadow-sm p-6 mb-5">
+        <div className="bg-white rounded-2xl p-6 mb-5" style={{border:"0.5px solid #EEEEEE",transition:"all 0.2s ease"}} onMouseEnter={e=>{e.currentTarget.style.border="1.5px solid #7EB3FF";e.currentTarget.style.transform="translateY(-3px)";e.currentTarget.style.boxShadow="0 8px 24px rgba(126,179,255,0.15)";e.currentTarget.style.background="#F5F9FF";}} onMouseLeave={e=>{e.currentTarget.style.border="0.5px solid #EEEEEE";e.currentTarget.style.transform="";e.currentTarget.style.boxShadow="";e.currentTarget.style.background="white";}}>
           <h3 className="text-lg font-bold text-gray-900 mb-2">Still have questions?</h3>
           <p className="text-gray-500 text-sm mb-4">Talk directly to the candidates or ask a neutral expert. All responses are based on verified platform positions and sourced.</p>
           <div className="grid grid-cols-1 gap-3">
@@ -1656,7 +1656,7 @@ Priority issues: ${selectedIssueLabels}`
                 onClick={() => switchMode(key)}
                 className={`py-2 px-2 rounded-xl text-xs font-semibold transition-all border-2 ${
                   mode === key
-                    ? 'text-white border-transparent'
+                    ? 'text-white border-transparent bg-blue-500'
                     : 'bg-gray-50 text-gray-600 border-transparent hover:border-blue-200'
                 }`}
               >
@@ -1701,7 +1701,7 @@ Priority issues: ${selectedIssueLabels}`
                   ? 'bg-blue-600 text-white rounded-2xl rounded-tr-sm p-4'
                   : `${config.bubbleColor} rounded-2xl rounded-tl-sm p-4`
               }`}>
-                <div className={`text-sm leading-relaxed ${msg.role === 'user' ? 'text-white' : 'text-gray-800'}`}>
+                <div style={{fontFamily:"'Lora',Georgia,serif",fontSize:"15px",lineHeight:1.75,color:msg.role==='user'?"white":"#111"}}>
                   {msg.role === 'assistant'
                     ? renderMarkdown(msg.content).split('\n').filter(l => l.trim()).map((line, li) => (
                         <p key={li} className="mb-2 last:mb-0">{line}</p>
@@ -1767,7 +1767,7 @@ Priority issues: ${selectedIssueLabels}`
                 onClick={() => switchMode(key)}
                 className={`py-1.5 px-2 rounded-lg text-xs font-semibold transition-all border-2 ${
                   mode === key
-                    ? 'text-white border-transparent'
+                    ? 'text-white border-transparent bg-blue-500'
                     : 'bg-gray-50 text-gray-600 border-transparent hover:border-blue-200'
                 }`}
               >
@@ -1783,7 +1783,7 @@ Priority issues: ${selectedIssueLabels}`
               onChange={e => setInput(e.target.value)}
               onKeyDown={handleKeyDown}
               placeholder={config.placeholder}
-              className="flex-1 border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-blue-400"
+              className="flex-1 border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:border-blue-400" style={{fontSize:"15px",fontFamily:"'Lora',Georgia,serif"}}
               disabled={loading}
             />
             <button
