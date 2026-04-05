@@ -283,6 +283,9 @@ function App() {
         </div>
         <footer className="text-center py-6 text-sm text-gray-400">
           Built by Ivana Okpakovwodo - {new Date().getFullYear()}
+          <div className="mt-2">
+            <button onClick={() => setCurrentStep('privacy')} className="text-gray-400 hover:text-gray-600 underline text-xs">Privacy & Terms</button>
+          </div>
         </footer>
       </div>
     );
@@ -310,6 +313,10 @@ function App() {
 
   if (currentStep === 'chat') {
     return <><NavBar currentStep={currentStep} onNavigate={navigate} /><ChatPage answers={userAnswers} selectedIssues={selectedIssues} onRestart={() => navigate('landing')} onBack={() => setCurrentStep('summary')} /></>;
+  }
+
+  if (currentStep === 'privacy') {
+    return <><NavBar currentStep={currentStep} onNavigate={navigate} /><PrivacyPage onBack={() => navigate('landing')} /></>;
   }
 }
 
@@ -1136,8 +1143,7 @@ function DecisionSummaryPage({ answers, selectedIssues, onChat, onRestart }) {
     alignment: getAlignment(key)
   }));
 
-  const liberalScore = alignments.filter(a => a.alignment?.liberal).length;
-  const conservativeScore = alignments.filter(a => a.alignment?.conservative).length;
+
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 px-4 py-12">
@@ -1175,61 +1181,41 @@ function DecisionSummaryPage({ answers, selectedIssues, onChat, onRestart }) {
           </p>
         </div>
 
-        {/* Per-issue alignment */}
+        {/* Per-issue tradeoffs - no scoring, just information */}
         <div className="bg-white rounded-2xl shadow-sm p-6 mb-5">
-          <h3 className="text-lg font-bold text-gray-900 mb-4">On your priorities, here's who leans your way</h3>
+          <h3 className="text-lg font-bold text-gray-900 mb-2">How each candidate approaches your priorities</h3>
+          <p className="text-gray-500 text-sm mb-5">Based on their verified 2025 platform positions. No ranking - just the tradeoffs.</p>
           {alignments.map(({ key, info, alignment }) => (
-            <div key={key} className="mb-5 pb-5 border-b border-gray-100 last:border-0 last:mb-0 last:pb-0">
-              <div className="flex items-center gap-2 mb-2">
+            <div key={key} className="mb-6 pb-6 border-b border-gray-100 last:border-0 last:mb-0 last:pb-0">
+              <div className="flex items-center gap-2 mb-3">
                 <span className="text-lg">{info?.emoji}</span>
                 <span className="font-semibold text-gray-900 text-sm">{info?.label}</span>
               </div>
-              <div className="flex gap-2 mb-2">
-                <span className={`text-xs px-2 py-1 rounded-full font-medium ${alignment?.liberal ? 'bg-red-100 text-red-700' : 'bg-gray-100 text-gray-400 line-through'}`}>
-                  🔴 Carney
-                </span>
-                <span className={`text-xs px-2 py-1 rounded-full font-medium ${alignment?.conservative ? 'bg-blue-100 text-blue-700' : 'bg-gray-100 text-gray-400 line-through'}`}>
-                  🔵 Poilievre
-                </span>
-                <span className={`text-xs px-2 py-1 rounded-full font-medium ${alignment?.ndp ? 'bg-orange-100 text-orange-700' : 'bg-gray-100 text-gray-400 line-through'}`}>
-                  🟠 NDP
-                </span>
+              <div className="space-y-2">
+                <div className="bg-gray-50 rounded-xl p-3">
+                  <p className="text-xs font-semibold text-gray-500 mb-1">Carney - Liberal</p>
+                  <p className="text-xs text-gray-700 leading-relaxed">{candidateComparison[key]?.liberal?.bottomLine || 'See comparison page for details.'}</p>
+                </div>
+                <div className="bg-gray-50 rounded-xl p-3">
+                  <p className="text-xs font-semibold text-gray-500 mb-1">Poilievre - Conservative</p>
+                  <p className="text-xs text-gray-700 leading-relaxed">{candidateComparison[key]?.conservative?.bottomLine || 'See comparison page for details.'}</p>
+                </div>
               </div>
-              <p className="text-gray-500 text-xs leading-relaxed">{alignment?.note}</p>
+              <p className="text-gray-400 text-xs mt-2 leading-relaxed italic">{alignment?.note}</p>
             </div>
           ))}
         </div>
 
-        {/* Overall takeaway */}
+        {/* Reflection prompt - not a score */}
         <div className="bg-gray-50 rounded-2xl p-6 mb-5 border border-gray-200">
-          <h3 className="text-lg font-bold text-gray-900 mb-3">The honest takeaway</h3>
-          <p className="text-gray-600 text-sm leading-relaxed mb-3">
-            Based on your priorities and situation:
-          </p>
-          <div className="space-y-2 mb-4">
-            <div className="flex items-center gap-3">
-              <span className="text-sm">🔴</span>
-              <p className="text-sm text-gray-700">
-                <strong>Carney</strong> - {liberalScore === 0
-                  ? "None of his positions align with your priorities as someone in your situation. That doesn't mean he's wrong - it means your specific circumstances aren't who his platform was built around."
-                  : liberalScore === selectedIssues.length
-                  ? `His positions align with all ${selectedIssues.length} of your priorities.`
-                  : `His positions align with ${liberalScore} of your ${selectedIssues.length} priorities.`}
-              </p>
-            </div>
-            <div className="flex items-center gap-3">
-              <span className="text-sm">🔵</span>
-              <p className="text-sm text-gray-700">
-                <strong>Poilievre</strong> - {conservativeScore === 0
-                  ? "None of his positions align with your priorities as someone in your situation. That doesn't mean he's wrong - it means your specific circumstances aren't who his platform was built around."
-                  : conservativeScore === selectedIssues.length
-                  ? `His positions align with all ${selectedIssues.length} of your priorities.`
-                  : `His positions align with ${conservativeScore} of your ${selectedIssues.length} priorities.`}
-              </p>
-            </div>
+          <h3 className="text-lg font-bold text-gray-900 mb-3">Questions to ask yourself</h3>
+          <div className="space-y-3">
+            <p className="text-sm text-gray-600 leading-relaxed">- Which candidate's approach to your top issue feels more realistic and specific?</p>
+            <p className="text-sm text-gray-600 leading-relaxed">- Are there tradeoffs you're willing to accept on lower-priority issues to get what you want on your top one?</p>
+            <p className="text-sm text-gray-600 leading-relaxed">- Does your local candidate's position on these issues matter to you as much as the party leader's?</p>
           </div>
-          <p className="text-gray-500 text-sm leading-relaxed">
-            Politics is about tradeoffs - no candidate perfectly matches anyone. The question isn't who's perfect. It's who's closer to what matters most to you. And that's something only you can decide.
+          <p className="text-gray-400 text-xs mt-4 leading-relaxed">
+            There is no right answer. Politics is about tradeoffs and only you know which ones matter most in your life.
           </p>
         </div>
 
@@ -1717,6 +1703,52 @@ Priority issues: ${selectedIssueLabels}`
               Send
             </button>
           </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function PrivacyPage({ onBack }) {
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 px-4 py-12">
+      <div className="max-w-2xl mx-auto">
+        <button onClick={onBack} className="text-blue-600 text-sm font-medium mb-6 block">
+          - Back
+        </button>
+        <div className="bg-white rounded-2xl shadow-sm p-8 mb-5">
+          <h1 className="text-2xl font-bold text-gray-900 mb-2">Privacy and Terms</h1>
+          <p className="text-gray-500 text-sm mb-6">Last updated: April 2026</p>
+          <div className="space-y-6">
+            <div>
+              <h2 className="text-lg font-semibold text-gray-900 mb-2">What Tallied is</h2>
+              <p className="text-gray-600 text-sm leading-relaxed">Tallied is a civic education tool built by Ivana Okpakovwodo as a student project. It is designed to help Ontario residents understand how political policies affect their lives. It is not affiliated with any political party, candidate, or government body.</p>
+            </div>
+            <div>
+              <h2 className="text-lg font-semibold text-gray-900 mb-2">What data we collect</h2>
+              <p className="text-gray-600 text-sm leading-relaxed">Tallied does not create accounts or store your personal information. The profile questions you answer exist only in your browser session and are not saved to any database. When you close or refresh the page, this information is gone.</p>
+              <p className="text-gray-600 text-sm leading-relaxed mt-2">Chat conversations are processed through Anthropic's API. We do not store or review your chat conversations. Anthropic's privacy policy applies to those interactions.</p>
+            </div>
+            <div>
+              <h2 className="text-lg font-semibold text-gray-900 mb-2">About the AI chatbot</h2>
+              <p className="text-gray-600 text-sm leading-relaxed">The candidate simulations are AI-generated based on verified 2025 federal election platform positions. They are not real people and do not represent the actual views of these politicians beyond their documented platforms. Always cross-reference with official sources before making voting decisions.</p>
+            </div>
+            <div>
+              <h2 className="text-lg font-semibold text-gray-900 mb-2">Content accuracy</h2>
+              <p className="text-gray-600 text-sm leading-relaxed">All policy content is sourced from official government websites, party platforms, and credible news outlets. Sources are linked throughout. Information may become outdated as policies change. Tallied is for educational purposes only and should not be your sole source of information when making voting decisions.</p>
+            </div>
+            <div>
+              <h2 className="text-lg font-semibold text-gray-900 mb-2">Non-partisan commitment</h2>
+              <p className="text-gray-600 text-sm leading-relaxed">Tallied presents information about multiple political parties and candidates equally. It does not endorse any party, candidate, or political position. The tool is designed to inform, not persuade.</p>
+            </div>
+            <div>
+              <h2 className="text-lg font-semibold text-gray-900 mb-2">Contact</h2>
+              <p className="text-gray-600 text-sm leading-relaxed">This is a student project submitted as part of a TKS Focus project, April 2026.</p>
+            </div>
+          </div>
+        </div>
+        <div className="text-center">
+          <button onClick={onBack} className="text-gray-400 hover:text-gray-600 text-sm">Back to Tallied</button>
         </div>
       </div>
     </div>
