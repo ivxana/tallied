@@ -1,5 +1,8 @@
 import React, { useState } from 'react';
 
+// Fonts injected via style tag in index.html - using Lora serif + Inter
+// Colors: Blue #6B9FFF (primary), Rose #C0395A / #FFF0F3 (personal/selected), #111 text
+
 const policies = [
   {
     id: 1,
@@ -163,6 +166,33 @@ const policies = [
   }
 ];
 
+// SVG icons for each issue - Lucide style, consistent stroke width
+const IssueIcon = ({ issueKey, size = 18, color = '#6B9FFF' }) => {
+  const style = { width: size, height: size, strokeWidth: 1.75, fill: 'none', stroke: color, strokeLinecap: 'round', strokeLinejoin: 'round' };
+  if (issueKey === 'housing') return <svg style={style} viewBox="0 0 24 24"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>;
+  if (issueKey === 'education') return <svg style={style} viewBox="0 0 24 24"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>;
+  if (issueKey === 'healthcare') return <svg style={style} viewBox="0 0 24 24"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>;
+  if (issueKey === 'jobs') return <svg style={style} viewBox="0 0 24 24"><rect width="20" height="14" x="2" y="7" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>;
+  if (issueKey === 'climate') return <svg style={style} viewBox="0 0 24 24"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10z"/><path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/></svg>;
+  if (issueKey === 'costoflife') return <svg style={style} viewBox="0 0 24 24"><circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"/></svg>;
+  if (issueKey === 'canadaus') return <svg style={style} viewBox="0 0 24 24"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" x2="4" y1="22" y2="15"/></svg>;
+  if (issueKey === 'privacy') return <svg style={style} viewBox="0 0 24 24"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>;
+  return null;
+};
+
+// Logo SVG component
+const TalliedLogo = ({ size = 28 }) => (
+  <svg width={size} height={size} viewBox="0 0 40 40" fill="none">
+    <rect width="40" height="40" rx="7" fill="#F0F5FF"/>
+    <rect x="7" y="9" width="26" height="23" rx="3" fill="white" stroke="#D8E6FF" strokeWidth="1.5"/>
+    <line x1="12" y1="16" x2="28" y2="16" stroke="#E0E8FF" strokeWidth="1.5"/>
+    <line x1="12" y1="21" x2="21" y2="21" stroke="#E0E8FF" strokeWidth="1.5"/>
+    <polyline points="19,26 22,30 29,22" stroke="#6B9FFF" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" fill="none"/>
+    <circle cx="31" cy="28" r="7" fill="#FFF0F3" stroke="#FFCDD6" strokeWidth="1"/>
+    <polyline points="28,28 30.5,30.5 34.5,26" stroke="#C0395A" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" fill="none"/>
+  </svg>
+);
+
 const issueOptions = [
   { key: 'housing', label: 'Housing & Affordability', emoji: '🏠', description: 'Rent, home prices, tenant rights' },
   { key: 'education', label: 'Education & Student Debt', emoji: '📚', description: 'Tuition, OSAP, student loans' },
@@ -198,21 +228,28 @@ function NavBar({ currentStep, onNavigate }) {
   const currentIdx = order.indexOf(currentStep);
 
   return (
-    <div className="bg-white border-b border-gray-100 px-4 py-2 sticky top-0 z-10">
-      <div className="max-w-2xl mx-auto flex items-center justify-between">
-        <button onClick={() => onNavigate('landing')} className="text-lg font-bold text-gray-900">Tallied</button>
-        <div className="flex gap-1">
+    <div style={{ background: '#FEFEFE', borderBottom: '0.5px solid #EEEEEE', padding: '10px 20px', position: 'sticky', top: 0, zIndex: 10 }}>
+      <div style={{ maxWidth: '680px', margin: '0 auto', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+        <button onClick={() => onNavigate('landing')} style={{ display: 'flex', alignItems: 'center', gap: '8px', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>
+          <TalliedLogo size={26} />
+          <span style={{ fontFamily: "'Lora', Georgia, serif", fontSize: '16px', fontWeight: 500, color: '#111' }}>Tallied</span>
+        </button>
+        <div style={{ display: 'flex', gap: '2px' }}>
           {steps.map((s, i) => (
             <button
               key={s.key}
               onClick={() => i <= currentIdx && onNavigate(s.key)}
-              className={`text-xs px-2 py-1 rounded-lg transition-all ${
-                s.key === currentStep
-                  ? 'bg-blue-600 text-white font-semibold'
-                  : i < currentIdx
-                  ? 'text-blue-500 hover:bg-blue-50 cursor-pointer'
-                  : 'text-gray-300 cursor-not-allowed'
-              }`}
+              style={{
+                fontSize: '9px',
+                padding: '3px 7px',
+                borderRadius: '20px',
+                border: 'none',
+                cursor: i <= currentIdx ? 'pointer' : 'default',
+                fontFamily: "'Inter', sans-serif",
+                fontWeight: s.key === currentStep ? 600 : 400,
+                background: s.key === currentStep ? '#6B9FFF' : 'transparent',
+                color: s.key === currentStep ? 'white' : i < currentIdx ? '#6B9FFF' : '#CCC',
+              }}
             >
               {s.label}
             </button>
@@ -227,6 +264,16 @@ function App() {
   const [currentStep, setCurrentStep] = useState('landing');
   const [userAnswers, setUserAnswers] = useState(null);
   const [selectedIssues, setSelectedIssues] = useState([]);
+
+  // Inject Google Fonts
+  React.useEffect(() => {
+    const link = document.createElement('link');
+    link.href = 'https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;1,400&family=Inter:wght@400;500;600&display=swap';
+    link.rel = 'stylesheet';
+    document.head.appendChild(link);
+    document.body.style.fontFamily = "'Lora', Georgia, serif";
+    document.body.style.background = '#FEFEFE';
+  }, []);
 
   const navigate = (step) => {
     if (step === 'landing') {
@@ -246,45 +293,83 @@ function App() {
 
   if (currentStep === 'landing') {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex flex-col">
-        <div className="flex-1 flex items-center justify-center px-4 py-16">
-          <div className="max-w-2xl w-full text-center">
-            <h1 className="text-7xl font-bold text-gray-900 mb-2">Tallied</h1>
-            <p className="text-sm font-semibold text-blue-400 uppercase tracking-widest mb-3">
-              Politics, Personalized
-            </p>
-            <p className="text-xl text-blue-600 font-semibold mb-10">
+      <div style={{ minHeight: '100vh', background: '#FEFEFE', display: 'flex', flexDirection: 'column', fontFamily: "'Lora', Georgia, serif" }}>
+        <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '48px 20px' }}>
+          <div style={{ maxWidth: '560px', width: '100%' }}>
+
+            {/* Logo hero */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: '14px', marginBottom: '8px' }}>
+              <TalliedLogo size={56} />
+              <div>
+                <h1 style={{ fontFamily: "'Lora', Georgia, serif", fontSize: '54px', fontWeight: 500, color: '#111', lineHeight: 1, letterSpacing: '-0.01em' }}>Tallied</h1>
+                <p style={{ fontFamily: "'Inter', sans-serif", fontSize: '10px', letterSpacing: '0.14em', textTransform: 'uppercase', color: '#999', fontWeight: 500, marginTop: '3px' }}>Politics, Personalized</p>
+              </div>
+            </div>
+
+            {/* Tagline */}
+            <p style={{ fontFamily: "'Lora', Georgia, serif", fontSize: '15px', color: '#6B9FFF', fontWeight: 500, fontStyle: 'italic', marginBottom: '20px', marginLeft: '70px' }}>
               This affects you. Get tallied.
             </p>
-            <div className="bg-white rounded-2xl shadow-sm p-6 mb-6 text-left">
-              <p className="text-4xl font-bold text-gray-900 mb-2">57%</p>
-              <p className="text-gray-600 leading-relaxed">
-                That's the share of eligible Ontario voters who didn't cast a ballot in 2022 - the highest abstention rate in provincial history. Meanwhile the policies they skipped voting on affect your rent, your tuition, and your healthcare.
+
+            {/* Issue pills */}
+            <div style={{ display: 'flex', gap: '8px', marginBottom: '20px', flexWrap: 'wrap' }}>
+              {[
+                { key: 'housing', label: 'Housing', rose: false },
+                { key: 'healthcare', label: 'Healthcare', rose: true },
+                { key: 'education', label: 'Education', rose: false },
+              ].map(p => (
+                <div key={p.key} style={{
+                  background: p.rose ? '#FFF0F3' : '#F0F5FF',
+                  border: \`0.5px solid \${p.rose ? '#FFCDD6' : '#D8E6FF'}\`,
+                  borderRadius: '20px', padding: '6px 12px',
+                  fontFamily: "'Inter', sans-serif", fontSize: '11px', fontWeight: 500,
+                  color: p.rose ? '#C0395A' : '#3A6FD8',
+                  display: 'flex', alignItems: 'center', gap: '6px'
+                }}>
+                  <IssueIcon issueKey={p.key} size={11} color={p.rose ? '#C0395A' : '#3A6FD8'} />
+                  {p.label}
+                </div>
+              ))}
+            </div>
+
+            {/* Stat card */}
+            <div style={{ background: '#F0F5FF', borderRadius: '16px', padding: '20px 22px', marginBottom: '12px', display: 'flex', gap: '18px', alignItems: 'flex-start', border: '0.5px solid #D8E6FF' }}>
+              <div style={{ fontFamily: "'Inter', sans-serif", fontSize: '46px', fontWeight: 600, color: '#111', lineHeight: 1, minWidth: '84px', letterSpacing: '-0.03em' }}>57%</div>
+              <p style={{ fontFamily: "'Lora', Georgia, serif", fontSize: '13px', color: '#333', lineHeight: 1.7, paddingTop: '4px' }}>
+                of eligible Ontario voters didn't cast a ballot in 2022 - the highest abstention rate in provincial history. Meanwhile the policies they skipped voting on affect your{' '}
+                <span style={{ color: '#6B9FFF', fontWeight: 500 }}>rent</span>,{' '}
+                <span style={{ color: '#6B9FFF', fontWeight: 500 }}>tuition</span>, and{' '}
+                <span style={{ color: '#C0395A', fontWeight: 500 }}>healthcare</span>.
               </p>
             </div>
-            <div className="bg-blue-50 border border-blue-200 rounded-2xl p-4 mb-6 text-left">
-              <p className="text-blue-800 text-sm">
-                <span className="font-semibold">Built for Ontario residents.</span> Tallied covers both provincial policies and federal decisions that directly affect life in Ontario. It is not a national tool and does not cover all Canadian provinces.
+
+            {/* Ontario scope */}
+            <div style={{ background: '#F0F5FF', borderRadius: '12px', padding: '10px 16px', marginBottom: '20px', border: '0.5px solid #D8E6FF' }}>
+              <p style={{ fontFamily: "'Lora', Georgia, serif", fontSize: '12px', color: '#333', lineHeight: 1.6 }}>
+                <span style={{ color: '#6B9FFF', fontWeight: 500 }}>Built for Ontario residents.</span>{' '}
+                Tallied covers both provincial policies and federal decisions that directly affect life in Ontario. It is not a national tool and does not cover all Canadian provinces.
               </p>
             </div>
-            <p className="text-lg text-gray-500 mb-10">
-              See exactly how Canadian policy changes affect your life, based on your situation. Takes 5 minutes.
-            </p>
+
+            {/* CTA */}
             <button
               onClick={() => setCurrentStep('form')}
-              className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-4 px-12 rounded-xl text-lg transition-colors shadow-md"
+              style={{ width: '100%', background: '#6B9FFF', color: 'white', borderRadius: '14px', padding: '16px', fontFamily: "'Lora', Georgia, serif", fontSize: '15px', fontWeight: 500, border: 'none', cursor: 'pointer', marginBottom: '10px' }}
             >
               Get Started
             </button>
-            <p className="text-sm text-gray-400 mt-6">
-              Already know what you want to ask? <button onClick={() => setCurrentStep('chat')} className="text-blue-500 underline font-medium">Talk to our AI civic expert or the candidates directly</button>
+            <p style={{ textAlign: 'center', fontFamily: "'Lora', Georgia, serif", fontSize: '12px', color: '#555', fontStyle: 'italic' }}>
+              Already have questions?{' '}
+              <button onClick={() => setCurrentStep('chat')} style={{ color: '#6B9FFF', fontStyle: 'normal', background: 'none', border: 'none', cursor: 'pointer', textDecoration: 'underline', fontFamily: "'Lora', Georgia, serif", fontSize: '12px' }}>
+                Talk to our AI civic expert or the candidates directly
+              </button>
             </p>
           </div>
         </div>
-        <footer className="text-center py-6 text-sm text-gray-400">
+        <footer style={{ textAlign: 'center', padding: '24px', fontFamily: "'Inter', sans-serif", fontSize: '12px', color: '#AAA' }}>
           Built by Ivana Okpakovwodo - {new Date().getFullYear()}
-          <div className="mt-2">
-            <button onClick={() => setCurrentStep('privacy')} className="text-gray-400 hover:text-gray-600 underline text-xs">Privacy & Terms</button>
+          <div style={{ marginTop: '6px' }}>
+            <button onClick={() => setCurrentStep('privacy')} style={{ color: '#AAA', background: 'none', border: 'none', cursor: 'pointer', textDecoration: 'underline', fontSize: '11px' }}>Privacy & Terms</button>
           </div>
         </footer>
       </div>
@@ -355,7 +440,7 @@ function PersonalizationForm({ onComplete, existingAnswers }) {
   const answeredCount = [answers.student, answers.employment, answers.income, answers.housing].filter(Boolean).length;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 px-4 py-12">
+    <div className="min-h-screen" style={{ background: '#FEFEFE' px-4 py-12">
       <div className="max-w-2xl mx-auto">
         <div className="text-center mb-10">
           <h1 className="text-4xl font-bold text-gray-900 mb-2">Tallied</h1>
@@ -421,7 +506,7 @@ function PrioritiesPage({ onComplete, existingIssues }) {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 px-4 py-12">
+    <div className="min-h-screen" style={{ background: '#FEFEFE' px-4 py-12">
       <div className="max-w-2xl mx-auto">
         {/* Progress */}
         <div className="text-center mb-8">
@@ -437,10 +522,11 @@ function PrioritiesPage({ onComplete, existingIssues }) {
         </div>
 
         <div className="bg-white rounded-2xl shadow-sm p-8 mb-5">
-          <h2 className="text-2xl font-bold text-gray-900 mb-2">What matters most to you?</h2>
-          <p className="text-gray-500 text-sm mb-6">
-            Pick your top 3 issues. We'll show you exactly how recent policy decisions have affected people in your situation - and how today's candidates plan to address them. ({selected.length}/3 selected)
+          <h2 style={{ fontFamily: "'Lora', Georgia, serif", fontSize: '22px', fontWeight: 500, color: '#111', marginBottom: '6px' }}>What matters most to you?</h2>
+          <p style={{ fontFamily: "'Lora', Georgia, serif", fontSize: '13px', color: '#333', marginBottom: '6px', lineHeight: 1.6 }}>
+            Pick your top 3 issues. We'll show you exactly how recent policy decisions have affected people in your situation - and how today's candidates plan to address them.
           </p>
+          <p style={{ fontFamily: "'Inter', sans-serif", fontSize: '11px', color: '#C0395A', fontWeight: 500, marginBottom: '16px' }}>{selected.length} of 3 selected</p>
           <div className="grid grid-cols-2 gap-3 mb-6">
             {issueOptions.map(issue => {
               const isSelected = selected.includes(issue.key);
@@ -450,17 +536,22 @@ function PrioritiesPage({ onComplete, existingIssues }) {
                   key={issue.key}
                   onClick={() => toggle(issue.key)}
                   disabled={isDisabled}
-                  className={`p-4 rounded-xl text-left transition-all border-2 ${
-                    isSelected
-                      ? 'bg-blue-600 text-white border-blue-600'
-                      : isDisabled
-                      ? 'bg-gray-50 text-gray-300 border-transparent cursor-not-allowed'
-                      : 'bg-gray-50 text-gray-700 border-transparent hover:border-blue-200'
-                  }`}
+                  style={{
+                    padding: '14px',
+                    borderRadius: '14px',
+                    textAlign: 'left',
+                    border: isSelected ? '1.5px solid #F4A0B0' : '0.5px solid #E8E8E8',
+                    background: isSelected ? '#FFF0F3' : isDisabled ? '#FAFAFA' : 'white',
+                    cursor: isDisabled ? 'not-allowed' : 'pointer',
+                    transition: 'all 0.15s',
+                    fontFamily: "'Lora', Georgia, serif",
+                  }}
                 >
-                  <div className="text-2xl mb-1">{issue.emoji}</div>
-                  <div className="font-semibold text-sm">{issue.label}</div>
-                  <div className={`text-xs mt-1 ${isSelected ? 'text-blue-100' : 'text-gray-400'}`}>
+                  <div style={{ width: '30px', height: '30px', borderRadius: '9px', marginBottom: '9px', display: 'flex', alignItems: 'center', justifyContent: 'center', background: isSelected ? '#FFD6DE' : '#E8F0FF' }}>
+                    <IssueIcon issueKey={issue.key} size={16} color={isSelected ? '#C0395A' : isDisabled ? '#CCC' : '#6B9FFF'} />
+                  </div>
+                  <div style={{ fontWeight: 500, fontSize: '12px', color: isSelected ? '#B0304A' : isDisabled ? '#CCC' : '#111', marginBottom: '2px' }}>{issue.label}</div>
+                  <div style={{ fontSize: '10px', color: isSelected ? '#C0395A' : isDisabled ? '#DDD' : '#555', fontStyle: 'italic' }}>
                     {issue.description}
                   </div>
                 </button>
@@ -549,7 +640,7 @@ function PoliciesPage({ answers, selectedIssues, onComplete, onChat }) {
     : null;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 px-4 py-12">
+    <div className="min-h-screen" style={{ background: '#FEFEFE' px-4 py-12">
       <div className="max-w-2xl mx-auto">
         {/* Progress */}
         <div className="text-center mb-8">
@@ -597,7 +688,10 @@ function PoliciesPage({ answers, selectedIssues, onComplete, onChat }) {
         ) : !searchQuery && (
           <>
             {/* Priority policies */}
-            <h3 className="text-lg font-bold text-gray-700 mb-4">📌 Your Priority Issues</h3>
+            <h3 style={{ fontFamily: "'Lora', Georgia, serif", fontSize: '16px', fontWeight: 500, color: '#111', marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#C0395A" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="17" x2="12" y2="22"/><path d="M5 17h14v-1.76a2 2 0 0 0-1.11-1.79l-1.78-.9A2 2 0 0 1 15 10.76V6h1a2 2 0 0 0 0-4H8a2 2 0 0 0 0 4h1v4.76a2 2 0 0 1-1.11 1.79l-1.78.9A2 2 0 0 0 5 15.24Z"/></svg>
+              Your Priority Issues
+            </h3>
             {priorityPolicies.map(policy => (
               <PolicyCard key={policy.id} policy={policy} answers={answers} />
             ))}
@@ -897,7 +991,7 @@ function ResultsPage({ answers, selectedIssues, onContinue, onChat, onRestart })
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 px-4 py-12">
+    <div className="min-h-screen" style={{ background: '#FEFEFE' px-4 py-12">
       <div className="max-w-2xl mx-auto">
 
         {/* Header */}
@@ -945,7 +1039,7 @@ function ResultsPage({ answers, selectedIssues, onContinue, onChat, onRestart })
 
               {/* Issue header */}
               <div className="flex items-center gap-2 mb-4">
-                <span className="text-2xl">{issueInfo.emoji}</span>
+                <IssueIcon issueKey={issueKey} size={22} color="#6B9FFF" />
                 <h2 className="text-xl font-bold text-gray-900">{issueInfo.label}</h2>
               </div>
 
@@ -958,7 +1052,7 @@ function ResultsPage({ answers, selectedIssues, onContinue, onChat, onRestart })
               {/* Liberal */}
               <div className="border-l-4 border-red-400 pl-4 mb-4">
                 <div className="flex items-center gap-2 mb-1">
-                  <span className="text-sm font-bold text-gray-900">🔴 Mark Carney - Liberal</span>
+                  <span style={{ fontSize: "13px", fontWeight: 500, color: "#111", fontFamily: "'Lora', Georgia, serif" }}>Mark Carney - Liberal</span>
                   <span className="text-xs bg-red-100 text-red-700 px-2 py-0.5 rounded-full">Current PM</span>
                 </div>
                 <p className="text-xs font-semibold text-gray-500 italic mb-2">{comparison.liberal.bottomLine}</p>
@@ -972,7 +1066,7 @@ function ResultsPage({ answers, selectedIssues, onContinue, onChat, onRestart })
               {/* Conservative */}
               <div className="border-l-4 border-blue-500 pl-4 mb-4">
                 <div className="flex items-center gap-2 mb-1">
-                  <span className="text-sm font-bold text-gray-900">🔵 Pierre Poilievre - Conservative</span>
+                  <span style={{ fontSize: "13px", fontWeight: 500, color: "#111", fontFamily: "'Lora', Georgia, serif" }}>Pierre Poilievre - Conservative</span>
                   <span className="text-xs bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full">Opposition Leader</span>
                 </div>
                 <p className="text-xs font-semibold text-gray-500 italic mb-2">{comparison.conservative.bottomLine}</p>
@@ -987,7 +1081,7 @@ function ResultsPage({ answers, selectedIssues, onContinue, onChat, onRestart })
               {showNDP && (
                 <div className="border-l-4 border-orange-400 pl-4 mb-4">
                   <div className="flex items-center gap-2 mb-1">
-                    <span className="text-sm font-bold text-gray-900">🟠 NDP - New Democrats</span>
+                    <span style={{ fontSize: "13px", fontWeight: 500, color: "#111", fontFamily: "'Lora', Georgia, serif" }}>NDP - New Democrats</span>
                     <span className="text-xs bg-orange-100 text-orange-700 px-2 py-0.5 rounded-full">Lost party status 2025</span>
                   </div>
                   <p className="text-xs font-semibold text-gray-500 italic mb-2">{comparison.ndp.bottomLine}</p>
@@ -1032,7 +1126,7 @@ function ResultsPage({ answers, selectedIssues, onContinue, onChat, onRestart })
             onClick={onChat}
             className="w-full py-3 rounded-xl font-medium text-gray-600 bg-gray-50 hover:bg-gray-100 border-2 border-gray-200 transition-all"
           >
-            💬 Have questions? Talk to the candidates or a civic expert
+            Have questions? Talk to the candidates or a civic expert
           </button>
         </div>
 
@@ -1146,7 +1240,7 @@ function DecisionSummaryPage({ answers, selectedIssues, onChat, onRestart }) {
 
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 px-4 py-12">
+    <div className="min-h-screen" style={{ background: '#FEFEFE' px-4 py-12">
       <div className="max-w-2xl mx-auto">
 
         {/* Header */}
@@ -1177,7 +1271,7 @@ function DecisionSummaryPage({ answers, selectedIssues, onChat, onRestart }) {
             {labelMap.student[answers.student]} · {labelMap.employment[answers.employment]} · {labelMap.income[answers.income]} income · {labelMap.housing[answers.housing]}
           </p>
           <p className="text-gray-500 text-sm mt-2">
-            Your top priorities: {selectedIssueData.map(i => `${i.emoji} ${i.label}`).join(', ')}
+            Your top priorities: {selectedIssueData.map(i => i.label).join(', ')}
           </p>
         </div>
 
@@ -1188,7 +1282,7 @@ function DecisionSummaryPage({ answers, selectedIssues, onChat, onRestart }) {
           {alignments.map(({ key, info, alignment }) => (
             <div key={key} className="mb-6 pb-6 border-b border-gray-100 last:border-0 last:mb-0 last:pb-0">
               <div className="flex items-center gap-2 mb-3">
-                <span className="text-lg">{info?.emoji}</span>
+<IssueIcon issueKey={key} size={18} color="#6B9FFF" />
                 <span className="font-semibold text-gray-900 text-sm">{info?.label}</span>
               </div>
               <div className="space-y-2">
@@ -1225,25 +1319,25 @@ function DecisionSummaryPage({ answers, selectedIssues, onChat, onRestart }) {
           <div className="space-y-3">
             <a href="https://www.registertovoteon.ca/" target="_blank" rel="noopener noreferrer"
               className="flex items-center gap-3 p-3 rounded-xl bg-blue-50 hover:bg-blue-100 transition-colors">
-              <span className="text-xl">✅</span>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#6B9FFF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
               <div>
-                <p className="font-semibold text-sm text-gray-900">Register to vote (Ontario)</p>
+                <p style={{ fontFamily: "'Lora', Georgia, serif", fontWeight: 500, fontSize: '13px', color: '#111' }}>Register to vote (Ontario)</p>
                 <p className="text-xs text-gray-500">Takes 2 minutes - registertovoteon.ca</p>
               </div>
             </a>
             <a href="https://www.elections.ca/content.aspx?section=vot&dir=reg/etr&document=index&lang=e" target="_blank" rel="noopener noreferrer"
               className="flex items-center gap-3 p-3 rounded-xl bg-blue-50 hover:bg-blue-100 transition-colors">
-              <span className="text-xl">✅</span>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#6B9FFF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
               <div>
-                <p className="font-semibold text-sm text-gray-900">Register to vote (Federal)</p>
+                <p style={{ fontFamily: "'Lora', Georgia, serif", fontWeight: 500, fontSize: '13px', color: '#111' }}>Register to vote (Federal)</p>
                 <p className="text-xs text-gray-500">elections.ca</p>
               </div>
             </a>
             <a href="https://www.elections.on.ca/en/voting-in-ontario/electoral-districts.html" target="_blank" rel="noopener noreferrer"
               className="flex items-center gap-3 p-3 rounded-xl bg-gray-50 hover:bg-gray-100 transition-colors">
-              <span className="text-xl">📍</span>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#6B9FFF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
               <div>
-                <p className="font-semibold text-sm text-gray-900">Find your riding</p>
+                <p style={{ fontFamily: "'Lora', Georgia, serif", fontWeight: 500, fontSize: '13px', color: '#111' }}>Find your riding</p>
                 <p className="text-xs text-gray-500">Your local candidate matters too</p>
               </div>
             </a>
@@ -1264,7 +1358,7 @@ function DecisionSummaryPage({ answers, selectedIssues, onChat, onRestart }) {
           <div className="grid grid-cols-1 gap-3">
             <button onClick={onChat}
               className="flex items-center gap-3 p-4 rounded-xl bg-blue-600 hover:bg-blue-700 transition-colors text-white text-left">
-              <span className="text-2xl">💬</span>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#6B9FFF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
               <div>
                 <p className="font-semibold text-sm">Talk to the candidates</p>
                 <p className="text-xs text-blue-200">Ask Carney or Poilievre your questions directly</p>
@@ -1272,7 +1366,7 @@ function DecisionSummaryPage({ answers, selectedIssues, onChat, onRestart }) {
             </button>
             <button onClick={onChat}
               className="flex items-center gap-3 p-4 rounded-xl bg-gray-50 hover:bg-gray-100 transition-colors text-left border-2 border-gray-200">
-              <span className="text-2xl">🎓</span>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#6B9FFF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
               <div>
                 <p className="font-semibold text-sm text-gray-900">Ask a neutral expert</p>
                 <p className="text-xs text-gray-500">How does the political system work? What does this policy mean?</p>
@@ -1409,7 +1503,7 @@ Priority issues: ${selectedIssueLabels}`
   const modeConfig = {
     carney: {
       label: 'Mark Carney',
-      emoji: '🔴',
+      emoji: 'MC',
       badge: 'Liberal - Current PM',
       badgeColor: 'bg-red-100 text-red-700',
       bubbleColor: 'bg-red-50 border border-red-100',
@@ -1418,7 +1512,7 @@ Priority issues: ${selectedIssueLabels}`
     },
     poilievre: {
       label: 'Pierre Poilievre',
-      emoji: '🔵',
+      emoji: 'PP',
       badge: 'Conservative - Opposition',
       badgeColor: 'bg-blue-100 text-blue-700',
       bubbleColor: 'bg-blue-50 border border-blue-100',
@@ -1427,7 +1521,7 @@ Priority issues: ${selectedIssueLabels}`
     },
     expert: {
       label: 'Civic Expert',
-      emoji: '🎓',
+      emoji: 'CE',
       badge: 'Neutral & Non-partisan',
       badgeColor: 'bg-green-100 text-green-700',
       bubbleColor: 'bg-green-50 border border-green-100',
@@ -1540,7 +1634,7 @@ Priority issues: ${selectedIssueLabels}`
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex flex-col">
+    <div className="min-h-screen" style={{ background: '#FEFEFE' flex flex-col">
 
       {/* Header */}
       <div className="bg-white border-b border-gray-200 px-4 py-3">
@@ -1567,7 +1661,8 @@ Priority issues: ${selectedIssueLabels}`
                     : 'bg-gray-50 text-gray-600 border-transparent hover:border-blue-200'
                 }`}
               >
-                {cfg.emoji} {cfg.label}
+                <div style={{ width: '24px', height: '24px', borderRadius: '50%', background: '#F0F5FF', border: '0.5px solid #D8E6FF', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: "'Inter', sans-serif", fontSize: '8px', fontWeight: 600, color: '#6B9FFF', margin: '0 auto 4px' }}>{cfg.emoji}</div>
+                {cfg.label}
               </button>
             ))}
           </div>
@@ -1581,8 +1676,8 @@ Priority issues: ${selectedIssueLabels}`
             {config.badge}
           </span>
         </div>
-        <div className="bg-yellow-50 border border-yellow-200 rounded-xl px-3 py-2">
-          <p className="text-yellow-800 text-xs">
+        <div style={{ background: '#FFF0F3', border: '0.5px solid #FFCDD6', borderRadius: '10px', padding: '9px 12px' }}>
+          <p style={{ fontFamily: "'Lora', Georgia, serif", fontSize: '10px', color: '#8B2A40', lineHeight: 1.55, fontStyle: 'italic' }}>
             {mode === 'expert'
               ? "This is an AI civic education tool, not a person. Always verify facts with official sources like elections.ca or canada.ca."
               : "This is an AI simulation based on verified 2025 platform positions only. It is not the real candidate. Always cross-reference with official sources before making voting decisions."}
@@ -1677,7 +1772,8 @@ Priority issues: ${selectedIssueLabels}`
                     : 'bg-gray-50 text-gray-600 border-transparent hover:border-blue-200'
                 }`}
               >
-                {cfg.emoji} {cfg.label}
+                <div style={{ width: '20px', height: '20px', borderRadius: '50%', background: '#F0F5FF', border: '0.5px solid #D8E6FF', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: "'Inter', sans-serif", fontSize: '7px', fontWeight: 600, color: '#6B9FFF', margin: '0 auto 3px' }}>{cfg.emoji}</div>
+                {cfg.label}
               </button>
             ))}
           </div>
@@ -1711,7 +1807,7 @@ Priority issues: ${selectedIssueLabels}`
 
 function PrivacyPage({ onBack }) {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 px-4 py-12">
+    <div className="min-h-screen" style={{ background: '#FEFEFE' px-4 py-12">
       <div className="max-w-2xl mx-auto">
         <button onClick={onBack} className="text-blue-600 text-sm font-medium mb-6 block">
           - Back
