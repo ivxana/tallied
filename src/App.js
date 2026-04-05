@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 
 // Fonts injected via style tag in index.html - using Lora serif + Inter
-// Colors: Blue #6B9FFF (primary), Rose #C0395A / #FFF0F3 (personal/selected), #111 text
+// Colors: Blue #7EB3FF (primary), Rose #C0395A / #FFF0F3 (personal/selected), #111 text
 
 const policies = [
   {
@@ -167,7 +167,7 @@ const policies = [
 ];
 
 // SVG icons for each issue - Lucide style, consistent stroke width
-const IssueIcon = ({ issueKey, size = 18, color = '#6B9FFF' }) => {
+const IssueIcon = ({ issueKey, size = 18, color = '#7EB3FF' }) => {
   const style = { width: size, height: size, strokeWidth: 1.75, fill: 'none', stroke: color, strokeLinecap: 'round', strokeLinejoin: 'round' };
   if (issueKey === 'housing') return <svg style={style} viewBox="0 0 24 24"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>;
   if (issueKey === 'education') return <svg style={style} viewBox="0 0 24 24"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>;
@@ -182,14 +182,10 @@ const IssueIcon = ({ issueKey, size = 18, color = '#6B9FFF' }) => {
 
 // Logo SVG component
 const TalliedLogo = ({ size = 28 }) => (
-  <svg width={size} height={size} viewBox="0 0 40 40" fill="none">
-    <rect width="40" height="40" rx="7" fill="#F0F5FF"/>
-    <rect x="7" y="9" width="26" height="23" rx="3" fill="white" stroke="#D8E6FF" strokeWidth="1.5"/>
-    <line x1="12" y1="16" x2="28" y2="16" stroke="#E0E8FF" strokeWidth="1.5"/>
-    <line x1="12" y1="21" x2="21" y2="21" stroke="#E0E8FF" strokeWidth="1.5"/>
-    <polyline points="19,26 22,30 29,22" stroke="#6B9FFF" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" fill="none"/>
-    <circle cx="31" cy="28" r="7" fill="#FFF0F3" stroke="#FFCDD6" strokeWidth="1"/>
-    <polyline points="28,28 30.5,30.5 34.5,26" stroke="#C0395A" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" fill="none"/>
+  <svg width={size} height={size} viewBox="0 0 56 56" fill="none">
+    <rect x="4" y="10" width="38" height="38" rx="5" fill="#7EB3FF"/>
+    <polyline points="12,29 21,38 28,31" stroke="#4A7AE0" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round"/>
+    <polyline points="21,38 48,8" stroke="#C0395A" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round"/>
   </svg>
 );
 
@@ -247,8 +243,8 @@ function NavBar({ currentStep, onNavigate }) {
                 cursor: i <= currentIdx ? 'pointer' : 'default',
                 fontFamily: "'Inter', sans-serif",
                 fontWeight: s.key === currentStep ? 600 : 400,
-                background: s.key === currentStep ? '#6B9FFF' : 'transparent',
-                color: s.key === currentStep ? 'white' : i < currentIdx ? '#6B9FFF' : '#CCC',
+                background: s.key === currentStep ? '#7EB3FF' : 'transparent',
+                color: s.key === currentStep ? 'white' : i < currentIdx ? '#7EB3FF' : '#CCC',
               }}
             >
               {s.label}
@@ -267,6 +263,9 @@ function App() {
 
   // Inject Google Fonts
   React.useEffect(() => {
+    const style = document.createElement('style');
+    style.textContent = '@keyframes fadeUp { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: translateY(0); } } .tl-fade { animation: fadeUp 0.5s ease both; } .tl-fade-1 { animation: fadeUp 0.5s ease 0.1s both; } .tl-fade-2 { animation: fadeUp 0.5s ease 0.2s both; } .tl-fade-3 { animation: fadeUp 0.5s ease 0.3s both; } .tl-fade-4 { animation: fadeUp 0.5s ease 0.4s both; }';
+    document.head.appendChild(style);
     const link = document.createElement('link');
     link.href = 'https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;1,400&family=Inter:wght@400;500;600&display=swap';
     link.rel = 'stylesheet';
@@ -295,7 +294,7 @@ function App() {
     return (
       <div style={{ minHeight: '100vh', background: '#FEFEFE', display: 'flex', flexDirection: 'column', fontFamily: "'Lora', Georgia, serif" }}>
         <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '48px 20px' }}>
-          <div style={{ maxWidth: '560px', width: '100%' }}>
+          <div style={{ maxWidth: '700px', width: '100%' }}>
 
             {/* Logo hero */}
             <div style={{ display: 'flex', alignItems: 'center', gap: '14px', marginBottom: '8px' }}>
@@ -307,7 +306,7 @@ function App() {
             </div>
 
             {/* Tagline */}
-            <p style={{ fontFamily: "'Lora', Georgia, serif", fontSize: '15px', color: '#6B9FFF', fontWeight: 500, fontStyle: 'italic', marginBottom: '20px', marginLeft: '70px' }}>
+            <p style={{ fontFamily: "'Lora', Georgia, serif", fontSize: '15px', color: '#7EB3FF', fontWeight: 500, fontStyle: 'italic', marginBottom: '20px', marginLeft: '70px' }}>
               This affects you. Get tallied.
             </p>
 
@@ -323,10 +322,10 @@ function App() {
                   border: p.rose ? '0.5px solid #FFCDD6' : '0.5px solid #D8E6FF',
                   borderRadius: '20px', padding: '6px 12px',
                   fontFamily: "'Inter', sans-serif", fontSize: '11px', fontWeight: 500,
-                  color: p.rose ? '#C0395A' : '#3A6FD8',
+                  color: p.rose ? '#C0395A' : '#2D6FD4',
                   display: 'flex', alignItems: 'center', gap: '6px'
                 }}>
-                  <IssueIcon issueKey={p.key} size={11} color={p.rose ? '#C0395A' : '#3A6FD8'} />
+                  <IssueIcon issueKey={p.key} size={11} color={p.rose ? '#C0395A' : '#2D6FD4'} />
                   {p.label}
                 </div>
               ))}
@@ -335,18 +334,18 @@ function App() {
             {/* Stat card */}
             <div style={{ background: '#F0F5FF', borderRadius: '16px', padding: '20px 22px', marginBottom: '12px', display: 'flex', gap: '18px', alignItems: 'flex-start', border: '0.5px solid #D8E6FF' }}>
               <div style={{ fontFamily: "'Inter', sans-serif", fontSize: '46px', fontWeight: 600, color: '#111', lineHeight: 1, minWidth: '84px', letterSpacing: '-0.03em' }}>57%</div>
-              <p style={{ fontFamily: "'Lora', Georgia, serif", fontSize: '13px', color: '#333', lineHeight: 1.7, paddingTop: '4px' }}>
+              <p style={{ fontFamily: "'Lora', Georgia, serif", fontSize: '15px', color: '#333', lineHeight: 1.75, paddingTop: '4px' }}>
                 of eligible Ontario voters didn't cast a ballot in 2022 - the highest abstention rate in provincial history. Meanwhile the policies they skipped voting on affect your{' '}
-                <span style={{ color: '#6B9FFF', fontWeight: 500 }}>rent</span>,{' '}
-                <span style={{ color: '#6B9FFF', fontWeight: 500 }}>tuition</span>, and{' '}
+                <span style={{ color: '#7EB3FF', fontWeight: 500 }}>rent</span>,{' '}
+                <span style={{ color: '#7EB3FF', fontWeight: 500 }}>tuition</span>, and{' '}
                 <span style={{ color: '#C0395A', fontWeight: 500 }}>healthcare</span>.
               </p>
             </div>
 
             {/* Ontario scope */}
             <div style={{ background: '#F0F5FF', borderRadius: '12px', padding: '10px 16px', marginBottom: '20px', border: '0.5px solid #D8E6FF' }}>
-              <p style={{ fontFamily: "'Lora', Georgia, serif", fontSize: '12px', color: '#333', lineHeight: 1.6 }}>
-                <span style={{ color: '#6B9FFF', fontWeight: 500 }}>Built for Ontario residents.</span>{' '}
+              <p style={{ fontFamily: "'Lora', Georgia, serif", fontSize: '14px', color: '#333', lineHeight: 1.7 }}>
+                <span style={{ color: '#7EB3FF', fontWeight: 500 }}>Built for Ontario residents.</span>{' '}
                 Tallied covers both provincial policies and federal decisions that directly affect life in Ontario. It is not a national tool and does not cover all Canadian provinces.
               </p>
             </div>
@@ -354,13 +353,13 @@ function App() {
             {/* CTA */}
             <button
               onClick={() => setCurrentStep('form')}
-              style={{ width: '100%', background: '#6B9FFF', color: 'white', borderRadius: '14px', padding: '16px', fontFamily: "'Lora', Georgia, serif", fontSize: '15px', fontWeight: 500, border: 'none', cursor: 'pointer', marginBottom: '10px' }}
+              style={{ width: '100%', background: '#7EB3FF', color: 'white', borderRadius: '14px', padding: '16px', fontFamily: "'Lora', Georgia, serif", fontSize: '15px', fontWeight: 500, border: 'none', cursor: 'pointer', marginBottom: '10px' }}
             >
               Get Started
             </button>
             <p style={{ textAlign: 'center', fontFamily: "'Lora', Georgia, serif", fontSize: '12px', color: '#555', fontStyle: 'italic' }}>
               Already have questions?{' '}
-              <button onClick={() => setCurrentStep('chat')} style={{ color: '#6B9FFF', fontStyle: 'normal', background: 'none', border: 'none', cursor: 'pointer', textDecoration: 'underline', fontFamily: "'Lora', Georgia, serif", fontSize: '12px' }}>
+              <button onClick={() => setCurrentStep('chat')} style={{ color: '#7EB3FF', fontStyle: 'normal', background: 'none', border: 'none', cursor: 'pointer', textDecoration: 'underline', fontFamily: "'Lora', Georgia, serif", fontSize: '12px' }}>
                 Talk to our AI civic expert or the candidates directly
               </button>
             </p>
@@ -441,7 +440,7 @@ function PersonalizationForm({ onComplete, existingAnswers }) {
 
   return (
     <div className="min-h-screen px-4 py-12" style={{ background: '#FEFEFE' }}>
-      <div className="max-w-2xl mx-auto">
+      <div className="max-w-4xl mx-auto">
         <div className="text-center mb-10">
           <h1 className="text-4xl font-bold text-gray-900 mb-2">Tallied</h1>
           <p className="text-gray-500">Step 1 of 3 - Tell us about yourself</p>
@@ -507,7 +506,7 @@ function PrioritiesPage({ onComplete, existingIssues }) {
 
   return (
     <div className="min-h-screen px-4 py-12" style={{ background: '#FEFEFE' }}>
-      <div className="max-w-2xl mx-auto">
+      <div className="max-w-4xl mx-auto">
         {/* Progress */}
         <div className="text-center mb-8">
           <h1 className="text-4xl font-bold text-gray-900 mb-2">Tallied</h1>
@@ -523,7 +522,7 @@ function PrioritiesPage({ onComplete, existingIssues }) {
 
         <div className="bg-white rounded-2xl shadow-sm p-8 mb-5">
           <h2 style={{ fontFamily: "'Lora', Georgia, serif", fontSize: '22px', fontWeight: 500, color: '#111', marginBottom: '6px' }}>What matters most to you?</h2>
-          <p style={{ fontFamily: "'Lora', Georgia, serif", fontSize: '13px', color: '#333', marginBottom: '6px', lineHeight: 1.6 }}>
+          <p style={{ fontFamily: "'Lora', Georgia, serif", fontSize: '15px', color: '#333', marginBottom: '6px', lineHeight: 1.7 }}>
             Pick your top 3 issues. We'll show you exactly how recent policy decisions have affected people in your situation - and how today's candidates plan to address them.
           </p>
           <p style={{ fontFamily: "'Inter', sans-serif", fontSize: '11px', color: '#C0395A', fontWeight: 500, marginBottom: '16px' }}>{selected.length} of 3 selected</p>
@@ -548,7 +547,7 @@ function PrioritiesPage({ onComplete, existingIssues }) {
                   }}
                 >
                   <div style={{ width: '30px', height: '30px', borderRadius: '9px', marginBottom: '9px', display: 'flex', alignItems: 'center', justifyContent: 'center', background: isSelected ? '#FFD6DE' : '#E8F0FF' }}>
-                    <IssueIcon issueKey={issue.key} size={16} color={isSelected ? '#C0395A' : isDisabled ? '#CCC' : '#6B9FFF'} />
+                    <IssueIcon issueKey={issue.key} size={16} color={isSelected ? '#C0395A' : isDisabled ? '#CCC' : '#7EB3FF'} />
                   </div>
                   <div style={{ fontWeight: 500, fontSize: '12px', color: isSelected ? '#B0304A' : isDisabled ? '#CCC' : '#111', marginBottom: '2px' }}>{issue.label}</div>
                   <div style={{ fontSize: '10px', color: isSelected ? '#C0395A' : isDisabled ? '#DDD' : '#555', fontStyle: 'italic' }}>
@@ -641,7 +640,7 @@ function PoliciesPage({ answers, selectedIssues, onComplete, onChat }) {
 
   return (
     <div className="min-h-screen px-4 py-12" style={{ background: '#FEFEFE' }}>
-      <div className="max-w-2xl mx-auto">
+      <div className="max-w-4xl mx-auto">
         {/* Progress */}
         <div className="text-center mb-8">
           <h1 className="text-4xl font-bold text-gray-900 mb-2">Tallied</h1>
@@ -992,7 +991,7 @@ function ResultsPage({ answers, selectedIssues, onContinue, onChat, onRestart })
 
   return (
     <div className="min-h-screen px-4 py-12" style={{ background: '#FEFEFE' }}>
-      <div className="max-w-2xl mx-auto">
+      <div className="max-w-4xl mx-auto">
 
         {/* Header */}
         <div className="text-center mb-8">
@@ -1039,7 +1038,7 @@ function ResultsPage({ answers, selectedIssues, onContinue, onChat, onRestart })
 
               {/* Issue header */}
               <div className="flex items-center gap-2 mb-4">
-                <IssueIcon issueKey={issueKey} size={22} color="#6B9FFF" />
+                <IssueIcon issueKey={issueKey} size={22} color="#7EB3FF" />
                 <h2 className="text-xl font-bold text-gray-900">{issueInfo.label}</h2>
               </div>
 
@@ -1241,7 +1240,7 @@ function DecisionSummaryPage({ answers, selectedIssues, onChat, onRestart }) {
 
   return (
     <div className="min-h-screen px-4 py-12" style={{ background: '#FEFEFE' }}>
-      <div className="max-w-2xl mx-auto">
+      <div className="max-w-4xl mx-auto">
 
         {/* Header */}
         <div className="text-center mb-8">
@@ -1282,7 +1281,7 @@ function DecisionSummaryPage({ answers, selectedIssues, onChat, onRestart }) {
           {alignments.map(({ key, info, alignment }) => (
             <div key={key} className="mb-6 pb-6 border-b border-gray-100 last:border-0 last:mb-0 last:pb-0">
               <div className="flex items-center gap-2 mb-3">
-<IssueIcon issueKey={key} size={18} color="#6B9FFF" />
+<IssueIcon issueKey={key} size={18} color="#7EB3FF" />
                 <span className="font-semibold text-gray-900 text-sm">{info?.label}</span>
               </div>
               <div className="space-y-2">
@@ -1319,7 +1318,7 @@ function DecisionSummaryPage({ answers, selectedIssues, onChat, onRestart }) {
           <div className="space-y-3">
             <a href="https://www.registertovoteon.ca/" target="_blank" rel="noopener noreferrer"
               className="flex items-center gap-3 p-3 rounded-xl bg-blue-50 hover:bg-blue-100 transition-colors">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#6B9FFF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#7EB3FF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
               <div>
                 <p style={{ fontFamily: "'Lora', Georgia, serif", fontWeight: 500, fontSize: '13px', color: '#111' }}>Register to vote (Ontario)</p>
                 <p className="text-xs text-gray-500">Takes 2 minutes - registertovoteon.ca</p>
@@ -1327,7 +1326,7 @@ function DecisionSummaryPage({ answers, selectedIssues, onChat, onRestart }) {
             </a>
             <a href="https://www.elections.ca/content.aspx?section=vot&dir=reg/etr&document=index&lang=e" target="_blank" rel="noopener noreferrer"
               className="flex items-center gap-3 p-3 rounded-xl bg-blue-50 hover:bg-blue-100 transition-colors">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#6B9FFF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#7EB3FF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
               <div>
                 <p style={{ fontFamily: "'Lora', Georgia, serif", fontWeight: 500, fontSize: '13px', color: '#111' }}>Register to vote (Federal)</p>
                 <p className="text-xs text-gray-500">elections.ca</p>
@@ -1335,7 +1334,7 @@ function DecisionSummaryPage({ answers, selectedIssues, onChat, onRestart }) {
             </a>
             <a href="https://www.elections.on.ca/en/voting-in-ontario/electoral-districts.html" target="_blank" rel="noopener noreferrer"
               className="flex items-center gap-3 p-3 rounded-xl bg-gray-50 hover:bg-gray-100 transition-colors">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#6B9FFF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#7EB3FF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
               <div>
                 <p style={{ fontFamily: "'Lora', Georgia, serif", fontWeight: 500, fontSize: '13px', color: '#111' }}>Find your riding</p>
                 <p className="text-xs text-gray-500">Your local candidate matters too</p>
@@ -1358,7 +1357,7 @@ function DecisionSummaryPage({ answers, selectedIssues, onChat, onRestart }) {
           <div className="grid grid-cols-1 gap-3">
             <button onClick={onChat}
               className="flex items-center gap-3 p-4 rounded-xl bg-blue-600 hover:bg-blue-700 transition-colors text-white text-left">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#6B9FFF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#7EB3FF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
               <div>
                 <p className="font-semibold text-sm">Talk to the candidates</p>
                 <p className="text-xs text-blue-200">Ask Carney or Poilievre your questions directly</p>
@@ -1366,7 +1365,7 @@ function DecisionSummaryPage({ answers, selectedIssues, onChat, onRestart }) {
             </button>
             <button onClick={onChat}
               className="flex items-center gap-3 p-4 rounded-xl bg-gray-50 hover:bg-gray-100 transition-colors text-left border-2 border-gray-200">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#6B9FFF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#7EB3FF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
               <div>
                 <p className="font-semibold text-sm text-gray-900">Ask a neutral expert</p>
                 <p className="text-xs text-gray-500">How does the political system work? What does this policy mean?</p>
@@ -1638,7 +1637,7 @@ Priority issues: ${selectedIssueLabels}`
 
       {/* Header */}
       <div className="bg-white border-b border-gray-200 px-4 py-3">
-        <div className="max-w-2xl mx-auto">
+        <div className="max-w-4xl mx-auto">
           <div className="flex items-center justify-between mb-3">
             <button onClick={onBack} className="text-blue-600 text-sm font-medium">
               ← Back
@@ -1661,7 +1660,7 @@ Priority issues: ${selectedIssueLabels}`
                     : 'bg-gray-50 text-gray-600 border-transparent hover:border-blue-200'
                 }`}
               >
-                <div style={{ width: '24px', height: '24px', borderRadius: '50%', background: '#F0F5FF', border: '0.5px solid #D8E6FF', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: "'Inter', sans-serif", fontSize: '8px', fontWeight: 600, color: '#6B9FFF', margin: '0 auto 4px' }}>{cfg.emoji}</div>
+                <div style={{ width: '24px', height: '24px', borderRadius: '50%', background: '#F0F5FF', border: '0.5px solid #D8E6FF', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: "'Inter', sans-serif", fontSize: '8px', fontWeight: 600, color: '#7EB3FF', margin: '0 auto 4px' }}>{cfg.emoji}</div>
                 {cfg.label}
               </button>
             ))}
@@ -1670,7 +1669,7 @@ Priority issues: ${selectedIssueLabels}`
       </div>
 
       {/* Badge + disclaimer */}
-      <div className="max-w-2xl mx-auto w-full px-4 pt-3 pb-2">
+      <div className="max-w-4xl mx-auto w-full px-4 pt-3 pb-2">
         <div className="flex items-center gap-2 mb-2">
           <span className={`text-xs font-semibold px-3 py-1 rounded-full ${config.badgeColor}`}>
             {config.badge}
@@ -1687,7 +1686,7 @@ Priority issues: ${selectedIssueLabels}`
 
       {/* Messages */}
       <div className="flex-1 overflow-y-auto px-4 py-4">
-        <div className="max-w-2xl mx-auto space-y-4">
+        <div className="max-w-4xl mx-auto space-y-4">
 
           {/* Intro message */}
           <div className={`rounded-2xl rounded-tl-sm p-4 max-w-xs ${config.bubbleColor}`}>
@@ -1759,7 +1758,7 @@ Priority issues: ${selectedIssueLabels}`
 
       {/* Sticky bottom - switcher + input */}
       <div className="bg-white border-t border-gray-200 px-4 pt-2 pb-3">
-        <div className="max-w-2xl mx-auto">
+        <div className="max-w-4xl mx-auto">
           {/* Mode switcher - sticky at bottom too */}
           <div className="grid grid-cols-3 gap-2 mb-2">
             {Object.entries(modeConfig).map(([key, cfg]) => (
@@ -1772,7 +1771,7 @@ Priority issues: ${selectedIssueLabels}`
                     : 'bg-gray-50 text-gray-600 border-transparent hover:border-blue-200'
                 }`}
               >
-                <div style={{ width: '20px', height: '20px', borderRadius: '50%', background: '#F0F5FF', border: '0.5px solid #D8E6FF', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: "'Inter', sans-serif", fontSize: '7px', fontWeight: 600, color: '#6B9FFF', margin: '0 auto 3px' }}>{cfg.emoji}</div>
+                <div style={{ width: '20px', height: '20px', borderRadius: '50%', background: '#F0F5FF', border: '0.5px solid #D8E6FF', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: "'Inter', sans-serif", fontSize: '7px', fontWeight: 600, color: '#7EB3FF', margin: '0 auto 3px' }}>{cfg.emoji}</div>
                 {cfg.label}
               </button>
             ))}
@@ -1808,7 +1807,7 @@ Priority issues: ${selectedIssueLabels}`
 function PrivacyPage({ onBack }) {
   return (
     <div className="min-h-screen px-4 py-12" style={{ background: '#FEFEFE' }}>
-      <div className="max-w-2xl mx-auto">
+      <div className="max-w-4xl mx-auto">
         <button onClick={onBack} className="text-blue-600 text-sm font-medium mb-6 block">
           - Back
         </button>
