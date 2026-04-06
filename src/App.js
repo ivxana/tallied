@@ -168,10 +168,10 @@ const IssueIcon = ({ issueKey, size = 18, color = '#7EB3FF' }) => {
 
 // Updated logo matching friend's design - accurate dual-tone checkmark
 const TalliedLogo = ({ size = 28 }) => (
-  <svg width={size} height={size} viewBox="0 0 56 56" fill="none">
-    <rect x="3" y="8" width="40" height="40" rx="7" fill="#7EB3FF"/>
-    <polyline points="11,28 20,37 27,30" stroke="white" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round"/>
-    <polyline points="20,37 50,7" stroke="#A3244A" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round"/>
+  <svg width={size} height={size} viewBox="0 0 100 100" fill="none">
+    <rect x="4" y="4" width="68" height="68" rx="14" fill="#7EB3FF"/>
+    <polyline points="18,46 34,62 46,50" stroke="white" strokeWidth="7" strokeLinecap="round" strokeLinejoin="round"/>
+    <polyline points="34,62 84,12" stroke="#A3244A" strokeWidth="7" strokeLinecap="round" strokeLinejoin="round"/>
   </svg>
 );
 
@@ -227,7 +227,7 @@ function TaliaGuide({ message, step, onDismiss }) {
 }
 
 const taliaMessages = {
-  form: "Hey! I'm Talia, your civic guide. Answer 4 quick questions and I'll filter everything to your actual life situation - not just generic politics.",
+  form: "Tell us about yourself and what matters to you - these two things together are what make Tallied different from a Google search. I use them to show how each policy hits your specific situation.",
   priorities: "Pick what genuinely matters to you - not what sounds impressive. Only 3 picks, so choose the stuff that actually affects your day-to-day.",
   policies: "This is what actually happened in Ontario - real policies, real effects on people like you. No spin. Read your priority issues first.",
   results: "Now see what each candidate actually plans to do about your priorities. I'll show you what it means specifically for your situation.",
@@ -257,8 +257,7 @@ function renderMarkdown(text) {
 
 function NavBar({ currentStep, onNavigate }) {
   const steps = [
-    { key: 'form', label: 'Profile' },
-    { key: 'priorities', label: 'Priorities' },
+    { key: 'form', label: 'Profile & Issues' },
     { key: 'policies', label: 'Policies' },
     { key: 'results', label: 'Comparison' },
     { key: 'summary', label: 'Summary' },
@@ -424,15 +423,16 @@ function App() {
   if (currentStep === 'form') return (
     <>
       <NavBar currentStep={currentStep} onNavigate={navigate} />
-      <PersonalizationForm existingAnswers={userAnswers} onComplete={(answers) => { setUserAnswers(answers); setCurrentStep('priorities'); }} />
+      <ProfileAndPrioritiesPage
+        existingAnswers={userAnswers}
+        existingIssues={selectedIssues}
+        onComplete={(answers, issues) => {
+          setUserAnswers(answers);
+          setSelectedIssues(issues);
+          setCurrentStep('policies');
+        }}
+      />
       {showTalia && <TaliaGuide message={taliaMessages.form} step={currentStep} onDismiss={() => setTaliaDismissed(true)} />}
-    </>
-  );
-  if (currentStep === 'priorities') return (
-    <>
-      <NavBar currentStep={currentStep} onNavigate={navigate} />
-      <PrioritiesPage existingIssues={selectedIssues} onComplete={(issues) => { setSelectedIssues(issues); setCurrentStep('policies'); }} />
-      {showTalia && <TaliaGuide message={taliaMessages.priorities} step={currentStep} onDismiss={() => setTaliaDismissed(true)} />}
     </>
   );
   if (currentStep === 'policies') return (
@@ -467,6 +467,151 @@ function App() {
       <NavBar currentStep={currentStep} onNavigate={navigate} />
       <PrivacyPage onBack={() => navigate('landing')} />
     </>
+  );
+}
+
+
+function ProfileAndPrioritiesPage({ onComplete, existingAnswers, existingIssues }) {
+  const [answers, setAnswers] = useState(existingAnswers || { student: null, income: null, housing: null, employment: null });
+  const [selected, setSelected] = useState(existingIssues || []);
+
+  const questions = [
+    { key: 'student', question: 'Student status', options: ['College/university', 'In high school', 'Recently graduated', 'Not a student'] },
+    { key: 'employment', question: 'Employment', options: ['Employed full-time', 'Employed part-time', 'Looking for work', 'Not currently working'] },
+    { key: 'income', question: 'Household income', options: ['Under $40k', '$40k-$75k', '$75k-$120k', 'Over $120k'] },
+    { key: 'housing', question: 'Housing situation', options: ['Renting', 'Homeowner', 'Living with family', 'Looking to buy'] }
+  ];
+
+  const toggle = (key) => {
+    if (selected.includes(key)) setSelected(selected.filter(k => k !== key));
+    else if (selected.length < 3) setSelected([...selected, key]);
+  };
+
+  const profileComplete = answers.student && answers.income && answers.housing && answers.employment;
+  const isComplete = profileComplete && selected.length > 0;
+  const answeredCount = [answers.student, answers.employment, answers.income, answers.housing].filter(Boolean).length;
+
+  return (
+    <div style={{ minHeight: '100vh', background: '#FEFEFE', padding: '40px 20px 100px' }}>
+      <div style={{ maxWidth: '820px', margin: '0 auto' }}>
+        <div style={{ textAlign: 'center', marginBottom: '32px' }}>
+          <h1 style={{ fontFamily: "'Lora', Georgia, serif", fontSize: '28px', fontWeight: 500, color: '#111', marginBottom: '8px' }}>
+            Let's personalize this for you
+          </h1>
+          <p style={{ fontFamily: "'Lora', Georgia, serif", fontSize: '15px', color: '#444', lineHeight: 1.6, maxWidth: '520px', margin: '0 auto' }}>
+            Your answers to these questions are the only reason Tallied is different from a Google search. They let us show you exactly how each policy affects <em>your</em> life - not just in general.
+          </p>
+        </div>
+
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px', alignItems: 'start' }}>
+          <div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '16px' }}>
+              <div style={{ width: '28px', height: '28px', borderRadius: '50%', background: '#7EB3FF', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: "'Inter', sans-serif", fontSize: '13px', fontWeight: 700, color: 'white' }}>1</div>
+              <h2 style={{ fontFamily: "'Lora', Georgia, serif", fontSize: '16px', fontWeight: 500, color: '#111' }}>Tell us about yourself</h2>
+              <div style={{ display: 'flex', gap: '5px', marginLeft: 'auto' }}>
+                {[0,1,2,3].map(i => <div key={i} style={{ width: '8px', height: '8px', borderRadius: '50%', background: i < answeredCount ? '#7EB3FF' : '#E0E0E0', transition: 'background 0.2s' }} />)}
+              </div>
+            </div>
+            {questions.map(({ key, question, options }) => (
+              <div key={key} style={{ background: 'white', borderRadius: '14px', padding: '18px', marginBottom: '12px', border: '1px solid #E0E0E0' }}>
+                <p style={{ fontFamily: "'Inter', sans-serif", fontSize: '11px', fontWeight: 600, color: '#888', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '10px' }}>{question}</p>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '7px' }}>
+                  {options.map(option => {
+                    const sel = answers[key] === option;
+                    return (
+                      <button
+                        key={option}
+                        onClick={() => setAnswers({ ...answers, [key]: option })}
+                        style={{
+                          padding: '10px 12px', borderRadius: '10px',
+                          fontFamily: "'Lora', Georgia, serif", fontSize: '13px', cursor: 'pointer',
+                          transition: 'all 0.15s',
+                          background: sel ? '#7EB3FF' : '#F6F6F6',
+                          color: sel ? 'white' : '#222',
+                          border: sel ? '2px solid #7EB3FF' : '2px solid transparent',
+                          fontWeight: sel ? 500 : 400,
+                          textAlign: 'left',
+                        }}
+                        onMouseEnter={e => { if (!sel) { e.currentTarget.style.background = '#EEF5FF'; e.currentTarget.style.borderColor = '#7EB3FF'; }}}
+                        onMouseLeave={e => { if (!sel) { e.currentTarget.style.background = '#F6F6F6'; e.currentTarget.style.borderColor = 'transparent'; }}}
+                      >
+                        {option}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '16px' }}>
+              <div style={{ width: '28px', height: '28px', borderRadius: '50%', background: selected.length > 0 ? '#7EB3FF' : '#E0E0E0', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: "'Inter', sans-serif", fontSize: '13px', fontWeight: 700, color: 'white', transition: 'background 0.2s' }}>2</div>
+              <h2 style={{ fontFamily: "'Lora', Georgia, serif", fontSize: '16px', fontWeight: 500, color: '#111' }}>What matters most to you?</h2>
+              <span style={{ fontFamily: "'Inter', sans-serif", fontSize: '11px', fontWeight: 600, color: '#A3244A', marginLeft: 'auto' }}>{selected.length}/3</span>
+            </div>
+            <div style={{ background: 'white', borderRadius: '14px', padding: '18px', border: '1px solid #E0E0E0' }}>
+              <p style={{ fontFamily: "'Lora', Georgia, serif", fontSize: '13px', color: '#555', lineHeight: 1.6, marginBottom: '14px' }}>
+                Pick up to 3. We'll filter every policy card and candidate comparison through these.
+              </p>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
+                {issueOptions.map(issue => {
+                  const isSelected = selected.includes(issue.key);
+                  const isDisabled = !isSelected && selected.length >= 3;
+                  return (
+                    <button
+                      key={issue.key}
+                      onClick={() => toggle(issue.key)}
+                      disabled={isDisabled}
+                      style={{
+                        padding: '12px', borderRadius: '12px', textAlign: 'left',
+                        border: isSelected ? '2px solid #7EB3FF' : '1px solid #E8E8E8',
+                        background: isSelected ? '#EEF5FF' : isDisabled ? '#F8F8F8' : 'white',
+                        cursor: isDisabled ? 'not-allowed' : 'pointer',
+                        transition: 'all 0.18s',
+                        boxShadow: isSelected ? '0 0 0 3px rgba(126,179,255,0.15)' : 'none',
+                      }}
+                      onMouseEnter={e => { if (!isDisabled && !isSelected) { e.currentTarget.style.borderColor = '#7EB3FF'; e.currentTarget.style.background = '#F5F9FF'; }}}
+                      onMouseLeave={e => { if (!isDisabled && !isSelected) { e.currentTarget.style.borderColor = '#E8E8E8'; e.currentTarget.style.background = 'white'; }}}
+                    >
+                      <div style={{ width: '26px', height: '26px', borderRadius: '8px', marginBottom: '7px', display: 'flex', alignItems: 'center', justifyContent: 'center', background: isSelected ? '#C8DCFF' : isDisabled ? '#EEE' : '#EEF4FF' }}>
+                        <IssueIcon issueKey={issue.key} size={14} color={isSelected ? '#2D6FD4' : isDisabled ? '#CCC' : '#7EB3FF'} />
+                      </div>
+                      <div style={{ fontFamily: "'Lora', Georgia, serif", fontWeight: 500, fontSize: '12px', color: isSelected ? '#1A4FAA' : isDisabled ? '#CCC' : '#111', marginBottom: '2px', lineHeight: 1.3 }}>{issue.label}</div>
+                      <div style={{ fontFamily: "'Lora', Georgia, serif", fontSize: '10px', color: isSelected ? '#4A7AE0' : isDisabled ? '#DDD' : '#777', fontStyle: 'italic' }}>{issue.description}</div>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div style={{ marginTop: '32px', textAlign: 'center' }}>
+          {!isComplete && (
+            <p style={{ fontFamily: "'Lora', Georgia, serif", fontSize: '13px', color: '#AAA', marginBottom: '12px', fontStyle: 'italic' }}>
+              {!profileComplete ? 'Answer all four profile questions and pick at least one issue to continue' : 'Now pick at least one issue that matters to you'}
+            </p>
+          )}
+          <button
+            onClick={() => isComplete && onComplete(answers, selected)}
+            disabled={!isComplete}
+            style={{
+              padding: '18px 56px', borderRadius: '14px',
+              fontFamily: "'Lora', Georgia, serif", fontSize: '16px', fontWeight: 500,
+              border: 'none', cursor: isComplete ? 'pointer' : 'not-allowed',
+              background: isComplete ? '#7EB3FF' : '#E0E0E0',
+              color: isComplete ? 'white' : '#AAA',
+              transition: 'all 0.15s',
+            }}
+            onMouseEnter={e => { if (isComplete) e.currentTarget.style.background = '#6BA3EF'; }}
+            onMouseLeave={e => { if (isComplete) e.currentTarget.style.background = '#7EB3FF'; }}
+          >
+            Show Me How This Affects Me
+          </button>
+        </div>
+      </div>
+    </div>
   );
 }
 
