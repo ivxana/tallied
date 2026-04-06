@@ -575,37 +575,22 @@ function PrioritiesPage({ onComplete, existingIssues }) {
 }
 
 function PolicyCard({ policy, answers }) {
+  const [hovered, setHovered] = React.useState(false);
   return (
-    <div className="bg-white rounded-2xl p-6 mb-5" style={{border:"0.5px solid #EEEEEE",transition:"all 0.2s ease"}} onMouseEnter={e=>{e.currentTarget.style.border="1.5px solid #7EB3FF";e.currentTarget.style.transform="translateY(-3px)";e.currentTarget.style.boxShadow="0 8px 24px rgba(126,179,255,0.15)";e.currentTarget.style.background="#F5F9FF";}} onMouseLeave={e=>{e.currentTarget.style.border="0.5px solid #EEEEEE";e.currentTarget.style.transform="";e.currentTarget.style.boxShadow="";e.currentTarget.style.background="white";}}>
-      <div className="flex items-start justify-between mb-3">
-        <span
-          className="text-xs font-semibold px-3 py-1 rounded-full"
-          style={{ backgroundColor: policy.tagColor, color: policy.tagText }}
-        >
-          {policy.tag}
-        </span>
-        <span className="text-sm text-gray-400">{policy.year}</span>
-      </div>
-      <h3 className="text-xl font-bold text-gray-900 mb-3">{policy.title}</h3>
-      <p className="text-gray-600 text-sm leading-relaxed mb-4">{policy.plain}</p>
-      <div className="bg-blue-50 rounded-xl p-4 mb-4">
-        <p className="text-xs font-semibold text-blue-600 uppercase tracking-wide mb-2">
-          How this affects you
-        </p>
-        <p className="text-gray-800 text-sm leading-relaxed">
-          {policy.getImpact(answers)}
-        </p>
-      </div>
-      <div className="flex items-center justify-between">
-        <a href={policy.link} target="_blank" rel="noopener noreferrer"
-          className="text-blue-600 text-sm font-medium hover:underline">
-          {policy.linkLabel}
-        </a>
-        <p className="text-xs text-gray-400">Source: {policy.source}</p>
-      </div>
-    </div>
-  );
-}
+    <div
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+      style={{
+        background: hovered ? '#F5F9FF' : 'white',
+        borderRadius: '16px',
+        padding: '24px',
+        marginBottom: '20px',
+        border: hovered ? '1.5px solid #7EB3FF' : '0.5px solid #EEEEEE',
+        boxShadow: hovered ? '0 8px 24px rgba(126,179,255,0.15)' : 'none',
+        transform: hovered ? 'translateY(-3px)' : 'none',
+        transition: 'all 0.2s ease',
+      }}
+    >
 
 function PoliciesPage({ answers, selectedIssues, onComplete, onChat }) {
   const [showAll, setShowAll] = useState(false);
