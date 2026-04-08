@@ -151,7 +151,7 @@ const issueOptions = [
   { key: 'privacy',    label: 'Privacy & Tech',            description: 'Data rights, AI, digital safety',         img: IMGS.privacy },
 ];
 
-function renderMarkdown(text) {
+function renderMarkdown(text) { // eslint-disable-line no-unused-vars
   if (!text) return '';
   return text.replace(/\*\*([^*]+)\*\*/g, '$1').replace(/\*([^*]+)\*/g, '$1').replace(/^#{1,3}\s+/gm, '').trim();
 }
@@ -936,6 +936,7 @@ function ChatPage({ answers, selectedIssues, onRestart }) {
   const messagesEndRef = React.useRef(null);
 
   const profileSummary = answers ? `${answers.student}, ${answers.employment}, ${answers.income} income, ${answers.housing}` : 'Not provided';
+  // eslint-disable-next-line no-unused-vars
   const selectedIssueLabels = selectedIssues ? issueOptions.filter(i => selectedIssues.includes(i.key)).map(i => i.label).join(', ') : 'Not selected';
 
   const systemPrompts = {
