@@ -151,7 +151,7 @@ const issueOptions = [
   { key: 'privacy',    label: 'Privacy & Tech',            description: 'Data rights, AI, digital safety',         img: IMGS.privacy },
 ];
 
-function renderMarkdown(text) { // eslint-disable-line no-unused-vars
+function renderMarkdown(text) {
   if (!text) return '';
   return text.replace(/\*\*([^*]+)\*\*/g, '$1').replace(/\*([^*]+)\*/g, '$1').replace(/^#{1,3}\s+/gm, '').trim();
 }
@@ -578,7 +578,6 @@ function ResultsPage({ answers, selectedIssues, onContinue, onRestart }) {
   const [activeChatIssue, setActiveChatIssue] = useState(null);
   const [chatMode, setChatMode] = useState('carney');
 
-  const selectedIssueLabels = issueOptions.filter(i => selectedIssues.includes(i.key)).map(i => i.label);
   const labelMap = {
     student: { 'College/university': 'college student', 'Yes, college/university': 'college student', 'In high school': 'high school student', 'Recently graduated': 'recent grad', 'Not a student': 'non-student' },
     employment: { 'Employed full-time': 'employed full-time', 'Employed part-time': 'employed part-time', 'Looking for work': 'looking for work', 'Not currently working': 'not working' },
@@ -936,7 +935,6 @@ function ChatPage({ answers, selectedIssues, onRestart }) {
   const messagesEndRef = React.useRef(null);
 
   const profileSummary = answers ? `${answers.student}, ${answers.employment}, ${answers.income} income, ${answers.housing}` : 'Not provided';
-  // eslint-disable-next-line no-unused-vars
   const selectedIssueLabels = selectedIssues ? issueOptions.filter(i => selectedIssues.includes(i.key)).map(i => i.label).join(', ') : 'Not selected';
 
   const systemPrompts = {
