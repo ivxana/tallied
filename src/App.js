@@ -2,15 +2,15 @@ import React, { useState } from 'react';
 
 // ─── Image URLs (Unsplash) ────────────────────────────────────────────────────
 const IMGS = {
-  landing:    'https://images.unsplash.com/photo-1596557372963-de0b87e6ea70?w=1400&q=85&auto=format&fit=crop',
-  housing:    'https://images.unsplash.com/photo-1582407947304-fd86f28f3b16?w=800&q=80&auto=format&fit=crop',
-  education:  'https://images.unsplash.com/photo-1523050854058-8df90110c9f1?w=800&q=80&auto=format&fit=crop',
-  healthcare: 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=800&q=80&auto=format&fit=crop',
-  jobs:       'https://images.unsplash.com/photo-1568992687947-868a62a9f521?w=800&q=80&auto=format&fit=crop',
-  climate:    'https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=800&q=80&auto=format&fit=crop',
-  costoflife: 'https://images.unsplash.com/photo-1553729459-efe14ef6055d?w=800&q=80&auto=format&fit=crop',
-  canadaus:   'https://images.unsplash.com/photo-1569982175971-d92b01cf8694?w=800&q=80&auto=format&fit=crop',
-  privacy:    'https://images.unsplash.com/photo-1550751827-4bd374c3f58b?w=800&q=80&auto=format&fit=crop',
+  landing:    '/images/landing.jpg',
+  housing:    '/images/housing.jpg',
+  education:  '/images/education.jpg',
+  healthcare: '/images/healthcare.jpg',
+  jobs:       '/images/jobs.jpg',
+  climate:    '/images/climate.jpg',
+  costoflife: '/images/costoflife.jpg',
+  canadaus:   '/images/canadaus.jpg',
+  privacy:    '/images/privacy.jpg',
   carney:     'https://upload.wikimedia.org/wikipedia/commons/thumb/9/9d/Mark_Carney_2024.jpg/440px-Mark_Carney_2024.jpg',
   poilievre:  'https://upload.wikimedia.org/wikipedia/commons/thumb/e/e8/Pierre_Poilievre_2022.jpg/440px-Pierre_Poilievre_2022.jpg',
 };
@@ -151,7 +151,6 @@ const issueOptions = [
   { key: 'privacy',    label: 'Privacy & Tech',            description: 'Data rights, AI, digital safety',         img: IMGS.privacy },
 ];
 
-// eslint-disable-next-line no-unused-vars
 function renderMarkdown(text) {
   if (!text) return '';
   return text.replace(/\*\*([^*]+)\*\*/g, '$1').replace(/\*([^*]+)\*/g, '$1').replace(/^#{1,3}\s+/gm, '').trim();
@@ -430,7 +429,6 @@ function PrioritiesPage({ onComplete, existingIssues }) {
 }
 
 // ─── Profile + Priorities (combined) ─────────────────────────────────────────
-// eslint-disable-next-line no-unused-vars
 function ProfileAndPrioritiesPage({ onComplete, existingAnswers, existingIssues }) {
   const [answers, setAnswers] = useState(existingAnswers || { student: null, income: null, housing: null, employment: null });
   const [selected, setSelected] = useState(existingIssues || []);
