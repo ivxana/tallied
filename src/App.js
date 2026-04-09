@@ -2,15 +2,15 @@ import React, { useState } from 'react';
 
 // ─── Image URLs (Unsplash) ────────────────────────────────────────────────────
 const IMGS = {
-  landing:    'https://images.unsplash.com/T9CXBZLUvic?w=1400&q=85&auto=format&fit=crop',
-  housing:    'https://images.unsplash.com/Vg96IZTFubo?w=800&q=80&auto=format&fit=crop',
-  education:  'https://images.unsplash.com/YZsvNs2GCPU?w=800&q=80&auto=format&fit=crop',
-  healthcare: 'https://images.unsplash.com/fr3l_svzHmQ?w=800&q=80&auto=format&fit=crop',
-  jobs:       'https://images.unsplash.com/B3UFXwcVbc4?w=800&q=80&auto=format&fit=crop',
-  climate:    'https://images.unsplash.com/1AaRGN_vyq0?w=800&q=80&auto=format&fit=crop',
-  costoflife: 'https://images.unsplash.com/cB4xzRX9ylU?w=800&q=80&auto=format&fit=crop',
-  canadaus:   'https://images.unsplash.com/aJ8F0SmOBpY?w=800&q=80&auto=format&fit=crop',
-  privacy:    'https://images.unsplash.com/zAhAUSdRLJ8?w=800&q=80&auto=format&fit=crop',
+  landing:    'https://images.unsplash.com/photo-1596557372963-de0b87e6ea70?w=1400&q=85&auto=format&fit=crop',
+  housing:    'https://images.unsplash.com/photo-1582407947304-fd86f28f3b16?w=800&q=80&auto=format&fit=crop',
+  education:  'https://images.unsplash.com/photo-1523050854058-8df90110c9f1?w=800&q=80&auto=format&fit=crop',
+  healthcare: 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=800&q=80&auto=format&fit=crop',
+  jobs:       'https://images.unsplash.com/photo-1568992687947-868a62a9f521?w=800&q=80&auto=format&fit=crop',
+  climate:    'https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=800&q=80&auto=format&fit=crop',
+  costoflife: 'https://images.unsplash.com/photo-1553729459-efe14ef6055d?w=800&q=80&auto=format&fit=crop',
+  canadaus:   'https://images.unsplash.com/photo-1569982175971-d92b01cf8694?w=800&q=80&auto=format&fit=crop',
+  privacy:    'https://images.unsplash.com/photo-1550751827-4bd374c3f58b?w=800&q=80&auto=format&fit=crop',
   carney:     'https://upload.wikimedia.org/wikipedia/commons/thumb/9/9d/Mark_Carney_2024.jpg/440px-Mark_Carney_2024.jpg',
   poilievre:  'https://upload.wikimedia.org/wikipedia/commons/thumb/e/e8/Pierre_Poilievre_2022.jpg/440px-Pierre_Poilievre_2022.jpg',
 };
@@ -151,7 +151,6 @@ const issueOptions = [
   { key: 'privacy',    label: 'Privacy & Tech',            description: 'Data rights, AI, digital safety',         img: IMGS.privacy },
 ];
 
-// eslint-disable-next-line no-unused-vars
 function renderMarkdown(text) {
   if (!text) return '';
   return text.replace(/\*\*([^*]+)\*\*/g, '$1').replace(/\*([^*]+)\*/g, '$1').replace(/^#{1,3}\s+/gm, '').trim();
@@ -219,7 +218,7 @@ function App() {
     else setCurrentStep(step);
   };
 
-  if (currentStep === 'landing') return <LandingPage onStart={() => setCurrentStep('form')} onChat={() => setCurrentStep('chat')} />;
+  if (currentStep === 'landing') return <LandingPage onStart={() => setCurrentStep('form')} />;
   if (currentStep === 'form') return (
     <><NavBar currentStep={currentStep} onNavigate={navigate} />
     <PersonalizationForm existingAnswers={userAnswers}
@@ -253,59 +252,51 @@ function App() {
 }
 
 // ─── Landing Page ─────────────────────────────────────────────────────────────
-function LandingPage({ onStart, onChat }) {
+function LandingPage({ onStart }) {
   return (
-    <div style={{ minHeight: '100vh', background: '#F5F8FF', display: 'flex', flexDirection: 'column', position: 'relative', overflow: 'hidden' }}>
+    <div style={{ minHeight: '100vh', background: '#FEFEFE', display: 'flex', flexDirection: 'column', fontFamily: "'Lora', Georgia, serif" }}>
+      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '60px 24px 40px', textAlign: 'center' }}>
 
-      {/* Hero image - full bleed with overlay */}
-      <div style={{ position: 'absolute', inset: 0, zIndex: 0 }}>
-        <img src={IMGS.landing} alt="People voting" style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center', opacity: 0.6 }} />
-        <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to bottom, rgba(10,30,80,0.55) 0%, rgba(10,30,80,0.75) 60%, rgba(10,30,80,0.88) 100%)' }} />
-      </div>
-
-      {/* Content */}
-      <div style={{ position: 'relative', zIndex: 1, flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', padding: '60px 24px', textAlign: 'center' }}>
-
-        {/* Logo */}
-        <div className="tl-fade" style={{ marginBottom: '32px' }}>
-          <TalliedLogo size={64} />
+        {/* Logo + name */}
+        <div className="tl-fade" style={{ display: 'flex', alignItems: 'center', gap: '14px', marginBottom: '6px' }}>
+          <TalliedLogo size={52} />
+          <h1 style={{ fontFamily: "'Lora', Georgia, serif", fontSize: '52px', fontWeight: 500, color: '#111', lineHeight: 1, letterSpacing: '-0.02em' }}>Tallied</h1>
         </div>
-
-        {/* Headline */}
-        <div className="tl-fade-1">
-          <h1 style={{ fontFamily: "'Lora', Georgia, serif", fontSize: 'clamp(40px, 8vw, 72px)', fontWeight: 500, color: 'white', lineHeight: 1.05, marginBottom: '8px', letterSpacing: '-0.02em' }}>
-            Tallied
-          </h1>
-          <p style={{ fontFamily: "'Inter', sans-serif", fontSize: '12px', letterSpacing: '0.2em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.5)', fontWeight: 500, marginBottom: '32px' }}>
-            Voting, Personalized
-          </p>
-        </div>
+        <p className="tl-fade" style={{ fontFamily: "'Inter', sans-serif", fontSize: '10px', letterSpacing: '0.18em', textTransform: 'uppercase', color: '#AAA', fontWeight: 600, marginBottom: '40px' }}>Voting, Personalized</p>
 
         {/* Stat */}
-        <div className="tl-fade-2" style={{ marginBottom: '40px' }}>
-          <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 'clamp(56px, 12vw, 96px)', fontWeight: 700, color: 'white', lineHeight: 1, letterSpacing: '-0.04em' }}>57%</div>
-          <p style={{ fontFamily: "'Lora', Georgia, serif", fontSize: 'clamp(15px, 2.5vw, 20px)', color: 'rgba(255,255,255,0.8)', lineHeight: 1.5, maxWidth: '480px', marginTop: '8px' }}>
-            of eligible Ontario voters didn't cast a ballot in 2022. The policies they skipped affect your <span style={{ color: '#7EB3FF' }}>rent</span>, <span style={{ color: '#7EB3FF' }}>tuition</span>, and <span style={{ color: '#F4A0B0' }}>healthcare</span>.
+        <div className="tl-fade-1" style={{ marginBottom: '16px' }}>
+          <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 'clamp(64px, 14vw, 104px)', fontWeight: 700, color: '#111', lineHeight: 1, letterSpacing: '-0.04em' }}>57%</div>
+          <p style={{ fontFamily: "'Lora', Georgia, serif", fontSize: '17px', color: '#333', lineHeight: 1.65, maxWidth: '440px', margin: '10px auto 0' }}>
+            of eligible Ontario voters didn't cast a ballot in 2022. The policies they skipped affect your{' '}
+            <span style={{ color: '#7EB3FF', fontWeight: 500 }}>rent</span>,{' '}
+            <span style={{ color: '#7EB3FF', fontWeight: 500 }}>tuition</span>, and{' '}
+            <span style={{ color: '#A3244A', fontWeight: 500 }}>healthcare</span>.
           </p>
+        </div>
+
+        {/* Hero image - inline between text */}
+        <div className="tl-fade-2" style={{ width: '100%', maxWidth: '560px', borderRadius: '16px', overflow: 'hidden', marginBottom: '32px', border: '1px solid #E8E8E8', boxShadow: '0 4px 20px rgba(0,0,0,0.08)' }}>
+          <img src={IMGS.landing} alt="People voting" style={{ width: '100%', height: '220px', objectFit: 'cover', objectPosition: 'center', display: 'block' }}
+            onError={e => { e.currentTarget.style.display = 'none'; }} />
         </div>
 
         {/* CTA */}
-        <div className="tl-fade-3" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '12px' }}>
+        <div className="tl-fade-3" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '10px' }}>
           <button onClick={onStart}
-            style={{ background: '#7EB3FF', color: 'white', border: 'none', borderRadius: '14px', padding: '18px 52px', fontFamily: "'Lora', Georgia, serif", fontSize: '16px', fontWeight: 500, cursor: 'pointer', transition: 'all 0.15s', letterSpacing: '0.01em' }}
+            style={{ background: '#7EB3FF', color: 'white', border: 'none', borderRadius: '14px', padding: '17px 52px', fontFamily: "'Lora', Georgia, serif", fontSize: '16px', fontWeight: 500, cursor: 'pointer', transition: 'background 0.15s' }}
             onMouseEnter={e => e.currentTarget.style.background = '#6BA3EF'}
             onMouseLeave={e => e.currentTarget.style.background = '#7EB3FF'}
           >
             See how it affects you →
           </button>
-          <p style={{ fontFamily: "'Lora', Georgia, serif", fontSize: '13px', color: 'rgba(255,255,255,0.45)', fontStyle: 'italic' }}>Takes 2 minutes</p>
+          <p style={{ fontFamily: "'Lora', Georgia, serif", fontSize: '13px', color: '#AAA', fontStyle: 'italic' }}>Takes 2 minutes · Built for Ontario residents</p>
         </div>
       </div>
 
-      {/* Footer */}
-      <div style={{ position: 'relative', zIndex: 1, textAlign: 'center', padding: '20px', display: 'flex', justifyContent: 'center', gap: '20px' }}>
-        <p style={{ fontFamily: "'Inter', sans-serif", fontSize: '11px', color: 'rgba(255,255,255,0.3)' }}>Built for Ontario residents · 2026</p>
-      </div>
+      <footer style={{ textAlign: 'center', padding: '20px', fontFamily: "'Inter', sans-serif", fontSize: '11px', color: '#CCC' }}>
+        Built by Ivana Okpakovwodo · {new Date().getFullYear()}
+      </footer>
     </div>
   );
 }
@@ -438,7 +429,6 @@ function PrioritiesPage({ onComplete, existingIssues }) {
 }
 
 // ─── Profile + Priorities (combined) ─────────────────────────────────────────
-// eslint-disable-next-line no-unused-vars
 function ProfileAndPrioritiesPage({ onComplete, existingAnswers, existingIssues }) {
   const [answers, setAnswers] = useState(existingAnswers || { student: null, income: null, housing: null, employment: null });
   const [selected, setSelected] = useState(existingIssues || []);
