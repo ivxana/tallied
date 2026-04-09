@@ -267,9 +267,9 @@ function LandingPage({ onStart, onPrivacy }) {
 
         {/* Stat */}
         <div className="tl-fade-1" style={{ marginBottom: '16px' }}>
-          <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 'clamp(64px, 14vw, 104px)', fontWeight: 700, color: '#111', lineHeight: 1, letterSpacing: '-0.04em' }}>57%</div>
+          <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 'clamp(64px, 14vw, 104px)', fontWeight: 700, color: '#111', lineHeight: 1, letterSpacing: '-0.04em' }}>55%</div>
           <p style={{ fontFamily: "'Lora', Georgia, serif", fontSize: '17px', color: '#333', lineHeight: 1.65, maxWidth: '440px', margin: '10px auto 0' }}>
-            of eligible Ontario voters didn't cast a ballot in 2022. The policies they skipped affect your{' '}
+            of eligible Ontario voters didn't cast a ballot in the 2025 provincial election. The policies they skipped affect your{' '}
             <span style={{ color: '#7EB3FF', fontWeight: 500 }}>rent</span>,{' '}
             <span style={{ color: '#7EB3FF', fontWeight: 500 }}>tuition</span>, and{' '}
             <span style={{ color: '#A3244A', fontWeight: 500 }}>healthcare</span>.
