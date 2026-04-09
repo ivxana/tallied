@@ -2,15 +2,15 @@ import React, { useState } from 'react';
 
 // ─── Image URLs (Unsplash) ────────────────────────────────────────────────────
 const IMGS = {
-  landing:    'https://images.unsplash.com/photo-T9CXBZLUvic?w=1400&q=85&auto=format&fit=crop',
-  housing:    'https://images.unsplash.com/photo-Vg96IZTFubo?w=800&q=80&auto=format&fit=crop',
-  education:  'https://images.unsplash.com/photo-YZsvNs2GCPU?w=800&q=80&auto=format&fit=crop',
-  healthcare: 'https://images.unsplash.com/photo-fr3l_svzHmQ?w=800&q=80&auto=format&fit=crop',
-  jobs:       'https://images.unsplash.com/photo-B3UFXwcVbc4?w=800&q=80&auto=format&fit=crop',
-  climate:    'https://images.unsplash.com/photo-1AaRGN_vyq0?w=800&q=80&auto=format&fit=crop',
-  costoflife: 'https://images.unsplash.com/photo-cB4xzRX9ylU?w=800&q=80&auto=format&fit=crop',
-  canadaus:   'https://images.unsplash.com/photo-aJ8F0SmOBpY?w=800&q=80&auto=format&fit=crop',
-  privacy:    'https://images.unsplash.com/photo-zAhAUSdRLJ8?w=800&q=80&auto=format&fit=crop',
+  landing:    'https://images.unsplash.com/T9CXBZLUvic?w=1400&q=85&auto=format&fit=crop',
+  housing:    'https://images.unsplash.com/Vg96IZTFubo?w=800&q=80&auto=format&fit=crop',
+  education:  'https://images.unsplash.com/YZsvNs2GCPU?w=800&q=80&auto=format&fit=crop',
+  healthcare: 'https://images.unsplash.com/fr3l_svzHmQ?w=800&q=80&auto=format&fit=crop',
+  jobs:       'https://images.unsplash.com/B3UFXwcVbc4?w=800&q=80&auto=format&fit=crop',
+  climate:    'https://images.unsplash.com/1AaRGN_vyq0?w=800&q=80&auto=format&fit=crop',
+  costoflife: 'https://images.unsplash.com/cB4xzRX9ylU?w=800&q=80&auto=format&fit=crop',
+  canadaus:   'https://images.unsplash.com/aJ8F0SmOBpY?w=800&q=80&auto=format&fit=crop',
+  privacy:    'https://images.unsplash.com/zAhAUSdRLJ8?w=800&q=80&auto=format&fit=crop',
   carney:     'https://upload.wikimedia.org/wikipedia/commons/thumb/9/9d/Mark_Carney_2024.jpg/440px-Mark_Carney_2024.jpg',
   poilievre:  'https://upload.wikimedia.org/wikipedia/commons/thumb/e/e8/Pierre_Poilievre_2022.jpg/440px-Pierre_Poilievre_2022.jpg',
 };
@@ -151,7 +151,6 @@ const issueOptions = [
   { key: 'privacy',    label: 'Privacy & Tech',            description: 'Data rights, AI, digital safety',         img: IMGS.privacy },
 ];
 
-// eslint-disable-next-line no-unused-vars
 function renderMarkdown(text) {
   if (!text) return '';
   return text.replace(/\*\*([^*]+)\*\*/g, '$1').replace(/\*([^*]+)\*/g, '$1').replace(/^#{1,3}\s+/gm, '').trim();
@@ -160,7 +159,8 @@ function renderMarkdown(text) {
 // ─── NavBar ───────────────────────────────────────────────────────────────────
 function NavBar({ currentStep, onNavigate }) {
   const steps = [
-    { key: 'form', label: 'Profile & Issues' },
+    { key: 'form', label: 'Profile' },
+    { key: 'priorities', label: 'Priorities' },
     { key: 'policies', label: 'Policies' },
     { key: 'results', label: 'Comparison' },
     { key: 'summary', label: 'Summary' },
@@ -221,8 +221,13 @@ function App() {
   if (currentStep === 'landing') return <LandingPage onStart={() => setCurrentStep('form')} onChat={() => setCurrentStep('chat')} />;
   if (currentStep === 'form') return (
     <><NavBar currentStep={currentStep} onNavigate={navigate} />
-    <ProfileAndPrioritiesPage existingAnswers={userAnswers} existingIssues={selectedIssues}
-      onComplete={(answers, issues) => { setUserAnswers(answers); setSelectedIssues(issues); setCurrentStep('policies'); }} /></>
+    <PersonalizationForm existingAnswers={userAnswers}
+      onComplete={(answers) => { setUserAnswers(answers); setCurrentStep('priorities'); }} /></>
+  );
+  if (currentStep === 'priorities') return (
+    <><NavBar currentStep={currentStep} onNavigate={navigate} />
+    <PrioritiesPage existingIssues={selectedIssues}
+      onComplete={(issues) => { setSelectedIssues(issues); setCurrentStep('policies'); }} /></>
   );
   if (currentStep === 'policies') return (
     <><NavBar currentStep={currentStep} onNavigate={navigate} />
@@ -249,12 +254,12 @@ function App() {
 // ─── Landing Page ─────────────────────────────────────────────────────────────
 function LandingPage({ onStart, onChat }) {
   return (
-    <div style={{ minHeight: '100vh', background: '#0A0A0A', display: 'flex', flexDirection: 'column', position: 'relative', overflow: 'hidden' }}>
+    <div style={{ minHeight: '100vh', background: '#F5F8FF', display: 'flex', flexDirection: 'column', position: 'relative', overflow: 'hidden' }}>
 
       {/* Hero image - full bleed with overlay */}
       <div style={{ position: 'absolute', inset: 0, zIndex: 0 }}>
-        <img src={IMGS.landing} alt="People voting" style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center', opacity: 0.45 }} />
-        <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to bottom, rgba(0,0,0,0.3) 0%, rgba(0,0,0,0.7) 60%, rgba(0,0,0,0.95) 100%)' }} />
+        <img src={IMGS.landing} alt="People voting" style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center', opacity: 0.6 }} />
+        <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to bottom, rgba(10,30,80,0.55) 0%, rgba(10,30,80,0.75) 60%, rgba(10,30,80,0.88) 100%)' }} />
       </div>
 
       {/* Content */}
@@ -299,6 +304,133 @@ function LandingPage({ onStart, onChat }) {
       {/* Footer */}
       <div style={{ position: 'relative', zIndex: 1, textAlign: 'center', padding: '20px', display: 'flex', justifyContent: 'center', gap: '20px' }}>
         <p style={{ fontFamily: "'Inter', sans-serif", fontSize: '11px', color: 'rgba(255,255,255,0.3)' }}>Built for Ontario residents · 2026</p>
+      </div>
+    </div>
+  );
+}
+
+
+// ─── Personalization Form (Step 1 - Profile) ─────────────────────────────────
+function PersonalizationForm({ onComplete, existingAnswers }) {
+  const [answers, setAnswers] = useState(existingAnswers || { student: null, income: null, housing: null, employment: null });
+
+  const questions = [
+    { key: 'student',    question: 'What is your current student status?', options: ['College/university', 'In high school', 'Recently graduated', 'Not a student'] },
+    { key: 'employment', question: "What's your employment situation?",    options: ['Employed full-time', 'Employed part-time', 'Looking for work', 'Not currently working'] },
+    { key: 'income',     question: "What's your household income range?",  options: ['Under $40k', '$40k-$75k', '$75k-$120k', 'Over $120k'] },
+    { key: 'housing',    question: "What's your housing situation?",       options: ['Renting', 'Homeowner', 'Living with family', 'Looking to buy'] }
+  ];
+
+  const isComplete = answers.student && answers.income && answers.housing && answers.employment;
+  const answeredCount = [answers.student, answers.employment, answers.income, answers.housing].filter(Boolean).length;
+
+  return (
+    <div style={{ minHeight: '100vh', background: '#FEFEFE', padding: '40px 20px 100px' }}>
+      <div style={{ maxWidth: '680px', margin: '0 auto' }}>
+        <div style={{ textAlign: 'center', marginBottom: '36px' }}>
+          <p style={{ fontFamily: "'Inter', sans-serif", fontSize: '11px', fontWeight: 600, color: '#7EB3FF', letterSpacing: '0.12em', textTransform: 'uppercase', marginBottom: '8px' }}>Step 1 of 3</p>
+          <h1 style={{ fontFamily: "'Lora', Georgia, serif", fontSize: '28px', fontWeight: 500, color: '#111', marginBottom: '10px' }}>Tell us about yourself</h1>
+          <p style={{ fontFamily: "'Lora', Georgia, serif", fontSize: '15px', color: '#555', lineHeight: 1.6 }}>
+            So we can show you exactly how each policy affects your specific situation.
+          </p>
+          <div style={{ display: 'flex', justifyContent: 'center', gap: '6px', marginTop: '16px' }}>
+            {[0,1,2,3].map(i => <div key={i} style={{ width: '8px', height: '8px', borderRadius: '50%', background: i < answeredCount ? '#7EB3FF' : '#E0E0E0', transition: 'background 0.2s' }} />)}
+          </div>
+        </div>
+
+        {questions.map(({ key, question, options }) => (
+          <div key={key} style={{ background: 'white', borderRadius: '16px', padding: '22px 24px', marginBottom: '14px', border: '1px solid #E8E8E8', boxShadow: '0 1px 4px rgba(0,0,0,0.04)' }}>
+            <h2 style={{ fontFamily: "'Lora', Georgia, serif", fontSize: '17px', fontWeight: 500, color: '#111', marginBottom: '14px' }}>{question}</h2>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
+              {options.map(option => {
+                const sel = answers[key] === option;
+                return (
+                  <button key={option} onClick={() => setAnswers({ ...answers, [key]: option })}
+                    style={{ padding: '11px 14px', borderRadius: '10px', fontFamily: "'Lora', Georgia, serif", fontSize: '14px', cursor: 'pointer', transition: 'all 0.15s', background: sel ? '#7EB3FF' : '#F6F6F6', color: sel ? 'white' : '#222', border: sel ? '2px solid #7EB3FF' : '2px solid transparent', textAlign: 'left' }}
+                    onMouseEnter={e => { if (!sel) { e.currentTarget.style.background = '#EEF5FF'; e.currentTarget.style.borderColor = '#7EB3FF'; }}}
+                    onMouseLeave={e => { if (!sel) { e.currentTarget.style.background = '#F6F6F6'; e.currentTarget.style.borderColor = 'transparent'; }}}
+                  >
+                    {option}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        ))}
+
+        <div style={{ textAlign: 'center', marginTop: '24px' }}>
+          <button onClick={() => isComplete && onComplete(answers)} disabled={!isComplete}
+            style={{ padding: '16px 52px', borderRadius: '14px', fontFamily: "'Lora', Georgia, serif", fontSize: '16px', fontWeight: 500, border: 'none', cursor: isComplete ? 'pointer' : 'not-allowed', background: isComplete ? '#7EB3FF' : '#E0E0E0', color: isComplete ? 'white' : '#AAA', transition: 'all 0.15s' }}
+            onMouseEnter={e => { if (isComplete) e.currentTarget.style.background = '#6BA3EF'; }}
+            onMouseLeave={e => { if (isComplete) e.currentTarget.style.background = '#7EB3FF'; }}
+          >
+            Next: Pick Your Issues →
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ─── Priorities Page (Step 2 - Issue selection) ───────────────────────────────
+function PrioritiesPage({ onComplete, existingIssues }) {
+  const [selected, setSelected] = useState(existingIssues || []);
+
+  const toggle = (key) => {
+    if (selected.includes(key)) setSelected(selected.filter(k => k !== key));
+    else if (selected.length < 3) setSelected([...selected, key]);
+  };
+
+  return (
+    <div style={{ minHeight: '100vh', background: '#FEFEFE', padding: '40px 20px 100px' }}>
+      <div style={{ maxWidth: '680px', margin: '0 auto' }}>
+        <div style={{ textAlign: 'center', marginBottom: '32px' }}>
+          <p style={{ fontFamily: "'Inter', sans-serif", fontSize: '11px', fontWeight: 600, color: '#7EB3FF', letterSpacing: '0.12em', textTransform: 'uppercase', marginBottom: '8px' }}>Step 2 of 3</p>
+          <h1 style={{ fontFamily: "'Lora', Georgia, serif", fontSize: '28px', fontWeight: 500, color: '#111', marginBottom: '10px' }}>What matters most to you?</h1>
+          <p style={{ fontFamily: "'Lora', Georgia, serif", fontSize: '15px', color: '#555', lineHeight: 1.6, maxWidth: '440px', margin: '0 auto' }}>
+            Pick up to 3 issues. We'll filter every policy and candidate comparison through these.
+          </p>
+          <p style={{ fontFamily: "'Inter', sans-serif", fontSize: '12px', fontWeight: 600, color: '#A3244A', marginTop: '12px' }}>{selected.length} of 3 selected</p>
+        </div>
+
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '32px' }}>
+          {issueOptions.map(issue => {
+            const isSelected = selected.includes(issue.key);
+            const isDisabled = !isSelected && selected.length >= 3;
+            return (
+              <button key={issue.key} onClick={() => toggle(issue.key)} disabled={isDisabled}
+                style={{ padding: 0, borderRadius: '14px', textAlign: 'left', border: isSelected ? '2px solid #7EB3FF' : '1px solid #E8E8E8', background: 'white', cursor: isDisabled ? 'not-allowed' : 'pointer', transition: 'all 0.15s', overflow: 'hidden', boxShadow: isSelected ? '0 0 0 3px rgba(126,179,255,0.2)' : '0 1px 3px rgba(0,0,0,0.04)', opacity: isDisabled ? 0.4 : 1 }}
+                onMouseEnter={e => { if (!isDisabled && !isSelected) e.currentTarget.style.borderColor = '#7EB3FF'; }}
+                onMouseLeave={e => { if (!isDisabled && !isSelected) e.currentTarget.style.borderColor = '#E8E8E8'; }}
+              >
+                <div style={{ height: '80px', overflow: 'hidden', position: 'relative' }}>
+                  <img src={issue.img} alt={issue.label} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                  {isSelected && (
+                    <div style={{ position: 'absolute', inset: 0, background: 'rgba(126,179,255,0.25)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                      <div style={{ width: '28px', height: '28px', borderRadius: '50%', background: '#7EB3FF', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                      </div>
+                    </div>
+                  )}
+                </div>
+                <div style={{ padding: '10px 12px' }}>
+                  <div style={{ fontFamily: "'Lora', Georgia, serif", fontWeight: 500, fontSize: '13px', color: isSelected ? '#1A4FAA' : '#111', marginBottom: '2px' }}>{issue.label}</div>
+                  <div style={{ fontFamily: "'Lora', Georgia, serif", fontSize: '11px', color: '#888', fontStyle: 'italic' }}>{issue.description}</div>
+                </div>
+              </button>
+            );
+          })}
+        </div>
+
+        <div style={{ textAlign: 'center' }}>
+          <button onClick={() => selected.length > 0 && onComplete(selected)} disabled={selected.length === 0}
+            style={{ padding: '16px 52px', borderRadius: '14px', fontFamily: "'Lora', Georgia, serif", fontSize: '16px', fontWeight: 500, border: 'none', cursor: selected.length > 0 ? 'pointer' : 'not-allowed', background: selected.length > 0 ? '#7EB3FF' : '#E0E0E0', color: selected.length > 0 ? 'white' : '#AAA', transition: 'all 0.15s' }}
+            onMouseEnter={e => { if (selected.length > 0) e.currentTarget.style.background = '#6BA3EF'; }}
+            onMouseLeave={e => { if (selected.length > 0) e.currentTarget.style.background = '#7EB3FF'; }}
+          >
+            Show Me How This Affects Me →
+          </button>
+        </div>
       </div>
     </div>
   );
@@ -678,7 +810,7 @@ function ResultsPage({ answers, selectedIssues, onContinue, onRestart }) {
 
                 {/* Embedded chat buttons */}
                 <div style={{ borderTop: '1px solid #F0F0F0', paddingTop: '14px' }}>
-                  <p style={{ fontFamily: "'Inter', sans-serif", fontSize: '11px', fontWeight: 600, color: '#888', marginBottom: '10px', letterSpacing: '0.05em', textTransform: 'uppercase' }}>Ask them directly about {issueInfo.label.split(' ')[0]}</p>
+                  <p style={{ fontFamily: "'Inter', sans-serif", fontSize: '11px', fontWeight: 600, color: '#888', marginBottom: '10px', letterSpacing: '0.05em', textTransform: 'uppercase' }}>Ask about their position on {issueInfo.label.split(' ')[0]}</p>
                   <div style={{ display: 'flex', gap: '8px' }}>
                     <button onClick={() => { setActiveChatIssue(isOpen && chatMode === 'carney' ? null : issueKey); setChatMode('carney'); }}
                       style={{ flex: 1, display: 'flex', alignItems: 'center', gap: '8px', padding: '10px 14px', borderRadius: '10px', border: (isOpen && chatMode === 'carney') ? '2px solid #FCA5A5' : '1px solid #E8E8E8', background: (isOpen && chatMode === 'carney') ? '#FFF0F0' : 'white', cursor: 'pointer', transition: 'all 0.15s' }}>
@@ -758,10 +890,10 @@ function InlineChatBox({ mode, issueKey, answers, selectedIssues }) {
   };
 
   const systemPrompt = mode === 'carney'
-    ? `You are an AI simulation of Mark Carney based on his verified 2025 Liberal Party platform. Speak in first person, warmly and clearly. Focus especially on ${issueInfo?.label}. Keep responses to 2-3 short paragraphs max. No em dashes, no emojis, no markdown. User profile: ${profileSummary}. Priority issues: ${selectedIssueLabels}.
+    ? `You are an AI simulation of Mark Carney based on his verified 2025 Liberal Party platform. Speak in first person, warmly and clearly. Focus especially on ${issueInfo?.label}. Default to 3 sentences max. Only expand if the user explicitly asks for more detail. No em dashes, no emojis, no markdown stars. User profile: ${profileSummary}. Priority issues: ${selectedIssueLabels}.
 
 Key Liberal positions: Housing - GST removed for first-time buyers under $1M (saves up to $50k), 500,000 homes/year. Tax cut saving families up to $825/year. Dental care expanded to 18-64. Carbon tax cancelled, industrial pricing kept. Retaliatory tariffs on US goods directing revenue to workers.`
-    : `You are an AI simulation of Pierre Poilievre based on his verified 2025 Conservative Party platform. Speak in first person, directly and clearly. Focus especially on ${issueInfo?.label}. Keep responses to 2-3 short paragraphs max. No em dashes, no emojis, no markdown. User profile: ${profileSummary}. Priority issues: ${selectedIssueLabels}.
+    : `You are an AI simulation of Pierre Poilievre based on his verified 2025 Conservative Party platform. Speak in first person, directly and clearly. Focus especially on ${issueInfo?.label}. Default to 3 sentences max. Only expand if the user explicitly asks for more detail. No em dashes, no emojis, no markdown stars. User profile: ${profileSummary}. Priority issues: ${selectedIssueLabels}.
 
 Key Conservative positions: Housing - GST removed on ALL new homes under $1.3M, sell federal land, 2.3M homes in 5 years. Income tax cut saving workers $900/year. Cancel all carbon pricing. Early CUSMA renegotiation. Income-contingent student loan repayment.`;
 
@@ -901,16 +1033,16 @@ function DecisionSummaryPage({ answers, selectedIssues, onChat, onRestart }) {
           ))}
         </div>
 
-        {/* Chat CTA - prominent */}
-        <div style={{ background: '#111', borderRadius: '16px', padding: '28px', textAlign: 'center' }}>
-          <div style={{ display: 'flex', justifyContent: 'center', gap: '-8px', marginBottom: '14px' }}>
-            <img src={IMGS.carney} alt="Carney" style={{ width: '48px', height: '48px', borderRadius: '50%', objectFit: 'cover', objectPosition: 'top', border: '3px solid #111', marginRight: '-8px', position: 'relative', zIndex: 2 }} />
-            <img src={IMGS.poilievre} alt="Poilievre" style={{ width: '48px', height: '48px', borderRadius: '50%', objectFit: 'cover', objectPosition: 'top', border: '3px solid #111' }} />
+        {/* Chat CTA */}
+        <div style={{ background: 'white', borderRadius: '16px', padding: '24px', border: '1px solid #E0E0E0', textAlign: 'center' }}>
+          <div style={{ display: 'flex', justifyContent: 'center', gap: '8px', marginBottom: '14px' }}>
+            <img src={IMGS.carney} alt="Carney" style={{ width: '44px', height: '44px', borderRadius: '50%', objectFit: 'cover', objectPosition: 'top', border: '2px solid #FCA5A5' }} />
+            <img src={IMGS.poilievre} alt="Poilievre" style={{ width: '44px', height: '44px', borderRadius: '50%', objectFit: 'cover', objectPosition: 'top', border: '2px solid #93C5FD' }} />
           </div>
-          <h3 style={{ fontFamily: "'Lora', Georgia, serif", fontSize: '20px', fontWeight: 500, color: 'white', marginBottom: '8px' }}>Still have questions?</h3>
-          <p style={{ fontFamily: "'Lora', Georgia, serif", fontSize: '14px', color: 'rgba(255,255,255,0.6)', marginBottom: '20px' }}>Chat directly with AI simulations of the candidates, based on their verified platforms.</p>
+          <h3 style={{ fontFamily: "'Lora', Georgia, serif", fontSize: '18px', fontWeight: 500, color: '#111', marginBottom: '8px' }}>Still have questions?</h3>
+          <p style={{ fontFamily: "'Lora', Georgia, serif", fontSize: '14px', color: '#555', marginBottom: '18px' }}>Chat with AI simulations of the candidates based on their verified platforms.</p>
           <button onClick={onChat}
-            style={{ padding: '15px 40px', borderRadius: '12px', fontFamily: "'Lora', Georgia, serif", fontSize: '15px', fontWeight: 500, background: '#7EB3FF', color: 'white', border: 'none', cursor: 'pointer', transition: 'background 0.15s' }}
+            style={{ padding: '14px 36px', borderRadius: '12px', fontFamily: "'Lora', Georgia, serif", fontSize: '15px', fontWeight: 500, background: '#7EB3FF', color: 'white', border: 'none', cursor: 'pointer', transition: 'background 0.15s' }}
             onMouseEnter={e => e.currentTarget.style.background = '#6BA3EF'}
             onMouseLeave={e => e.currentTarget.style.background = '#7EB3FF'}
           >
@@ -940,11 +1072,11 @@ function ChatPage({ answers, selectedIssues, onRestart }) {
 
   const systemPrompts = {
     carney: `You are an AI simulation of Mark Carney based on his verified 2025 Liberal Party platform. Speak in first person, warmly and clearly. You are talking to a Canadian voter.
-RULES: Only make claims grounded in the verified 2025 Liberal platform. Never tell the user who to vote for. Do NOT use em dashes. Do NOT use emojis. Do NOT use markdown. Separate paragraphs with blank lines. Keep responses to 2-4 short paragraphs max. Never make up policies or numbers. For verifiable claims end with: SOURCES: [Label](URL).
+RULES: Only make claims grounded in the verified 2025 Liberal platform. Never tell the user who to vote for. Do NOT use em dashes. Do NOT use emojis. Do NOT use markdown. Separate paragraphs with blank lines. Default to 3 sentences max. Expand only if the user asks. Never make up policies or numbers. For verifiable claims end with: SOURCES: [Label](URL).
 User profile: ${profileSummary}. Priority issues: ${selectedIssueLabels}.
 Key Liberal positions: GST removed for first-time buyers under $1M (up to $50k saved). 500,000 homes/year. Tax cut saving families up to $825/year. Dental care expanded to 18-64. Carbon tax cancelled, industrial pricing kept. Retaliatory tariffs on US goods, revenue to workers.`,
     poilievre: `You are an AI simulation of Pierre Poilievre based on his verified 2025 Conservative Party platform. Speak in first person, directly and clearly. You are talking to a Canadian voter.
-RULES: Only make claims grounded in the verified 2025 Conservative platform. Never tell the user who to vote for. Do NOT use em dashes. Do NOT use emojis. Do NOT use markdown. Separate paragraphs with blank lines. Keep responses to 2-4 short paragraphs max. Never make up policies or numbers. For verifiable claims end with: SOURCES: [Label](URL).
+RULES: Only make claims grounded in the verified 2025 Conservative platform. Never tell the user who to vote for. Do NOT use em dashes. Do NOT use emojis. Do NOT use markdown. Separate paragraphs with blank lines. Default to 3 sentences max. Expand only if the user asks. Never make up policies or numbers. For verifiable claims end with: SOURCES: [Label](URL).
 User profile: ${profileSummary}. Priority issues: ${selectedIssueLabels}.
 Key Conservative positions: GST removed on ALL new homes under $1.3M. Sell federal land for housing. 2.3M homes in 5 years. Income tax cut saving workers $900/year. Cancel all carbon pricing. Early CUSMA renegotiation. Income-contingent student loan repayment.`
   };
