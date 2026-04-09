@@ -151,6 +151,7 @@ const issueOptions = [
   { key: 'privacy',    label: 'Privacy & Tech',            description: 'Data rights, AI, digital safety',         img: IMGS.privacy },
 ];
 
+// eslint-disable-next-line no-unused-vars
 function renderMarkdown(text) {
   if (!text) return '';
   return text.replace(/\*\*([^*]+)\*\*/g, '$1').replace(/\*([^*]+)\*/g, '$1').replace(/^#{1,3}\s+/gm, '').trim();
@@ -437,6 +438,7 @@ function PrioritiesPage({ onComplete, existingIssues }) {
 }
 
 // ─── Profile + Priorities (combined) ─────────────────────────────────────────
+// eslint-disable-next-line no-unused-vars
 function ProfileAndPrioritiesPage({ onComplete, existingAnswers, existingIssues }) {
   const [answers, setAnswers] = useState(existingAnswers || { student: null, income: null, housing: null, employment: null });
   const [selected, setSelected] = useState(existingIssues || []);
