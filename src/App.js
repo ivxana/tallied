@@ -11,8 +11,8 @@ const IMGS = {
   costoflife: '/images/costoflife.jpg',
   canadaus:   '/images/canadaus.jpg',
   privacy:    '/images/privacy.jpg',
-  carney:     'https://upload.wikimedia.org/wikipedia/commons/thumb/9/9d/Mark_Carney_2024.jpg/440px-Mark_Carney_2024.jpg',
-  poilievre:  'https://upload.wikimedia.org/wikipedia/commons/thumb/e/e8/Pierre_Poilievre_2022.jpg/440px-Pierre_Poilievre_2022.jpg',
+  carney:     '/images/carney.jpg',
+  poilievre:  '/images/poilievre.jpg',
 };
 
 // ─── Policy data ──────────────────────────────────────────────────────────────
