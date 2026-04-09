@@ -11,8 +11,8 @@ const IMGS = {
   costoflife: '/images/costoflife.jpg',
   canadaus:   '/images/canadaus.jpg',
   privacy:    '/images/privacy.jpg',
-  carney:     '/images/carney.jpg',
-  poilievre:  '/images/poilievre.jpg',
+  carney:     'https://upload.wikimedia.org/wikipedia/commons/thumb/9/9d/Mark_Carney_2024.jpg/440px-Mark_Carney_2024.jpg',
+  poilievre:  'https://upload.wikimedia.org/wikipedia/commons/thumb/e/e8/Pierre_Poilievre_2022.jpg/440px-Pierre_Poilievre_2022.jpg',
 };
 
 // ─── Policy data ──────────────────────────────────────────────────────────────
@@ -151,7 +151,6 @@ const issueOptions = [
   { key: 'privacy',    label: 'Privacy & Tech',            description: 'Data rights, AI, digital safety',         img: IMGS.privacy },
 ];
 
-// eslint-disable-next-line no-unused-vars
 function renderMarkdown(text) {
   if (!text) return '';
   return text.replace(/\*\*([^*]+)\*\*/g, '$1').replace(/\*([^*]+)\*/g, '$1').replace(/^#{1,3}\s+/gm, '').trim();
@@ -219,7 +218,7 @@ function App() {
     else setCurrentStep(step);
   };
 
-  if (currentStep === 'landing') return <LandingPage onStart={() => setCurrentStep('form')} />;
+  if (currentStep === 'landing') return <LandingPage onStart={() => setCurrentStep('form')} onPrivacy={() => setCurrentStep('privacy')} />;
   if (currentStep === 'form') return (
     <><NavBar currentStep={currentStep} onNavigate={navigate} />
     <PersonalizationForm existingAnswers={userAnswers}
@@ -253,7 +252,7 @@ function App() {
 }
 
 // ─── Landing Page ─────────────────────────────────────────────────────────────
-function LandingPage({ onStart }) {
+function LandingPage({ onStart, onPrivacy }) {
   return (
     <div style={{ minHeight: '100vh', background: '#FEFEFE', display: 'flex', flexDirection: 'column', fontFamily: "'Lora', Georgia, serif" }}>
       <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '60px 24px 40px', textAlign: 'center' }}>
@@ -297,6 +296,9 @@ function LandingPage({ onStart }) {
 
       <footer style={{ textAlign: 'center', padding: '20px', fontFamily: "'Inter', sans-serif", fontSize: '11px', color: '#CCC' }}>
         Built by Ivana Okpakovwodo · {new Date().getFullYear()}
+        <div style={{ marginTop: '6px' }}>
+          <button onClick={() => onPrivacy && onPrivacy()} style={{ color: '#CCC', background: 'none', border: 'none', cursor: 'pointer', textDecoration: 'underline', fontSize: '11px', fontFamily: "'Inter', sans-serif" }}>Privacy & Terms</button>
+        </div>
       </footer>
     </div>
   );
@@ -305,17 +307,16 @@ function LandingPage({ onStart }) {
 
 // ─── Personalization Form (Step 1 - Profile) ─────────────────────────────────
 function PersonalizationForm({ onComplete, existingAnswers }) {
-  const [answers, setAnswers] = useState(existingAnswers || { student: null, income: null, housing: null, employment: null });
+  const [answers, setAnswers] = useState(existingAnswers || { student: null, housing: null, employment: null });
 
   const questions = [
     { key: 'student',    question: 'What is your current student status?', options: ['College/university', 'In high school', 'Recently graduated', 'Not a student'] },
     { key: 'employment', question: "What's your employment situation?",    options: ['Employed full-time', 'Employed part-time', 'Looking for work', 'Not currently working'] },
-    { key: 'income',     question: "What's your household income range?",  options: ['Under $40k', '$40k-$75k', '$75k-$120k', 'Over $120k'] },
     { key: 'housing',    question: "What's your housing situation?",       options: ['Renting', 'Homeowner', 'Living with family', 'Looking to buy'] }
   ];
 
-  const isComplete = answers.student && answers.income && answers.housing && answers.employment;
-  const answeredCount = [answers.student, answers.employment, answers.income, answers.housing].filter(Boolean).length;
+  const isComplete = answers.student && answers.housing && answers.employment;
+  const answeredCount = [answers.student, answers.employment, answers.housing].filter(Boolean).length;
 
   return (
     <div style={{ minHeight: '100vh', background: '#FEFEFE', padding: '40px 20px 100px' }}>
@@ -327,7 +328,7 @@ function PersonalizationForm({ onComplete, existingAnswers }) {
             So we can show you exactly how each policy affects your specific situation.
           </p>
           <div style={{ display: 'flex', justifyContent: 'center', gap: '6px', marginTop: '16px' }}>
-            {[0,1,2,3].map(i => <div key={i} style={{ width: '8px', height: '8px', borderRadius: '50%', background: i < answeredCount ? '#7EB3FF' : '#E0E0E0', transition: 'background 0.2s' }} />)}
+            {[0,1,2].map(i => <div key={i} style={{ width: '8px', height: '8px', borderRadius: '50%', background: i < answeredCount ? '#7EB3FF' : '#E0E0E0', transition: 'background 0.2s' }} />)}
           </div>
         </div>
 
@@ -430,9 +431,8 @@ function PrioritiesPage({ onComplete, existingIssues }) {
 }
 
 // ─── Profile + Priorities (combined) ─────────────────────────────────────────
-// eslint-disable-next-line no-unused-vars
 function ProfileAndPrioritiesPage({ onComplete, existingAnswers, existingIssues }) {
-  const [answers, setAnswers] = useState(existingAnswers || { student: null, income: null, housing: null, employment: null });
+  const [answers, setAnswers] = useState(existingAnswers || { student: null, housing: null, employment: null });
   const [selected, setSelected] = useState(existingIssues || []);
 
   const questions = [
@@ -733,7 +733,7 @@ function ResultsPage({ answers, selectedIssues, onContinue, onRestart }) {
             <img src={IMGS.carney} alt="Mark Carney" style={{ width: '52px', height: '52px', borderRadius: '50%', objectFit: 'cover', objectPosition: 'top', border: '2px solid #FCA5A5' }} />
             <div>
               <p style={{ fontFamily: "'Lora', Georgia, serif", fontSize: '15px', fontWeight: 500, color: '#111' }}>Mark Carney</p>
-              <span style={{ fontFamily: "'Inter', sans-serif", fontSize: '10px', background: '#FEE2E2', color: '#991B1B', padding: '2px 8px', borderRadius: '20px', fontWeight: 600 }}>Liberal - Current PM</span>
+              <span style={{ fontFamily: "'Inter', sans-serif", fontSize: '10px', background: '#FEE2E2', color: '#991B1B', padding: '2px 8px', borderRadius: '20px', fontWeight: 600 }}>Liberal</span>
             </div>
           </div>
           <div style={{ width: '1px', height: '40px', background: '#E8E8E8' }} />
@@ -741,7 +741,7 @@ function ResultsPage({ answers, selectedIssues, onContinue, onRestart }) {
             <img src={IMGS.poilievre} alt="Pierre Poilievre" style={{ width: '52px', height: '52px', borderRadius: '50%', objectFit: 'cover', objectPosition: 'top', border: '2px solid #93C5FD' }} />
             <div>
               <p style={{ fontFamily: "'Lora', Georgia, serif", fontSize: '15px', fontWeight: 500, color: '#111' }}>Pierre Poilievre</p>
-              <span style={{ fontFamily: "'Inter', sans-serif", fontSize: '10px', background: '#DBEAFE', color: '#1E40AF', padding: '2px 8px', borderRadius: '20px', fontWeight: 600 }}>Conservative - Opposition</span>
+              <span style={{ fontFamily: "'Inter', sans-serif", fontSize: '10px', background: '#DBEAFE', color: '#1E40AF', padding: '2px 8px', borderRadius: '20px', fontWeight: 600 }}>Conservative</span>
             </div>
           </div>
         </div>
@@ -919,7 +919,7 @@ Key Conservative positions: Housing - GST removed on ALL new homes under $1.3M, 
         <img src={candidate.img} alt={candidate.name} style={{ width: '28px', height: '28px', borderRadius: '50%', objectFit: 'cover', objectPosition: 'top' }} />
         <div>
           <p style={{ fontFamily: "'Lora', Georgia, serif", fontSize: '13px', fontWeight: 500, color: '#111' }}>{candidate.name}</p>
-          <p style={{ fontFamily: "'Inter', sans-serif", fontSize: '10px', color: '#888', fontStyle: 'italic' }}>AI simulation based on verified 2025 platform positions only</p>
+          <p style={{ fontFamily: "'Inter', sans-serif", fontSize: '10px', color: '#888', fontStyle: 'italic' }}>AI simulation of platform positions only - NOT the real candidate</p>
         </div>
       </div>
 
@@ -1076,8 +1076,8 @@ Key Conservative positions: GST removed on ALL new homes under $1.3M. Sell feder
   };
 
   const candidates = {
-    carney: { name: 'Mark Carney', img: IMGS.carney, bubbleBg: '#FEF2F2', bubbleBorder: '#FECACA', badge: 'Liberal - Current PM', badgeBg: '#FEE2E2', badgeText: '#991B1B', intro: "I'm an AI simulation of Mark Carney, based on his verified 2025 Liberal platform. Ask me about housing, healthcare, climate, jobs, or anything else. What's on your mind?" },
-    poilievre: { name: 'Pierre Poilievre', img: IMGS.poilievre, bubbleBg: '#EFF6FF', bubbleBorder: '#BFDBFE', badge: 'Conservative - Opposition', badgeBg: '#DBEAFE', badgeText: '#1E40AF', intro: "I'm an AI simulation of Pierre Poilievre, based on his verified 2025 Conservative platform. Ask me about housing, jobs, affordability, trade, or anything else. What do you want to know?" }
+    carney: { name: 'Mark Carney', img: IMGS.carney, bubbleBg: '#FEF2F2', bubbleBorder: '#FECACA', badge: 'Liberal', badgeBg: '#FEE2E2', badgeText: '#991B1B', intro: "I'm an AI simulation of Mark Carney, based on his verified 2025 Liberal platform. Ask me about housing, healthcare, climate, jobs, or anything else. What's on your mind?" },
+    poilievre: { name: 'Pierre Poilievre', img: IMGS.poilievre, bubbleBg: '#EFF6FF', bubbleBorder: '#BFDBFE', badge: 'Conservative', badgeBg: '#DBEAFE', badgeText: '#1E40AF', intro: "I'm an AI simulation of Pierre Poilievre, based on his verified 2025 Conservative platform. Ask me about housing, jobs, affordability, trade, or anything else. What do you want to know?" }
   };
 
   const config = candidates[mode];
@@ -1149,7 +1149,7 @@ Key Conservative positions: GST removed on ALL new homes under $1.3M. Sell feder
       <div style={{ maxWidth: '800px', margin: '0 auto', width: '100%', padding: '10px 20px 0' }}>
         <div style={{ background: '#FFF0F3', border: '1px solid #F4B8C4', borderRadius: '8px', padding: '8px 14px' }}>
           <p style={{ fontFamily: "'Lora', Georgia, serif", fontSize: '11px', color: '#7A1A34', fontStyle: 'italic' }}>
-            AI simulation based on verified 2025 platform positions only. Not the real candidate. Always cross-reference with official sources.
+            This is an AI tool simulating platform positions, NOT the real candidate or their team. Responses are based on verified 2025 party platforms only. Always verify with official sources.
           </p>
         </div>
       </div>
