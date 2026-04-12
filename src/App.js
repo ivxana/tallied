@@ -152,7 +152,6 @@ const issueOptions = [
 ];
 
 // eslint-disable-next-line no-unused-vars
-// eslint-disable-next-line no-unused-vars
 function renderMarkdown(text) {
   if (!text) return '';
   return text.replace(/\*\*([^*]+)\*\*/g, '$1').replace(/\*([^*]+)\*/g, '$1').replace(/^#{1,3}\s+/gm, '').trim();
@@ -267,7 +266,7 @@ function LandingPage({ onStart, onPrivacy }) {
         </div>
         <p className="tl-fade" style={{ fontFamily: "'Inter', sans-serif", fontSize: '10px', letterSpacing: '0.18em', textTransform: 'uppercase', color: '#AAA', fontWeight: 600, marginBottom: '16px' }}>Voting, Personalized</p>
         <div className="tl-fade" style={{ background: '#F0F5FF', border: '1px solid #C8DCFF', borderRadius: '20px', padding: '5px 14px', marginBottom: '32px' }}>
-          <p style={{ fontFamily: "'Inter', sans-serif", fontSize: '11px', color: '#2D6FD4', fontWeight: 500 }}>Non-partisan educational tool</p>
+          <p style={{ fontFamily: "'Inter', sans-serif", fontSize: '11px', color: '#2D6FD4', fontWeight: 500 }}>Non-partisan educational tool · Not affiliated with any party</p>
         </div>
 
         {/* Stat */}
@@ -335,7 +334,7 @@ function PersonalizationForm({ onComplete, existingAnswers }) {
             So we can show you exactly how each policy affects your specific situation.
           </p>
           <p style={{ fontFamily: "'Inter', sans-serif", fontSize: '11px', color: '#AAA', background: '#F8F8F8', borderRadius: '8px', padding: '6px 12px', display: 'inline-block' }}>
-            Your answers stay on your device only and are never saved or shared.
+            🔒 Your answers stay on your device only and are never saved or shared.
           </p>
           <div style={{ display: 'flex', justifyContent: 'center', gap: '6px', marginTop: '16px' }}>
             {[0,1,2].map(i => <div key={i} style={{ width: '8px', height: '8px', borderRadius: '50%', background: i < answeredCount ? '#7EB3FF' : '#E0E0E0', transition: 'background 0.2s' }} />)}
@@ -441,7 +440,6 @@ function PrioritiesPage({ onComplete, existingIssues }) {
 }
 
 // ─── Profile + Priorities (combined) ─────────────────────────────────────────
-// eslint-disable-next-line no-unused-vars
 // eslint-disable-next-line no-unused-vars
 function ProfileAndPrioritiesPage({ onComplete, existingAnswers, existingIssues }) {
   const [answers, setAnswers] = useState(existingAnswers || { student: null, housing: null, employment: null });
@@ -743,8 +741,8 @@ function ResultsPage({ answers, selectedIssues, onContinue, onRestart }) {
         </div>
 
         {/* Candidate photo header */}
-        <div style={{ background: '#FFF8E8', borderRadius: '10px', padding: '8px 16px', marginBottom: '12px', border: '1px solid #FFE4A0', textAlign: 'center' }}>
-          <p style={{ fontFamily: "'Inter', sans-serif", fontSize: '11px', color: '#92600A', fontWeight: 500 }}>Based on verified 2025 party platforms · Not affiliated with any candidate</p>
+        <div style={{ background: '#EEF4FF', borderRadius: '10px', padding: '8px 16px', marginBottom: '12px', border: '1px solid #C8DCFF', textAlign: 'center' }}>
+          <p style={{ fontFamily: "'Inter', sans-serif", fontSize: '11px', color: '#2D6FD4', fontWeight: 500 }}>AI Simulation · Based on verified 2025 party platforms · Not affiliated with any candidate</p>
         </div>
         <div style={{ background: 'white', borderRadius: '16px', padding: '20px 24px', marginBottom: '24px', border: '1px solid #E0E0E0', display: 'flex', gap: '16px', alignItems: 'center' }}>
           <div style={{ flex: 1, display: 'flex', alignItems: 'center', gap: '12px' }}>
@@ -902,10 +900,10 @@ function InlineChatBox({ mode, issueKey, answers, selectedIssues }) {
   };
 
   const systemPrompt = mode === 'carney'
-    ? `You are an AI simulation of Mark Carney based on his verified 2025 Liberal Party platform. Speak in first person, warmly and clearly. Focus especially on ${issueInfo?.label}. Default to 3 sentences max. Only expand if the user explicitly asks for more detail. No em dashes, no emojis, no markdown stars. User profile: ${profileSummary}. Priority issues: ${selectedIssueLabels}.
+    ? `You are an AI simulation based on Mark Carney's verified 2025 Liberal Party platform. You are NOT Mark Carney - if asked, clearly say so. Focus especially on ${issueInfo?.label}. Default to 3 sentences max. Only expand if the user explicitly asks for more detail. No em dashes, no emojis, no markdown stars. User profile: ${profileSummary}. Priority issues: ${selectedIssueLabels}.
 
 Key Liberal positions: Housing - GST removed for first-time buyers under $1M (saves up to $50k), 500,000 homes/year. Tax cut saving families up to $825/year. Dental care expanded to 18-64. Carbon tax cancelled, industrial pricing kept. Retaliatory tariffs on US goods directing revenue to workers.`
-    : `You are an AI simulation of Pierre Poilievre based on his verified 2025 Conservative Party platform. Speak in first person, directly and clearly. Focus especially on ${issueInfo?.label}. Default to 3 sentences max. Only expand if the user explicitly asks for more detail. No em dashes, no emojis, no markdown stars. User profile: ${profileSummary}. Priority issues: ${selectedIssueLabels}.
+    : `You are an AI simulation based on Pierre Poilievre's verified 2025 Conservative Party platform. You are NOT Pierre Poilievre - if asked, clearly say so. Focus especially on ${issueInfo?.label}. Default to 3 sentences max. Only expand if the user explicitly asks for more detail. No em dashes, no emojis, no markdown stars. User profile: ${profileSummary}. Priority issues: ${selectedIssueLabels}.
 
 Key Conservative positions: Housing - GST removed on ALL new homes under $1.3M, sell federal land, 2.3M homes in 5 years. Income tax cut saving workers $900/year. Cancel all carbon pricing. Early CUSMA renegotiation. Income-contingent student loan repayment.`;
 
@@ -1083,11 +1081,11 @@ function ChatPage({ answers, selectedIssues, onRestart }) {
   const selectedIssueLabels = selectedIssues ? issueOptions.filter(i => selectedIssues.includes(i.key)).map(i => i.label).join(', ') : 'Not selected';
 
   const systemPrompts = {
-    carney: `You are an AI simulation of Mark Carney based on his verified 2025 Liberal Party platform. Speak in first person, warmly and clearly. You are talking to a Canadian voter.
+    carney: `You are an AI simulation based on Mark Carney's verified 2025 Liberal Party platform. You are NOT Mark Carney and must never claim to be. If anyone asks whether you are the real Mark Carney or a real person, clearly say: "No - I'm an AI simulation built by Tallied, based only on Mark Carney's public 2025 platform positions. I'm not him or anyone from his team." Speak in first person about platform positions only.
 RULES: Only make claims grounded in the verified 2025 Liberal platform. Never tell the user who to vote for. Do NOT use em dashes. Do NOT use emojis. Do NOT use markdown. Separate paragraphs with blank lines. Default to 3 sentences max. Expand only if the user asks. Never make up policies or numbers. For verifiable claims end with: SOURCES: [Label](URL).
 User profile: ${profileSummary}. Priority issues: ${selectedIssueLabels}.
 Key Liberal positions: GST removed for first-time buyers under $1M (up to $50k saved). 500,000 homes/year. Tax cut saving families up to $825/year. Dental care expanded to 18-64. Carbon tax cancelled, industrial pricing kept. Retaliatory tariffs on US goods, revenue to workers.`,
-    poilievre: `You are an AI simulation of Pierre Poilievre based on his verified 2025 Conservative Party platform. Speak in first person, directly and clearly. You are talking to a Canadian voter.
+    poilievre: `You are an AI simulation based on Pierre Poilievre's verified 2025 Conservative Party platform. You are NOT Pierre Poilievre and must never claim to be. If anyone asks whether you are the real Pierre Poilievre or a real person, clearly say: "No - I'm an AI simulation built by Tallied, based only on Pierre Poilievre's public 2025 platform positions. I'm not him or anyone from his team." Speak in first person about platform positions only.
 RULES: Only make claims grounded in the verified 2025 Conservative platform. Never tell the user who to vote for. Do NOT use em dashes. Do NOT use emojis. Do NOT use markdown. Separate paragraphs with blank lines. Default to 3 sentences max. Expand only if the user asks. Never make up policies or numbers. For verifiable claims end with: SOURCES: [Label](URL).
 User profile: ${profileSummary}. Priority issues: ${selectedIssueLabels}.
 Key Conservative positions: GST removed on ALL new homes under $1.3M. Sell federal land for housing. 2.3M homes in 5 years. Income tax cut saving workers $900/year. Cancel all carbon pricing. Early CUSMA renegotiation. Income-contingent student loan repayment.`
@@ -1166,12 +1164,12 @@ Key Conservative positions: GST removed on ALL new homes under $1.3M. Sell feder
       {/* Disclaimer */}
       <div style={{ maxWidth: '800px', margin: '0 auto', width: '100%', padding: '10px 20px 0' }}>
         <div style={{ background: '#FFF0F3', border: '1.5px solid #F4B8C4', borderRadius: '10px', padding: '12px 16px' }}>
-          <p style={{ fontFamily: "'Inter', sans-serif", fontSize: '12px', fontWeight: 600, color: '#A3244A', marginBottom: '4px' }}>Important: AI Simulation Only</p>
+          <p style={{ fontFamily: "'Inter', sans-serif", fontSize: '12px', fontWeight: 600, color: '#A3244A', marginBottom: '4px' }}>⚠️ Important: AI Simulation Only</p>
           <p style={{ fontFamily: "'Lora', Georgia, serif", fontSize: '13px', color: '#7A1A34', lineHeight: 1.5 }}>
             These are AI simulations based on verified 2025 platform positions - NOT the real candidates or their teams. Always verify with official party websites before making voting decisions.
           </p>
           <p style={{ fontFamily: "'Inter', sans-serif", fontSize: '11px', color: '#AAA', marginTop: '6px' }}>
-            Your messages are not stored. This conversation is private.
+            🔒 Your messages are not stored. This conversation is private.
           </p>
         </div>
       </div>
