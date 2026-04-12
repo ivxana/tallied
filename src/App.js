@@ -11,8 +11,8 @@ const IMGS = {
   costoflife: '/images/costoflife.jpg',
   canadaus:   '/images/canadaus.jpg',
   privacy:    '/images/privacy.jpg',
-  carney:     'https://upload.wikimedia.org/wikipedia/commons/thumb/9/9d/Mark_Carney_2024.jpg/440px-Mark_Carney_2024.jpg',
-  poilievre:  'https://upload.wikimedia.org/wikipedia/commons/thumb/e/e8/Pierre_Poilievre_2022.jpg/440px-Pierre_Poilievre_2022.jpg',
+  carney:     '/images/carney.jpg',
+  poilievre:  '/images/poilievre.jpg',
 };
 
 // ─── Policy data ──────────────────────────────────────────────────────────────
@@ -266,7 +266,7 @@ function LandingPage({ onStart, onPrivacy }) {
         </div>
         <p className="tl-fade" style={{ fontFamily: "'Inter', sans-serif", fontSize: '10px', letterSpacing: '0.18em', textTransform: 'uppercase', color: '#AAA', fontWeight: 600, marginBottom: '16px' }}>Voting, Personalized</p>
         <div className="tl-fade" style={{ background: '#F0F5FF', border: '1px solid #C8DCFF', borderRadius: '20px', padding: '5px 14px', marginBottom: '32px' }}>
-          <p style={{ fontFamily: "'Inter', sans-serif", fontSize: '11px', color: '#2D6FD4', fontWeight: 500 }}>Non-partisan educational tool · Not affiliated with any party</p>
+          <p style={{ fontFamily: "'Inter', sans-serif", fontSize: '11px', color: '#2D6FD4', fontWeight: 500 }}>Non-partisan educational tool</p>
         </div>
 
         {/* Stat */}
@@ -334,7 +334,7 @@ function PersonalizationForm({ onComplete, existingAnswers }) {
             So we can show you exactly how each policy affects your specific situation.
           </p>
           <p style={{ fontFamily: "'Inter', sans-serif", fontSize: '11px', color: '#AAA', background: '#F8F8F8', borderRadius: '8px', padding: '6px 12px', display: 'inline-block' }}>
-            🔒 Your answers stay on your device only and are never saved or shared.
+            Your answers stay on your device only and are never saved or shared.
           </p>
           <div style={{ display: 'flex', justifyContent: 'center', gap: '6px', marginTop: '16px' }}>
             {[0,1,2].map(i => <div key={i} style={{ width: '8px', height: '8px', borderRadius: '50%', background: i < answeredCount ? '#7EB3FF' : '#E0E0E0', transition: 'background 0.2s' }} />)}
@@ -742,7 +742,7 @@ function ResultsPage({ answers, selectedIssues, onContinue, onRestart }) {
 
         {/* Candidate photo header */}
         <div style={{ background: '#FFF8E8', borderRadius: '10px', padding: '8px 16px', marginBottom: '12px', border: '1px solid #FFE4A0', textAlign: 'center' }}>
-          <p style={{ fontFamily: "'Inter', sans-serif", fontSize: '11px', color: '#92600A', fontWeight: 500 }}>AI Simulation · Based on verified 2025 party platforms · Not affiliated with any candidate</p>
+          <p style={{ fontFamily: "'Inter', sans-serif", fontSize: '11px', color: '#92600A', fontWeight: 500 }}>Based on verified 2025 party platforms · Not affiliated with any candidate</p>
         </div>
         <div style={{ background: 'white', borderRadius: '16px', padding: '20px 24px', marginBottom: '24px', border: '1px solid #E0E0E0', display: 'flex', gap: '16px', alignItems: 'center' }}>
           <div style={{ flex: 1, display: 'flex', alignItems: 'center', gap: '12px' }}>
@@ -1164,12 +1164,12 @@ Key Conservative positions: GST removed on ALL new homes under $1.3M. Sell feder
       {/* Disclaimer */}
       <div style={{ maxWidth: '800px', margin: '0 auto', width: '100%', padding: '10px 20px 0' }}>
         <div style={{ background: '#FFF0F3', border: '1.5px solid #F4B8C4', borderRadius: '10px', padding: '12px 16px' }}>
-          <p style={{ fontFamily: "'Inter', sans-serif", fontSize: '12px', fontWeight: 600, color: '#A3244A', marginBottom: '4px' }}>⚠️ Important: AI Simulation Only</p>
+          <p style={{ fontFamily: "'Inter', sans-serif", fontSize: '12px', fontWeight: 600, color: '#A3244A', marginBottom: '4px' }}>Important: AI Simulation Only</p>
           <p style={{ fontFamily: "'Lora', Georgia, serif", fontSize: '13px', color: '#7A1A34', lineHeight: 1.5 }}>
             These are AI simulations based on verified 2025 platform positions - NOT the real candidates or their teams. Always verify with official party websites before making voting decisions.
           </p>
           <p style={{ fontFamily: "'Inter', sans-serif", fontSize: '11px', color: '#AAA', marginTop: '6px' }}>
-            🔒 Your messages are not stored. This conversation is private.
+            Your messages are not stored. This conversation is private.
           </p>
         </div>
       </div>
