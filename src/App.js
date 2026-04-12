@@ -152,6 +152,7 @@ const issueOptions = [
 ];
 
 // eslint-disable-next-line no-unused-vars
+// eslint-disable-next-line no-unused-vars
 function renderMarkdown(text) {
   if (!text) return '';
   return text.replace(/\*\*([^*]+)\*\*/g, '$1').replace(/\*([^*]+)\*/g, '$1').replace(/^#{1,3}\s+/gm, '').trim();
@@ -440,6 +441,7 @@ function PrioritiesPage({ onComplete, existingIssues }) {
 }
 
 // ─── Profile + Priorities (combined) ─────────────────────────────────────────
+// eslint-disable-next-line no-unused-vars
 // eslint-disable-next-line no-unused-vars
 function ProfileAndPrioritiesPage({ onComplete, existingAnswers, existingIssues }) {
   const [answers, setAnswers] = useState(existingAnswers || { student: null, housing: null, employment: null });
