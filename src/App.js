@@ -152,6 +152,7 @@ const issueOptions = [
 ];
 
 // eslint-disable-next-line no-unused-vars
+// eslint-disable-next-line no-unused-vars
 function renderMarkdown(text) {
   if (!text) return '';
   return text.replace(/\*\*([^*]+)\*\*/g, '$1').replace(/\*([^*]+)\*/g, '$1').replace(/^#{1,3}\s+/gm, '').trim();
@@ -334,7 +335,7 @@ function PersonalizationForm({ onComplete, existingAnswers }) {
             So we can show you exactly how each policy affects your specific situation.
           </p>
           <p style={{ fontFamily: "'Inter', sans-serif", fontSize: '11px', color: '#AAA', background: '#F8F8F8', borderRadius: '8px', padding: '6px 12px', display: 'inline-block' }}>
-            🔒 Your answers stay on your device only and are never saved or shared.
+            Your answers stay on your device only and are never saved or shared.
           </p>
           <div style={{ display: 'flex', justifyContent: 'center', gap: '6px', marginTop: '16px' }}>
             {[0,1,2].map(i => <div key={i} style={{ width: '8px', height: '8px', borderRadius: '50%', background: i < answeredCount ? '#7EB3FF' : '#E0E0E0', transition: 'background 0.2s' }} />)}
@@ -440,6 +441,7 @@ function PrioritiesPage({ onComplete, existingIssues }) {
 }
 
 // ─── Profile + Priorities (combined) ─────────────────────────────────────────
+// eslint-disable-next-line no-unused-vars
 // eslint-disable-next-line no-unused-vars
 function ProfileAndPrioritiesPage({ onComplete, existingAnswers, existingIssues }) {
   const [answers, setAnswers] = useState(existingAnswers || { student: null, housing: null, employment: null });
@@ -1164,12 +1166,12 @@ Key Conservative positions: GST removed on ALL new homes under $1.3M. Sell feder
       {/* Disclaimer */}
       <div style={{ maxWidth: '800px', margin: '0 auto', width: '100%', padding: '10px 20px 0' }}>
         <div style={{ background: '#FFF0F3', border: '1.5px solid #F4B8C4', borderRadius: '10px', padding: '12px 16px' }}>
-          <p style={{ fontFamily: "'Inter', sans-serif", fontSize: '12px', fontWeight: 600, color: '#A3244A', marginBottom: '4px' }}>⚠️ Important: AI Simulation Only</p>
+          <p style={{ fontFamily: "'Inter', sans-serif", fontSize: '12px', fontWeight: 600, color: '#A3244A', marginBottom: '4px' }}>Important: AI Simulation Only</p>
           <p style={{ fontFamily: "'Lora', Georgia, serif", fontSize: '13px', color: '#7A1A34', lineHeight: 1.5 }}>
             These are AI simulations based on verified 2025 platform positions - NOT the real candidates or their teams. Always verify with official party websites before making voting decisions.
           </p>
           <p style={{ fontFamily: "'Inter', sans-serif", fontSize: '11px', color: '#AAA', marginTop: '6px' }}>
-            🔒 Your messages are not stored. This conversation is private.
+            Your messages are not stored. This conversation is private.
           </p>
         </div>
       </div>
