@@ -11,8 +11,8 @@ const IMGS = {
   costoflife: '/images/costoflife.jpg',
   canadaus:   '/images/canadaus.jpg',
   privacy:    '/images/privacy.jpg',
-  carney:     '/images/carney.jpg',
-  poilievre:  '/images/poilievre.jpg',
+  carney:     'https://upload.wikimedia.org/wikipedia/commons/thumb/9/9d/Mark_Carney_2024.jpg/440px-Mark_Carney_2024.jpg',
+  poilievre:  'https://upload.wikimedia.org/wikipedia/commons/thumb/e/e8/Pierre_Poilievre_2022.jpg/440px-Pierre_Poilievre_2022.jpg',
 };
 
 // ─── Policy data ──────────────────────────────────────────────────────────────
@@ -151,7 +151,6 @@ const issueOptions = [
   { key: 'privacy',    label: 'Privacy & Tech',            description: 'Data rights, AI, digital safety',         img: IMGS.privacy },
 ];
 
-// eslint-disable-next-line no-unused-vars
 function renderMarkdown(text) {
   if (!text) return '';
   return text.replace(/\*\*([^*]+)\*\*/g, '$1').replace(/\*([^*]+)\*/g, '$1').replace(/^#{1,3}\s+/gm, '').trim();
@@ -176,13 +175,14 @@ function NavBar({ currentStep, onNavigate }) {
           <TalliedLogo size={26} />
           <span style={{ fontFamily: "'Lora', Georgia, serif", fontSize: '16px', fontWeight: 500, color: '#111' }}>Tallied</span>
         </button>
-        <div style={{ display: 'flex', gap: '2px' }}>
+        <div style={{ display: 'flex', gap: '2px', alignItems: 'center' }}>
           {steps.map((s, i) => (
             <button key={s.key} onClick={() => i <= currentIdx && onNavigate(s.key)}
               style={{ fontSize: '9px', padding: '3px 7px', borderRadius: '20px', border: 'none', cursor: i <= currentIdx ? 'pointer' : 'default', fontFamily: "'Inter', sans-serif", fontWeight: s.key === currentStep ? 600 : 400, background: s.key === currentStep ? '#7EB3FF' : 'transparent', color: s.key === currentStep ? 'white' : i < currentIdx ? '#7EB3FF' : '#BBB' }}>
               {s.label}
             </button>
           ))}
+          <button onClick={() => onNavigate('privacy')} style={{ fontSize: '9px', padding: '3px 7px', borderRadius: '20px', border: 'none', cursor: 'pointer', fontFamily: "'Inter', sans-serif", fontWeight: 400, background: 'transparent', color: '#BBB' }}>Privacy</button>
         </div>
       </div>
     </div>
@@ -263,13 +263,16 @@ function LandingPage({ onStart, onPrivacy }) {
           <TalliedLogo size={52} />
           <h1 style={{ fontFamily: "'Lora', Georgia, serif", fontSize: '52px', fontWeight: 500, color: '#111', lineHeight: 1, letterSpacing: '-0.02em' }}>Tallied</h1>
         </div>
-        <p className="tl-fade" style={{ fontFamily: "'Inter', sans-serif", fontSize: '10px', letterSpacing: '0.18em', textTransform: 'uppercase', color: '#AAA', fontWeight: 600, marginBottom: '40px' }}>Voting, Personalized</p>
+        <p className="tl-fade" style={{ fontFamily: "'Inter', sans-serif", fontSize: '10px', letterSpacing: '0.18em', textTransform: 'uppercase', color: '#AAA', fontWeight: 600, marginBottom: '16px' }}>Voting, Personalized</p>
+        <div className="tl-fade" style={{ background: '#F0F5FF', border: '1px solid #C8DCFF', borderRadius: '20px', padding: '5px 14px', marginBottom: '32px' }}>
+          <p style={{ fontFamily: "'Inter', sans-serif", fontSize: '11px', color: '#2D6FD4', fontWeight: 500 }}>Non-partisan educational tool · Not affiliated with any party</p>
+        </div>
 
         {/* Stat */}
         <div className="tl-fade-1" style={{ marginBottom: '16px' }}>
-          <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 'clamp(64px, 14vw, 104px)', fontWeight: 700, color: '#111', lineHeight: 1, letterSpacing: '-0.04em' }}>55%</div>
+          <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 'clamp(64px, 14vw, 104px)', fontWeight: 700, color: '#111', lineHeight: 1, letterSpacing: '-0.04em' }}>57%</div>
           <p style={{ fontFamily: "'Lora', Georgia, serif", fontSize: '17px', color: '#333', lineHeight: 1.65, maxWidth: '440px', margin: '10px auto 0' }}>
-            of eligible Ontario voters didn't cast a ballot in the 2025 provincial election. The policies they skipped affect your{' '}
+            of eligible Ontario voters didn't cast a ballot in the 2022 provincial election. Federal and provincial policies affect your{' '}
             <span style={{ color: '#7EB3FF', fontWeight: 500 }}>rent</span>,{' '}
             <span style={{ color: '#7EB3FF', fontWeight: 500 }}>tuition</span>, and{' '}
             <span style={{ color: '#A3244A', fontWeight: 500 }}>healthcare</span>.
@@ -292,6 +295,7 @@ function LandingPage({ onStart, onPrivacy }) {
             See how it affects you →
           </button>
           <p style={{ fontFamily: "'Lora', Georgia, serif", fontSize: '13px', color: '#AAA', fontStyle: 'italic' }}>Takes 2 minutes · Built for Ontario residents</p>
+          <p style={{ fontFamily: "'Inter', sans-serif", fontSize: '11px', color: '#BBB', marginTop: '4px' }}>Covers the 2025 federal election and Ontario provincial policies</p>
         </div>
       </div>
 
@@ -325,8 +329,11 @@ function PersonalizationForm({ onComplete, existingAnswers }) {
         <div style={{ textAlign: 'center', marginBottom: '36px' }}>
           <p style={{ fontFamily: "'Inter', sans-serif", fontSize: '11px', fontWeight: 600, color: '#7EB3FF', letterSpacing: '0.12em', textTransform: 'uppercase', marginBottom: '8px' }}>Step 1 of 3</p>
           <h1 style={{ fontFamily: "'Lora', Georgia, serif", fontSize: '28px', fontWeight: 500, color: '#111', marginBottom: '10px' }}>Tell us about yourself</h1>
-          <p style={{ fontFamily: "'Lora', Georgia, serif", fontSize: '15px', color: '#555', lineHeight: 1.6 }}>
+          <p style={{ fontFamily: "'Lora', Georgia, serif", fontSize: '15px', color: '#555', lineHeight: 1.6, marginBottom: '10px' }}>
             So we can show you exactly how each policy affects your specific situation.
+          </p>
+          <p style={{ fontFamily: "'Inter', sans-serif", fontSize: '11px', color: '#AAA', background: '#F8F8F8', borderRadius: '8px', padding: '6px 12px', display: 'inline-block' }}>
+            🔒 Your answers stay on your device only and are never saved or shared.
           </p>
           <div style={{ display: 'flex', justifyContent: 'center', gap: '6px', marginTop: '16px' }}>
             {[0,1,2].map(i => <div key={i} style={{ width: '8px', height: '8px', borderRadius: '50%', background: i < answeredCount ? '#7EB3FF' : '#E0E0E0', transition: 'background 0.2s' }} />)}
@@ -432,7 +439,6 @@ function PrioritiesPage({ onComplete, existingIssues }) {
 }
 
 // ─── Profile + Priorities (combined) ─────────────────────────────────────────
-// eslint-disable-next-line no-unused-vars
 function ProfileAndPrioritiesPage({ onComplete, existingAnswers, existingIssues }) {
   const [answers, setAnswers] = useState(existingAnswers || { student: null, housing: null, employment: null });
   const [selected, setSelected] = useState(existingIssues || []);
@@ -606,8 +612,11 @@ function PoliciesPage({ answers, selectedIssues, onComplete }) {
         <div style={{ textAlign: 'center', padding: '40px 0 28px' }}>
           <p style={{ fontFamily: "'Inter', sans-serif", fontSize: '11px', fontWeight: 600, color: '#7EB3FF', letterSpacing: '0.12em', textTransform: 'uppercase', marginBottom: '8px' }}>Step 2 of 3</p>
           <h1 style={{ fontFamily: "'Lora', Georgia, serif", fontSize: '32px', fontWeight: 500, color: '#111', marginBottom: '10px' }}>Policies That Affect You</h1>
-          <p style={{ fontFamily: "'Lora', Georgia, serif", fontSize: '15px', color: '#555', maxWidth: '460px', margin: '0 auto', lineHeight: 1.6 }}>
+          <p style={{ fontFamily: "'Lora', Georgia, serif", fontSize: '15px', color: '#555', maxWidth: '460px', margin: '0 auto', lineHeight: 1.6, marginBottom: '10px' }}>
             See how recent policy decisions have affected people like you. Your context before comparing candidates.
+          </p>
+          <p style={{ fontFamily: "'Inter', sans-serif", fontSize: '11px', color: '#AAA', maxWidth: '500px', margin: '0 auto' }}>
+            Some policies below are provincial (Ford government), others are federal. Federal parties influence provincial issues through funding and legislation - both matter for Ontario voters.
           </p>
         </div>
 
@@ -730,6 +739,9 @@ function ResultsPage({ answers, selectedIssues, onContinue, onRestart }) {
         </div>
 
         {/* Candidate photo header */}
+        <div style={{ background: '#FFF8E8', borderRadius: '10px', padding: '8px 16px', marginBottom: '12px', border: '1px solid #FFE4A0', textAlign: 'center' }}>
+          <p style={{ fontFamily: "'Inter', sans-serif", fontSize: '11px', color: '#92600A', fontWeight: 500 }}>AI Simulation · Based on verified 2025 party platforms · Not affiliated with any candidate</p>
+        </div>
         <div style={{ background: 'white', borderRadius: '16px', padding: '20px 24px', marginBottom: '24px', border: '1px solid #E0E0E0', display: 'flex', gap: '16px', alignItems: 'center' }}>
           <div style={{ flex: 1, display: 'flex', alignItems: 'center', gap: '12px' }}>
             <img src={IMGS.carney} alt="Mark Carney" style={{ width: '52px', height: '52px', borderRadius: '50%', objectFit: 'cover', objectPosition: 'top', border: '2px solid #FCA5A5' }} />
@@ -1149,9 +1161,13 @@ Key Conservative positions: GST removed on ALL new homes under $1.3M. Sell feder
 
       {/* Disclaimer */}
       <div style={{ maxWidth: '800px', margin: '0 auto', width: '100%', padding: '10px 20px 0' }}>
-        <div style={{ background: '#FFF0F3', border: '1px solid #F4B8C4', borderRadius: '8px', padding: '8px 14px' }}>
-          <p style={{ fontFamily: "'Lora', Georgia, serif", fontSize: '11px', color: '#7A1A34', fontStyle: 'italic' }}>
-            This is an AI tool simulating platform positions, NOT the real candidate or their team. Responses are based on verified 2025 party platforms only. Always verify with official sources.
+        <div style={{ background: '#FFF0F3', border: '1.5px solid #F4B8C4', borderRadius: '10px', padding: '12px 16px' }}>
+          <p style={{ fontFamily: "'Inter', sans-serif", fontSize: '12px', fontWeight: 600, color: '#A3244A', marginBottom: '4px' }}>⚠️ Important: AI Simulation Only</p>
+          <p style={{ fontFamily: "'Lora', Georgia, serif", fontSize: '13px', color: '#7A1A34', lineHeight: 1.5 }}>
+            These are AI simulations based on verified 2025 platform positions - NOT the real candidates or their teams. Always verify with official party websites before making voting decisions.
+          </p>
+          <p style={{ fontFamily: "'Inter', sans-serif", fontSize: '11px', color: '#AAA', marginTop: '6px' }}>
+            🔒 Your messages are not stored. This conversation is private.
           </p>
         </div>
       </div>
