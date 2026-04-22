@@ -1,5 +1,11 @@
 import React, { useState } from 'react';
 import { Analytics } from '@vercel/analytics/react';
+import posthog from 'posthog-js';
+
+posthog.init('phc_ksFNcJ9onX8DjqkgYfHWvLYrY3rQm96EsyDRnzoB8nV5', {
+  api_host: 'https://app.posthog.com',
+  autocapture: true,
+});
 
 // ─── Image URLs (Unsplash) ────────────────────────────────────────────────────
 const IMGS = {
@@ -259,7 +265,7 @@ function LandingPage({ onStart, onPrivacy }) {
         </div>
 
         <div className="tl-fade-3" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '10px' }}>
-          <button onClick={onStart}
+          <button onClick={() => { posthog.capture('landing_cta_clicked'); onStart(); }}
             style={{ background: '#7EB3FF', color: 'white', border: 'none', borderRadius: '14px', padding: '17px 52px', fontFamily: "'Lora', Georgia, serif", fontSize: '16px', fontWeight: 500, cursor: 'pointer', transition: 'background 0.15s' }}
             onMouseEnter={e => e.currentTarget.style.background = '#6BA3EF'}
             onMouseLeave={e => e.currentTarget.style.background = '#7EB3FF'}
@@ -350,8 +356,13 @@ function PrioritiesPage({ onComplete, existingIssues }) {
   const [selected, setSelected] = useState(existingIssues || []);
 
   const toggle = (key) => {
-    if (selected.includes(key)) setSelected(selected.filter(k => k !== key));
-    else if (selected.length < 3) setSelected([...selected, key]);
+    if (selected.includes(key)) {
+      setSelected(selected.filter(k => k !== key));
+      posthog.capture('issue_deselected', { issue: key });
+    } else if (selected.length < 3) {
+      setSelected([...selected, key]);
+      posthog.capture('issue_selected', { issue: key });
+    }
   };
 
   return (
@@ -396,7 +407,7 @@ function PrioritiesPage({ onComplete, existingIssues }) {
         </div>
 
         <div style={{ textAlign: 'center' }}>
-          <button onClick={() => selected.length > 0 && onComplete(selected)} disabled={selected.length === 0}
+          <button onClick={() => { if (selected.length > 0) { posthog.capture('priorities_completed', { issues: selected, count: selected.length }); onComplete(selected); } }} disabled={selected.length === 0}
             style={{ padding: '16px 52px', borderRadius: '14px', fontFamily: "'Lora', Georgia, serif", fontSize: '16px', fontWeight: 500, border: 'none', cursor: selected.length > 0 ? 'pointer' : 'not-allowed', background: selected.length > 0 ? '#7EB3FF' : '#E0E0E0', color: selected.length > 0 ? 'white' : '#AAA', transition: 'all 0.15s' }}
             onMouseEnter={e => { if (selected.length > 0) e.currentTarget.style.background = '#6BA3EF'; }}
             onMouseLeave={e => { if (selected.length > 0) e.currentTarget.style.background = '#7EB3FF'; }}
@@ -486,7 +497,7 @@ function PoliciesPage({ answers, selectedIssues, onComplete }) {
         <div style={{ background: 'white', borderRadius: '16px', padding: '28px', border: '1px solid #E0E0E0', textAlign: 'center' }}>
           <h3 style={{ fontFamily: "'Lora', Georgia, serif", fontSize: '20px', fontWeight: 500, color: '#111', marginBottom: '8px' }}>Ready to compare the candidates?</h3>
           <p style={{ fontFamily: "'Lora', Georgia, serif", fontSize: '14px', color: '#555', marginBottom: '20px' }}>See what Carney and Poilievre actually plan to do about your priorities.</p>
-          <button onClick={onComplete}
+          <button onClick={() => { posthog.capture('policies_completed'); onComplete(); }}
             style={{ padding: '16px 48px', borderRadius: '12px', fontFamily: "'Lora', Georgia, serif", fontSize: '15px', fontWeight: 500, background: '#7EB3FF', color: 'white', border: 'none', cursor: 'pointer', transition: 'background 0.15s' }}
             onMouseEnter={e => e.currentTarget.style.background = '#6BA3EF'}
             onMouseLeave={e => e.currentTarget.style.background = '#7EB3FF'}
@@ -651,12 +662,12 @@ function ResultsPage({ answers, selectedIssues, onContinue, onRestart }) {
                 <div style={{ borderTop: '1px solid #F0F0F0', paddingTop: '14px' }}>
                   <p style={{ fontFamily: "'Inter', sans-serif", fontSize: '11px', fontWeight: 600, color: '#888', marginBottom: '10px', letterSpacing: '0.05em', textTransform: 'uppercase' }}>Ask about their position on {issueInfo.label.split(' ')[0]}</p>
                   <div style={{ display: 'flex', gap: '8px' }}>
-                    <button onClick={() => { setActiveChatIssue(isOpen && chatMode === 'carney' ? null : issueKey); setChatMode('carney'); }}
+                    <button onClick={() => { posthog.capture('inline_chat_opened', { candidate: 'carney', issue: issueKey }); setActiveChatIssue(isOpen && chatMode === 'carney' ? null : issueKey); setChatMode('carney'); }}
                       style={{ flex: 1, display: 'flex', alignItems: 'center', gap: '8px', padding: '10px 14px', borderRadius: '10px', border: (isOpen && chatMode === 'carney') ? '2px solid #FCA5A5' : '1px solid #E8E8E8', background: (isOpen && chatMode === 'carney') ? '#FFF0F0' : 'white', cursor: 'pointer', transition: 'all 0.15s' }}>
                       <img src={IMGS.carney} alt="Carney" style={{ width: '24px', height: '24px', borderRadius: '50%', objectFit: 'cover', objectPosition: 'top' }} />
                       <span style={{ fontFamily: "'Lora', Georgia, serif", fontSize: '13px', color: '#111' }}>Chat with Mark</span>
                     </button>
-                    <button onClick={() => { setActiveChatIssue(isOpen && chatMode === 'poilievre' ? null : issueKey); setChatMode('poilievre'); }}
+                    <button onClick={() => { posthog.capture('inline_chat_opened', { candidate: 'poilievre', issue: issueKey }); setActiveChatIssue(isOpen && chatMode === 'poilievre' ? null : issueKey); setChatMode('poilievre'); }}
                       style={{ flex: 1, display: 'flex', alignItems: 'center', gap: '8px', padding: '10px 14px', borderRadius: '10px', border: (isOpen && chatMode === 'poilievre') ? '2px solid #93C5FD' : '1px solid #E8E8E8', background: (isOpen && chatMode === 'poilievre') ? '#EFF6FF' : 'white', cursor: 'pointer', transition: 'all 0.15s' }}>
                       <img src={IMGS.poilievre} alt="Poilievre" style={{ width: '24px', height: '24px', borderRadius: '50%', objectFit: 'cover', objectPosition: 'top' }} />
                       <span style={{ fontFamily: "'Lora', Georgia, serif", fontSize: '13px', color: '#111' }}>Chat with Pierre</span>
@@ -861,7 +872,7 @@ function DecisionSummaryPage({ answers, selectedIssues, onChat, onRestart }) {
           </div>
           <h3 style={{ fontFamily: "'Lora', Georgia, serif", fontSize: '18px', fontWeight: 500, color: '#111', marginBottom: '8px' }}>Still have questions?</h3>
           <p style={{ fontFamily: "'Lora', Georgia, serif", fontSize: '14px', color: '#555', marginBottom: '18px' }}>Chat with AI simulations of the candidates based on their verified platforms.</p>
-          <button onClick={onChat}
+          <button onClick={() => { posthog.capture('summary_chat_clicked'); onChat(); }}
             style={{ padding: '14px 36px', borderRadius: '12px', fontFamily: "'Lora', Georgia, serif", fontSize: '15px', fontWeight: 500, background: '#7EB3FF', color: 'white', border: 'none', cursor: 'pointer', transition: 'background 0.15s' }}
             onMouseEnter={e => e.currentTarget.style.background = '#6BA3EF'}
             onMouseLeave={e => e.currentTarget.style.background = '#7EB3FF'}
@@ -931,6 +942,7 @@ Key Conservative positions: GST removed on ALL new homes under $1.3M. Sell feder
     setInput('');
     setLoading(true);
     setLoadingMode(mode);
+    posthog.capture('chat_message_sent', { candidate: mode, message_count: updatedMessages.length });
     try {
       const response = await fetch('/api/chat', {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
@@ -956,7 +968,7 @@ Key Conservative positions: GST removed on ALL new homes under $1.3M. Sell feder
           </div>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
             {Object.entries(candidates).map(([key, cand]) => (
-              <button key={key} onClick={() => setMode(key)}
+              <button key={key} onClick={() => { posthog.capture('chat_candidate_switched', { candidate: key }); setMode(key); }}
                 style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '12px 16px', borderRadius: '12px', border: key === mode ? `2px solid ${cand.bubbleBorder}` : '1px solid #E0E0E0', background: key === mode ? cand.bubbleBg : 'white', cursor: 'pointer', transition: 'all 0.15s', textAlign: 'left' }}>
                 <img src={cand.img} alt={cand.name} style={{ width: '36px', height: '36px', borderRadius: '50%', objectFit: 'cover', objectPosition: 'top' }} />
                 <div>
