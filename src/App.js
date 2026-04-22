@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Analytics } from '@vercel/analytics/react';
 
 // ─── Image URLs (Unsplash) ────────────────────────────────────────────────────
 const IMGS = {
@@ -61,7 +62,7 @@ const policies = [
     plain: "Minimum wage rose from $15/hr in 2022 to $17.20/hr in 2024. But the GTA living wage is $23-25/hr - full-time minimum wage still doesn't cover rent.",
     getImpact: (a) => {
       if (a.student === 'In high school' || a.student === 'College/university' || a.student === 'Yes, college/university') return "Most student jobs pay at or near minimum wage. At $17.20/hr working 20 hours a week you're making ~$17,900/year. Still far below the $23-25/hr GTA living wage.";
-      if (a.employment === 'Employed part-time' || a.income === 'Under $40k') return "The jump to $17.20/hr means ~$4,000/year more at full-time hours. But inflation eroded much of that gain - groceries, rent, and transit all went up too.";
+      if (a.employment === 'Employed part-time') return "The jump to $17.20/hr means ~$4,000/year more at full-time hours. But inflation eroded much of that gain - groceries, rent, and transit all went up too.";
       return "Ontario's minimum wage is still significantly below the GTA living wage of $23-25/hr, meaning many workers around you are still cost-burdened.";
     },
     link: "https://www.ontario.ca/document/your-guide-employment-standards-act-0/minimum-wage", linkLabel: "Ontario minimum wage info",
@@ -72,7 +73,6 @@ const policies = [
     tag: "Climate", issueKey: "climate", img: IMGS.climate,
     plain: "Canada introduced a carbon tax in 2019. Ontario residents got ~$560/year in rebates. Carney cancelled the consumer carbon tax in March 2025 - ending both the tax and the rebates.",
     getImpact: (a) => {
-      if (a.income === 'Under $40k') return "When it existed, you were likely getting more back in rebates ($560/year) than you paid in extra costs. Now both the tax and rebate are gone.";
       if (a.student === 'In high school' || a.student === 'College/university' || a.student === 'Yes, college/university') return "As a student, the carbon tax rebate was likely more than you paid in costs. Both are gone now. The bigger question: what replaces it for climate action?";
       return "Both the carbon tax and the $560/year Ontario rebate are gone. The debate now shifts to what replaces it as Canada's main climate tool.";
     },
@@ -141,22 +141,15 @@ const TalliedLogo = ({ size = 28 }) => (
 );
 
 const issueOptions = [
-  { key: 'housing',    label: 'Housing & Affordability',  description: 'Rent, home prices, tenant rights',        img: IMGS.housing },
-  { key: 'education',  label: 'Education & Student Debt',  description: 'Tuition, OSAP, student loans',            img: IMGS.education },
-  { key: 'healthcare', label: 'Healthcare & Mental Health',description: 'Wait times, prescriptions, access',       img: IMGS.healthcare },
-  { key: 'jobs',       label: 'Jobs & Economy',            description: 'Wages, employment, cost of living',       img: IMGS.jobs },
-  { key: 'climate',    label: 'Climate & Environment',     description: 'Carbon policy, green jobs, emissions',    img: IMGS.climate },
-  { key: 'costoflife', label: 'Cost of Living',            description: 'Inflation, interest rates, affordability',img: IMGS.costoflife },
-  { key: 'canadaus',   label: 'Canada-US Relations',       description: 'Tariffs, sovereignty, trade',             img: IMGS.canadaus },
-  { key: 'privacy',    label: 'Privacy & Tech',            description: 'Data rights, AI, digital safety',         img: IMGS.privacy },
+  { key: 'housing',    label: 'Housing & Affordability',   description: 'Rent, home prices, tenant rights',         img: IMGS.housing },
+  { key: 'education',  label: 'Education & Student Debt',   description: 'Tuition, OSAP, student loans',             img: IMGS.education },
+  { key: 'healthcare', label: 'Healthcare & Mental Health', description: 'Wait times, prescriptions, access',        img: IMGS.healthcare },
+  { key: 'jobs',       label: 'Jobs & Economy',             description: 'Wages, employment, cost of living',        img: IMGS.jobs },
+  { key: 'climate',    label: 'Climate & Environment',      description: 'Carbon policy, green jobs, emissions',     img: IMGS.climate },
+  { key: 'costoflife', label: 'Cost of Living',             description: 'Inflation, interest rates, affordability', img: IMGS.costoflife },
+  { key: 'canadaus',   label: 'Canada-US Relations',        description: 'Tariffs, sovereignty, trade',              img: IMGS.canadaus },
+  { key: 'privacy',    label: 'Privacy & Tech',             description: 'Data rights, AI, digital safety',          img: IMGS.privacy },
 ];
-
-// eslint-disable-next-line no-unused-vars
-// eslint-disable-next-line no-unused-vars
-function renderMarkdown(text) {
-  if (!text) return '';
-  return text.replace(/\*\*([^*]+)\*\*/g, '$1').replace(/\*([^*]+)\*/g, '$1').replace(/^#{1,3}\s+/gm, '').trim();
-}
 
 // ─── NavBar ───────────────────────────────────────────────────────────────────
 function NavBar({ currentStep, onNavigate }) {
@@ -221,36 +214,18 @@ function App() {
     else setCurrentStep(step);
   };
 
-  if (currentStep === 'landing') return <LandingPage onStart={() => setCurrentStep('form')} onPrivacy={() => setCurrentStep('privacy')} />;
-  if (currentStep === 'form') return (
-    <><NavBar currentStep={currentStep} onNavigate={navigate} />
-    <PersonalizationForm existingAnswers={userAnswers}
-      onComplete={(answers) => { setUserAnswers(answers); setCurrentStep('priorities'); }} /></>
-  );
-  if (currentStep === 'priorities') return (
-    <><NavBar currentStep={currentStep} onNavigate={navigate} />
-    <PrioritiesPage existingIssues={selectedIssues}
-      onComplete={(issues) => { setSelectedIssues(issues); setCurrentStep('policies'); }} /></>
-  );
-  if (currentStep === 'policies') return (
-    <><NavBar currentStep={currentStep} onNavigate={navigate} />
-    <PoliciesPage answers={userAnswers} selectedIssues={selectedIssues} onComplete={() => setCurrentStep('results')} /></>
-  );
-  if (currentStep === 'results') return (
-    <><NavBar currentStep={currentStep} onNavigate={navigate} />
-    <ResultsPage answers={userAnswers} selectedIssues={selectedIssues} onContinue={() => setCurrentStep('summary')} onRestart={() => navigate('landing')} /></>
-  );
-  if (currentStep === 'summary') return (
-    <><NavBar currentStep={currentStep} onNavigate={navigate} />
-    <DecisionSummaryPage answers={userAnswers} selectedIssues={selectedIssues} onChat={() => setCurrentStep('chat')} onRestart={() => navigate('landing')} /></>
-  );
-  if (currentStep === 'chat') return (
-    <><NavBar currentStep={currentStep} onNavigate={navigate} />
-    <ChatPage answers={userAnswers} selectedIssues={selectedIssues} onRestart={() => navigate('landing')} /></>
-  );
-  if (currentStep === 'privacy') return (
-    <><NavBar currentStep={currentStep} onNavigate={navigate} />
-    <PrivacyPage onBack={() => navigate('landing')} /></>
+  return (
+    <>
+      <Analytics />
+      {currentStep === 'landing' && <LandingPage onStart={() => setCurrentStep('form')} onPrivacy={() => setCurrentStep('privacy')} />}
+      {currentStep === 'form' && <><NavBar currentStep={currentStep} onNavigate={navigate} /><PersonalizationForm existingAnswers={userAnswers} onComplete={(answers) => { setUserAnswers(answers); setCurrentStep('priorities'); }} /></>}
+      {currentStep === 'priorities' && <><NavBar currentStep={currentStep} onNavigate={navigate} /><PrioritiesPage existingIssues={selectedIssues} onComplete={(issues) => { setSelectedIssues(issues); setCurrentStep('policies'); }} /></>}
+      {currentStep === 'policies' && <><NavBar currentStep={currentStep} onNavigate={navigate} /><PoliciesPage answers={userAnswers} selectedIssues={selectedIssues} onComplete={() => setCurrentStep('results')} /></>}
+      {currentStep === 'results' && <><NavBar currentStep={currentStep} onNavigate={navigate} /><ResultsPage answers={userAnswers} selectedIssues={selectedIssues} onContinue={() => setCurrentStep('summary')} onRestart={() => navigate('landing')} /></>}
+      {currentStep === 'summary' && <><NavBar currentStep={currentStep} onNavigate={navigate} /><DecisionSummaryPage answers={userAnswers} selectedIssues={selectedIssues} onChat={() => setCurrentStep('chat')} onRestart={() => navigate('landing')} /></>}
+      {currentStep === 'chat' && <><NavBar currentStep={currentStep} onNavigate={navigate} /><ChatPage answers={userAnswers} selectedIssues={selectedIssues} onRestart={() => navigate('landing')} /></>}
+      {currentStep === 'privacy' && <><NavBar currentStep={currentStep} onNavigate={navigate} /><PrivacyPage onBack={() => navigate('landing')} /></>}
+    </>
   );
 }
 
@@ -259,8 +234,6 @@ function LandingPage({ onStart, onPrivacy }) {
   return (
     <div style={{ minHeight: '100vh', background: '#FEFEFE', display: 'flex', flexDirection: 'column', fontFamily: "'Lora', Georgia, serif" }}>
       <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '60px 24px 40px', textAlign: 'center' }}>
-
-        {/* Logo + name */}
         <div className="tl-fade" style={{ display: 'flex', alignItems: 'center', gap: '14px', marginBottom: '6px' }}>
           <TalliedLogo size={52} />
           <h1 style={{ fontFamily: "'Lora', Georgia, serif", fontSize: '52px', fontWeight: 500, color: '#111', lineHeight: 1, letterSpacing: '-0.02em' }}>Tallied</h1>
@@ -270,7 +243,6 @@ function LandingPage({ onStart, onPrivacy }) {
           <p style={{ fontFamily: "'Inter', sans-serif", fontSize: '11px', color: '#2D6FD4', fontWeight: 500 }}>Non-partisan educational tool · Not affiliated with any party</p>
         </div>
 
-        {/* Stat */}
         <div className="tl-fade-1" style={{ marginBottom: '16px' }}>
           <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 'clamp(64px, 14vw, 104px)', fontWeight: 700, color: '#111', lineHeight: 1, letterSpacing: '-0.04em' }}>57%</div>
           <p style={{ fontFamily: "'Lora', Georgia, serif", fontSize: '17px', color: '#333', lineHeight: 1.65, maxWidth: '440px', margin: '10px auto 0' }}>
@@ -281,13 +253,11 @@ function LandingPage({ onStart, onPrivacy }) {
           </p>
         </div>
 
-        {/* Hero image - inline between text */}
         <div className="tl-fade-2" style={{ width: '100%', maxWidth: '560px', borderRadius: '16px', overflow: 'hidden', marginBottom: '32px', border: '1px solid #E8E8E8', boxShadow: '0 4px 20px rgba(0,0,0,0.08)' }}>
           <img src={IMGS.landing} alt="People voting" style={{ width: '100%', height: '220px', objectFit: 'cover', objectPosition: 'center', display: 'block' }}
             onError={e => { e.currentTarget.style.display = 'none'; }} />
         </div>
 
-        {/* CTA */}
         <div className="tl-fade-3" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '10px' }}>
           <button onClick={onStart}
             style={{ background: '#7EB3FF', color: 'white', border: 'none', borderRadius: '14px', padding: '17px 52px', fontFamily: "'Lora', Georgia, serif", fontSize: '16px', fontWeight: 500, cursor: 'pointer', transition: 'background 0.15s' }}
@@ -297,7 +267,7 @@ function LandingPage({ onStart, onPrivacy }) {
             See how it affects you →
           </button>
           <p style={{ fontFamily: "'Lora', Georgia, serif", fontSize: '13px', color: '#AAA', fontStyle: 'italic' }}>Takes 2 minutes · Built for Ontario residents</p>
-          <p style={{ fontFamily: "'Inter', sans-serif", fontSize: '11px', color: '#BBB', marginTop: '4px' }}>Covers the 2025 federal election and Ontario provincial policies</p>
+          <p style={{ fontFamily: "'Inter', sans-serif", fontSize: '11px', color: '#BBB' }}>Covers the 2025 federal election and Ontario provincial policies</p>
         </div>
       </div>
 
@@ -311,8 +281,7 @@ function LandingPage({ onStart, onPrivacy }) {
   );
 }
 
-
-// ─── Personalization Form (Step 1 - Profile) ─────────────────────────────────
+// ─── Personalization Form ─────────────────────────────────────────────────────
 function PersonalizationForm({ onComplete, existingAnswers }) {
   const [answers, setAnswers] = useState(existingAnswers || { student: null, housing: null, employment: null });
 
@@ -376,7 +345,7 @@ function PersonalizationForm({ onComplete, existingAnswers }) {
   );
 }
 
-// ─── Priorities Page (Step 2 - Issue selection) ───────────────────────────────
+// ─── Priorities Page ──────────────────────────────────────────────────────────
 function PrioritiesPage({ onComplete, existingIssues }) {
   const [selected, setSelected] = useState(existingIssues || []);
 
@@ -440,136 +409,12 @@ function PrioritiesPage({ onComplete, existingIssues }) {
   );
 }
 
-// ─── Profile + Priorities (combined) ─────────────────────────────────────────
-// eslint-disable-next-line no-unused-vars
-// eslint-disable-next-line no-unused-vars
-function ProfileAndPrioritiesPage({ onComplete, existingAnswers, existingIssues }) {
-  const [answers, setAnswers] = useState(existingAnswers || { student: null, housing: null, employment: null });
-  const [selected, setSelected] = useState(existingIssues || []);
-
-  const questions = [
-    { key: 'student',    question: 'Student status',      options: ['College/university', 'In high school', 'Recently graduated', 'Not a student'] },
-    { key: 'employment', question: 'Employment',          options: ['Employed full-time', 'Employed part-time', 'Looking for work', 'Not currently working'] },
-    { key: 'income',     question: 'Household income',    options: ['Under $40k', '$40k-$75k', '$75k-$120k', 'Over $120k'] },
-    { key: 'housing',    question: 'Housing situation',   options: ['Renting', 'Homeowner', 'Living with family', 'Looking to buy'] }
-  ];
-
-  const toggle = (key) => {
-    if (selected.includes(key)) setSelected(selected.filter(k => k !== key));
-    else if (selected.length < 3) setSelected([...selected, key]);
-  };
-
-  const profileComplete = answers.student && answers.income && answers.housing && answers.employment;
-  const isComplete = profileComplete && selected.length > 0;
-  const answeredCount = [answers.student, answers.employment, answers.income, answers.housing].filter(Boolean).length;
-
-  return (
-    <div style={{ minHeight: '100vh', background: '#FEFEFE', padding: '40px 20px 100px' }}>
-      <div style={{ maxWidth: '840px', margin: '0 auto' }}>
-
-        <div style={{ textAlign: 'center', marginBottom: '36px' }}>
-          <p style={{ fontFamily: "'Inter', sans-serif", fontSize: '11px', fontWeight: 600, color: '#7EB3FF', letterSpacing: '0.12em', textTransform: 'uppercase', marginBottom: '8px' }}>Step 1 of 3</p>
-          <h1 style={{ fontFamily: "'Lora', Georgia, serif", fontSize: '28px', fontWeight: 500, color: '#111', marginBottom: '10px' }}>Tell us about yourself</h1>
-          <p style={{ fontFamily: "'Lora', Georgia, serif", fontSize: '15px', color: '#555', lineHeight: 1.6, maxWidth: '500px', margin: '0 auto' }}>
-            Answer these so we can personalize every policy and candidate insight to your actual situation - not just generic info.
-          </p>
-        </div>
-
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px', alignItems: 'start' }}>
-
-          {/* LEFT: Profile */}
-          <div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '16px' }}>
-              <div style={{ width: '24px', height: '24px', borderRadius: '50%', background: '#7EB3FF', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: "'Inter', sans-serif", fontSize: '12px', fontWeight: 700, color: 'white' }}>1</div>
-              <span style={{ fontFamily: "'Lora', Georgia, serif", fontSize: '15px', fontWeight: 500, color: '#111' }}>About you</span>
-              <div style={{ display: 'flex', gap: '4px', marginLeft: 'auto' }}>
-                {[0,1,2,3].map(i => <div key={i} style={{ width: '7px', height: '7px', borderRadius: '50%', background: i < answeredCount ? '#7EB3FF' : '#E0E0E0', transition: 'background 0.2s' }} />)}
-              </div>
-            </div>
-            {questions.map(({ key, question, options }) => (
-              <div key={key} style={{ background: 'white', borderRadius: '14px', padding: '16px', marginBottom: '10px', border: '1px solid #E8E8E8' }}>
-                <p style={{ fontFamily: "'Inter', sans-serif", fontSize: '10px', fontWeight: 600, color: '#999', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '10px' }}>{question}</p>
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '6px' }}>
-                  {options.map(option => {
-                    const sel = answers[key] === option;
-                    return (
-                      <button key={option} onClick={() => setAnswers({ ...answers, [key]: option })}
-                        style={{ padding: '9px 10px', borderRadius: '9px', fontFamily: "'Lora', Georgia, serif", fontSize: '13px', cursor: 'pointer', transition: 'all 0.12s', background: sel ? '#7EB3FF' : '#F6F6F6', color: sel ? 'white' : '#222', border: sel ? '2px solid #7EB3FF' : '2px solid transparent', textAlign: 'left' }}
-                        onMouseEnter={e => { if (!sel) { e.currentTarget.style.background = '#EEF5FF'; e.currentTarget.style.borderColor = '#7EB3FF'; }}}
-                        onMouseLeave={e => { if (!sel) { e.currentTarget.style.background = '#F6F6F6'; e.currentTarget.style.borderColor = 'transparent'; }}}
-                      >
-                        {option}
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
-            ))}
-          </div>
-
-          {/* RIGHT: Issues */}
-          <div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '16px' }}>
-              <div style={{ width: '24px', height: '24px', borderRadius: '50%', background: selected.length > 0 ? '#7EB3FF' : '#E0E0E0', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: "'Inter', sans-serif", fontSize: '12px', fontWeight: 700, color: 'white', transition: 'background 0.2s' }}>2</div>
-              <span style={{ fontFamily: "'Lora', Georgia, serif", fontSize: '15px', fontWeight: 500, color: '#111' }}>What matters to you</span>
-              <span style={{ fontFamily: "'Inter', sans-serif", fontSize: '11px', fontWeight: 600, color: '#A3244A', marginLeft: 'auto' }}>{selected.length}/3</span>
-            </div>
-            <div style={{ background: 'white', borderRadius: '14px', padding: '14px', border: '1px solid #E8E8E8' }}>
-              <p style={{ fontFamily: "'Lora', Georgia, serif", fontSize: '13px', color: '#666', marginBottom: '12px', lineHeight: 1.5 }}>Pick up to 3 issues. We'll filter everything through these.</p>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
-                {issueOptions.map(issue => {
-                  const isSelected = selected.includes(issue.key);
-                  const isDisabled = !isSelected && selected.length >= 3;
-                  return (
-                    <button key={issue.key} onClick={() => toggle(issue.key)} disabled={isDisabled}
-                      style={{ padding: 0, borderRadius: '12px', textAlign: 'left', border: isSelected ? '2px solid #7EB3FF' : '1px solid #E8E8E8', background: 'white', cursor: isDisabled ? 'not-allowed' : 'pointer', transition: 'all 0.15s', overflow: 'hidden', boxShadow: isSelected ? '0 0 0 3px rgba(126,179,255,0.2)' : 'none', opacity: isDisabled ? 0.4 : 1 }}
-                      onMouseEnter={e => { if (!isDisabled && !isSelected) e.currentTarget.style.borderColor = '#7EB3FF'; }}
-                      onMouseLeave={e => { if (!isDisabled && !isSelected) e.currentTarget.style.borderColor = '#E8E8E8'; }}
-                    >
-                      <div style={{ height: '60px', overflow: 'hidden', position: 'relative' }}>
-                        <img src={issue.img} alt={issue.label} style={{ width: '100%', height: '100%', objectFit: 'cover', filter: isSelected ? 'none' : 'grayscale(30%)' }} />
-                        {isSelected && <div style={{ position: 'absolute', top: '6px', right: '6px', width: '18px', height: '18px', borderRadius: '50%', background: '#7EB3FF', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-                        </div>}
-                      </div>
-                      <div style={{ padding: '8px 10px' }}>
-                        <div style={{ fontFamily: "'Lora', Georgia, serif", fontWeight: 500, fontSize: '11px', color: isSelected ? '#1A4FAA' : '#111', lineHeight: 1.3 }}>{issue.label}</div>
-                      </div>
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div style={{ marginTop: '32px', textAlign: 'center' }}>
-          {!isComplete && (
-            <p style={{ fontFamily: "'Lora', Georgia, serif", fontSize: '13px', color: '#BBB', marginBottom: '12px', fontStyle: 'italic' }}>
-              {!profileComplete ? 'Answer all four questions and pick at least one issue' : 'Now pick at least one issue that matters to you'}
-            </p>
-          )}
-          <button onClick={() => isComplete && onComplete(answers, selected)} disabled={!isComplete}
-            style={{ padding: '17px 52px', borderRadius: '14px', fontFamily: "'Lora', Georgia, serif", fontSize: '16px', fontWeight: 500, border: 'none', cursor: isComplete ? 'pointer' : 'not-allowed', background: isComplete ? '#7EB3FF' : '#E0E0E0', color: isComplete ? 'white' : '#AAA', transition: 'all 0.15s' }}
-            onMouseEnter={e => { if (isComplete) e.currentTarget.style.background = '#6BA3EF'; }}
-            onMouseLeave={e => { if (isComplete) e.currentTarget.style.background = '#7EB3FF'; }}
-          >
-            Show me how this affects me →
-          </button>
-        </div>
-      </div>
-    </div>
-  );
-}
-
 // ─── Policy Card ──────────────────────────────────────────────────────────────
 function PolicyCard({ policy, answers }) {
   const [hovered, setHovered] = useState(false);
   return (
     <div onMouseEnter={() => setHovered(true)} onMouseLeave={() => setHovered(false)}
       style={{ background: 'white', borderRadius: '16px', marginBottom: '16px', border: hovered ? '1.5px solid #7EB3FF' : '1px solid #E0E0E0', boxShadow: hovered ? '0 8px 24px rgba(126,179,255,0.15)' : '0 1px 4px rgba(0,0,0,0.04)', transform: hovered ? 'translateY(-2px)' : 'none', transition: 'all 0.2s ease', overflow: 'hidden' }}>
-
-      {/* Image */}
       <div style={{ height: '160px', overflow: 'hidden', position: 'relative' }}>
         <img src={policy.img} alt={policy.tag} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
         <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to bottom, transparent 40%, rgba(0,0,0,0.5) 100%)' }} />
@@ -581,18 +426,13 @@ function PolicyCard({ policy, answers }) {
           <span style={{ fontFamily: "'Inter', sans-serif", fontSize: '11px', color: 'rgba(255,255,255,0.8)' }}>{policy.year}</span>
         </div>
       </div>
-
-      {/* Content */}
       <div style={{ padding: '20px 22px' }}>
         <h3 style={{ fontFamily: "'Lora', Georgia, serif", fontSize: '19px', fontWeight: 500, color: '#111', marginBottom: '10px', lineHeight: 1.3 }}>{policy.title}</h3>
         <p style={{ fontFamily: "'Lora', Georgia, serif", fontSize: '14px', color: '#444', lineHeight: 1.7, marginBottom: '14px' }}>{policy.plain}</p>
-
-        {/* Personalized impact */}
         <div style={{ background: '#FFF0F3', borderRadius: '10px', padding: '14px 16px', marginBottom: '14px', border: '1px solid #F4B8C4' }}>
           <p style={{ fontFamily: "'Inter', sans-serif", fontSize: '10px', fontWeight: 600, color: '#A3244A', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '5px' }}>How this affects you</p>
           <p style={{ fontFamily: "'Lora', Georgia, serif", fontSize: '14px', color: '#222', lineHeight: 1.65, fontStyle: 'italic' }}>{policy.getImpact(answers)}</p>
         </div>
-
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <a href={policy.link} target="_blank" rel="noopener noreferrer" style={{ fontFamily: "'Inter', sans-serif", fontSize: '12px', color: '#7EB3FF', textDecoration: 'none', fontWeight: 500 }}>{policy.linkLabel} ↗</a>
           <p style={{ fontFamily: "'Inter', sans-serif", fontSize: '11px', color: '#BBB' }}>Source: {policy.source}</p>
@@ -611,8 +451,6 @@ function PoliciesPage({ answers, selectedIssues, onComplete }) {
   return (
     <div style={{ minHeight: '100vh', background: '#F8F8F8', padding: '0 20px 80px' }}>
       <div style={{ maxWidth: '800px', margin: '0 auto' }}>
-
-        {/* Header */}
         <div style={{ textAlign: 'center', padding: '40px 0 28px' }}>
           <p style={{ fontFamily: "'Inter', sans-serif", fontSize: '11px', fontWeight: 600, color: '#7EB3FF', letterSpacing: '0.12em', textTransform: 'uppercase', marginBottom: '8px' }}>Step 2 of 3</p>
           <h1 style={{ fontFamily: "'Lora', Georgia, serif", fontSize: '32px', fontWeight: 500, color: '#111', marginBottom: '10px' }}>Policies That Affect You</h1>
@@ -645,7 +483,6 @@ function PoliciesPage({ answers, selectedIssues, onComplete }) {
           </>
         )}
 
-        {/* CTA */}
         <div style={{ background: 'white', borderRadius: '16px', padding: '28px', border: '1px solid #E0E0E0', textAlign: 'center' }}>
           <h3 style={{ fontFamily: "'Lora', Georgia, serif", fontSize: '20px', fontWeight: 500, color: '#111', marginBottom: '8px' }}>Ready to compare the candidates?</h3>
           <p style={{ fontFamily: "'Lora', Georgia, serif", fontSize: '14px', color: '#555', marginBottom: '20px' }}>See what Carney and Poilievre actually plan to do about your priorities.</p>
@@ -686,7 +523,7 @@ const candidateComparison = {
     liberal: { bottomLine: "Tax cut up to $825/year. Tariff revenue directed to affected workers.", what: "Middle-class tax cut saving dual-income families up to $825/year. Every dollar from retaliatory tariffs goes to support workers affected by the trade war.", source: "https://liberal.ca/mark-carneys-liberals-take-action-to-make-life-more-affordable/", sourceLabel: "Liberal affordability plan" },
     conservative: { bottomLine: "Bigger tax cut - $900/year average. Grow through oil and resource jobs.", what: "Larger tax cut saving average worker $900/year, families $1,800. Funded by cutting spending and growing Canada's resource sector.", source: "https://www.conservative.ca/poilievre-unveils-his-plan-for-change/", sourceLabel: "Conservative plan" },
     ndp: { bottomLine: "Raise tax-free threshold to $19,500. Stronger EI for gig workers.", what: "Most minimum wage workers would pay zero federal income tax. EI easier to qualify for and expanded to cover gig workers. Lost 2025 election.", source: "https://www.ndp.ca/news/singh-announces-campaign-commitments-first-budget-focused-health-care-affordability-and-housing", sourceLabel: "NDP commitments" },
-    getPersonalized: (a) => { if (a.employment === 'Looking for work') return "NDP's EI improvements would have helped you most. Liberal EI modernization is happening but slower. Conservative plan focused on creating jobs through resource extraction."; if (a.income === 'Under $40k') return "NDP's raised tax-free threshold ($19,500) would have helped you most. Liberal cut helps somewhat. Conservative cut is larger but you need to earn more to feel it."; return "Liberal tax cut is now law. Conservative promised bigger cuts. NDP focused on low earners and people between jobs."; }
+    getPersonalized: (a) => { if (a.employment === 'Looking for work') return "NDP's EI improvements would have helped you most. Liberal EI modernization is happening but slower. Conservative plan focused on creating jobs through resource extraction."; return "Liberal tax cut is now law. Conservative promised bigger cuts. NDP focused on low earners and people between jobs."; }
   },
   climate: {
     liberal: { bottomLine: "Consumer carbon tax cancelled. Industrial polluters still pay.", what: "Carney cancelled the consumer carbon tax in March 2025. Big industrial companies still pay for pollution. Grants available for energy-efficient appliances and EVs.", source: "https://liberal.ca/cstrong/build/", sourceLabel: "Liberal climate plan" },
@@ -698,7 +535,7 @@ const candidateComparison = {
     liberal: { bottomLine: "Tax cut + cheaper gas + dental care. Modest but already in effect.", what: "Income tax cut (up to $825/year), carbon tax cancellation saving ~18 cents/litre on gas, and dental care expansion. All already in effect.", source: "https://liberal.ca/mark-carneys-liberals-take-action-to-make-life-more-affordable/", sourceLabel: "Liberal affordability plan" },
     conservative: { bottomLine: "Bigger tax cut. But benefits higher earners more.", what: "Larger income tax cut ($900/year average). Cancel all carbon pricing. The bigger cut sounds great but economists noted flat rate cuts benefit higher earners more.", source: "https://www.conservative.ca/poilievre-unveils-his-plan-for-change/", sourceLabel: "Conservative plan" },
     ndp: { bottomLine: "Remove GST from groceries, heat, and internet bills.", what: "Instead of income tax cuts, NDP wanted to remove GST from groceries, heating, internet, and diapers. Directly cuts the biggest expenses for lower-income Canadians.", source: "https://www.ndp.ca/news/singh-announces-campaign-commitments-first-budget-focused-health-care-affordability-and-housing", sourceLabel: "NDP commitments" },
-    getPersonalized: (a) => { if (a.income === 'Under $40k') return "NDP's GST removal from groceries and internet would have helped you most. Tax cuts are less useful when you earn less. Liberal dental helps if you have no coverage."; if (a.housing === 'Renting') return "NDP removing GST from heating and internet would have directly cut your bills. Liberal tax cut helps a bit. Conservative cut benefits higher earners more."; return "Liberal delivered modest tax cut and cheaper gas. NDP's approach targets everyday essentials like groceries and heat."; }
+    getPersonalized: (a) => { if (a.housing === 'Renting') return "NDP removing GST from heating and internet would have directly cut your bills. Liberal tax cut helps a bit. Conservative cut benefits higher earners more."; return "Liberal delivered modest tax cut and cheaper gas. NDP's approach targets everyday essentials like groceries and heat."; }
   },
   canadaus: {
     liberal: { bottomLine: "Fight back with matching tariffs. Protect affected workers.", what: "Matching tariffs on US goods. Every dollar collected goes to Canadian workers affected by the trade war. Building new trade relationships with Europe and Asia.", source: "https://www.canada.ca/en/department-finance/news/2025/03/canada-responds-to-unjustified-us-tariffs-on-canadian-steel-and-aluminum-products.html", sourceLabel: "Canada's tariff response" },
@@ -714,7 +551,7 @@ const candidateComparison = {
   }
 };
 
-// ─── Results Page (with embedded chat) ───────────────────────────────────────
+// ─── Results Page ─────────────────────────────────────────────────────────────
 function ResultsPage({ answers, selectedIssues, onContinue, onRestart }) {
   const [showNDP, setShowNDP] = useState(false);
   const [activeChatIssue, setActiveChatIssue] = useState(null);
@@ -723,7 +560,6 @@ function ResultsPage({ answers, selectedIssues, onContinue, onRestart }) {
   const labelMap = {
     student: { 'College/university': 'college student', 'Yes, college/university': 'college student', 'In high school': 'high school student', 'Recently graduated': 'recent grad', 'Not a student': 'non-student' },
     employment: { 'Employed full-time': 'employed full-time', 'Employed part-time': 'employed part-time', 'Looking for work': 'looking for work', 'Not currently working': 'not working' },
-    income: { 'Under $40k': 'under $40k', '$40k-$75k': '$40k-$75k', '$75k-$120k': '$75k-$120k', 'Over $120k': 'over $120k' },
     housing: { 'Renting': 'renter', 'Homeowner': 'homeowner', 'Living with family': 'living with family', 'Looking to buy': 'looking to buy' }
   };
 
@@ -738,15 +574,15 @@ function ResultsPage({ answers, selectedIssues, onContinue, onRestart }) {
             What Carney and Poilievre actually plan to do about your priorities.
           </p>
           <p style={{ fontFamily: "'Inter', sans-serif", fontSize: '12px', color: '#AAA', marginTop: '8px' }}>
-            Personalized for: {[labelMap.student[answers.student], labelMap.employment[answers.employment], labelMap.income[answers.income], labelMap.housing[answers.housing]].filter(Boolean).join(' · ')}
+            Personalized for: {[labelMap.student[answers.student], labelMap.employment[answers.employment], labelMap.housing[answers.housing]].filter(Boolean).join(' · ')}
           </p>
         </div>
 
-        {/* Candidate photo header */}
         <div style={{ background: '#EEF4FF', borderRadius: '10px', padding: '8px 16px', marginBottom: '12px', border: '1px solid #C8DCFF', textAlign: 'center' }}>
           <p style={{ fontFamily: "'Inter', sans-serif", fontSize: '11px', color: '#2D6FD4', fontWeight: 500 }}>AI Simulation · Based on verified 2025 party platforms · Not affiliated with any candidate</p>
         </div>
-        <div style={{ background: 'white', borderRadius: '16px', padding: '20px 24px', marginBottom: '24px', border: '1px solid #E0E0E0', display: 'flex', gap: '16px', alignItems: 'center' }}>
+
+        <div style={{ background: 'white', borderRadius: '16px', padding: '20px 24px', marginBottom: '16px', border: '1px solid #E0E0E0', display: 'flex', gap: '16px', alignItems: 'center' }}>
           <div style={{ flex: 1, display: 'flex', alignItems: 'center', gap: '12px' }}>
             <img src={IMGS.carney} alt="Mark Carney" style={{ width: '52px', height: '52px', borderRadius: '50%', objectFit: 'cover', objectPosition: 'top', border: '2px solid #FCA5A5' }} />
             <div>
@@ -768,7 +604,6 @@ function ResultsPage({ answers, selectedIssues, onContinue, onRestart }) {
           <p style={{ fontFamily: "'Lora', Georgia, serif", fontSize: '13px', color: '#2D4A8A', textAlign: 'center' }}>Official 2025 federal election platform positions. Carney won and is now PM. All sourced from party websites.</p>
         </div>
 
-        {/* Per-issue comparison cards */}
         {selectedIssues.map(issueKey => {
           const comparison = candidateComparison[issueKey];
           const issueInfo = issueOptions.find(i => i.key === issueKey);
@@ -777,8 +612,6 @@ function ResultsPage({ answers, selectedIssues, onContinue, onRestart }) {
 
           return (
             <div key={issueKey} style={{ background: 'white', borderRadius: '16px', marginBottom: '20px', border: '1px solid #E0E0E0', overflow: 'hidden' }}>
-
-              {/* Issue image banner */}
               <div style={{ height: '120px', overflow: 'hidden', position: 'relative' }}>
                 <img src={issueInfo.img} alt={issueInfo.label} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                 <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to right, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0.2) 100%)' }} />
@@ -789,15 +622,12 @@ function ResultsPage({ answers, selectedIssues, onContinue, onRestart }) {
               </div>
 
               <div style={{ padding: '20px 22px' }}>
-                {/* Personalized */}
                 <div style={{ background: '#FFF0F3', borderRadius: '10px', padding: '14px 16px', marginBottom: '18px', border: '1px solid #F4B8C4' }}>
                   <p style={{ fontFamily: "'Inter', sans-serif", fontSize: '10px', fontWeight: 600, color: '#A3244A', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '4px' }}>What this means for you</p>
                   <p style={{ fontFamily: "'Lora', Georgia, serif", fontSize: '14px', color: '#222', lineHeight: 1.65, fontStyle: 'italic' }}>{comparison.getPersonalized(answers)}</p>
                 </div>
 
-                {/* Two-column candidate comparison */}
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '16px' }}>
-                  {/* Carney */}
                   <div style={{ borderLeft: '3px solid #FCA5A5', paddingLeft: '14px' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px' }}>
                       <img src={IMGS.carney} alt="Carney" style={{ width: '28px', height: '28px', borderRadius: '50%', objectFit: 'cover', objectPosition: 'top' }} />
@@ -807,8 +637,6 @@ function ResultsPage({ answers, selectedIssues, onContinue, onRestart }) {
                     <p style={{ fontFamily: "'Lora', Georgia, serif", fontSize: '13px', color: '#333', lineHeight: 1.6, marginBottom: '6px' }}>{comparison.liberal.what}</p>
                     <a href={comparison.liberal.source} target="_blank" rel="noopener noreferrer" style={{ fontFamily: "'Inter', sans-serif", fontSize: '11px', color: '#7EB3FF' }}>Source ↗</a>
                   </div>
-
-                  {/* Poilievre */}
                   <div style={{ borderLeft: '3px solid #93C5FD', paddingLeft: '14px' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px' }}>
                       <img src={IMGS.poilievre} alt="Poilievre" style={{ width: '28px', height: '28px', borderRadius: '50%', objectFit: 'cover', objectPosition: 'top' }} />
@@ -820,7 +648,6 @@ function ResultsPage({ answers, selectedIssues, onContinue, onRestart }) {
                   </div>
                 </div>
 
-                {/* Embedded chat buttons */}
                 <div style={{ borderTop: '1px solid #F0F0F0', paddingTop: '14px' }}>
                   <p style={{ fontFamily: "'Inter', sans-serif", fontSize: '11px', fontWeight: 600, color: '#888', marginBottom: '10px', letterSpacing: '0.05em', textTransform: 'uppercase' }}>Ask about their position on {issueInfo.label.split(' ')[0]}</p>
                   <div style={{ display: 'flex', gap: '8px' }}>
@@ -835,12 +662,9 @@ function ResultsPage({ answers, selectedIssues, onContinue, onRestart }) {
                       <span style={{ fontFamily: "'Lora', Georgia, serif", fontSize: '13px', color: '#111' }}>Chat with Pierre</span>
                     </button>
                   </div>
-
-                  {/* Inline chat */}
                   {isOpen && <InlineChatBox mode={chatMode} issueKey={issueKey} answers={answers} selectedIssues={selectedIssues} />}
                 </div>
 
-                {/* NDP toggle */}
                 {showNDP && (
                   <div style={{ borderTop: '1px solid #F0F0F0', paddingTop: '14px', marginTop: '14px' }}>
                     <div style={{ borderLeft: '3px solid #FCD34D', paddingLeft: '14px' }}>
@@ -880,7 +704,7 @@ function ResultsPage({ answers, selectedIssues, onContinue, onRestart }) {
   );
 }
 
-// ─── Inline Chat Box (embedded in comparison cards) ───────────────────────────
+// ─── Inline Chat Box ──────────────────────────────────────────────────────────
 function InlineChatBox({ mode, issueKey, answers, selectedIssues }) {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState('');
@@ -888,26 +712,20 @@ function InlineChatBox({ mode, issueKey, answers, selectedIssues }) {
   const messagesEndRef = React.useRef(null);
 
   const issueInfo = issueOptions.find(i => i.key === issueKey);
-  const profileSummary = answers ? `${answers.student}, ${answers.employment}, ${answers.income} income, ${answers.housing}` : 'Not provided';
+  const profileSummary = answers ? `${answers.student}, ${answers.employment}, ${answers.housing}` : 'Not provided';
   const selectedIssueLabels = selectedIssues ? issueOptions.filter(i => selectedIssues.includes(i.key)).map(i => i.label).join(', ') : '';
 
   const candidate = mode === 'carney' ? {
-    name: 'Mark Carney', party: 'Liberal', img: IMGS.carney,
-    bubbleBg: '#FEF2F2', bubbleBorder: '#FECACA',
-    intro: `I'm an AI simulation of Mark Carney. Ask me about my position on ${issueInfo?.label}.`,
+    name: 'Mark Carney', img: IMGS.carney, bubbleBg: '#FEF2F2', bubbleBorder: '#FECACA',
+    intro: `I'm an AI simulation based on Mark Carney's 2025 Liberal platform - not the real person. Ask me about ${issueInfo?.label}.`,
   } : {
-    name: 'Pierre Poilievre', party: 'Conservative', img: IMGS.poilievre,
-    bubbleBg: '#EFF6FF', bubbleBorder: '#BFDBFE',
-    intro: `I'm an AI simulation of Pierre Poilievre. Ask me about my position on ${issueInfo?.label}.`,
+    name: 'Pierre Poilievre', img: IMGS.poilievre, bubbleBg: '#EFF6FF', bubbleBorder: '#BFDBFE',
+    intro: `I'm an AI simulation based on Pierre Poilievre's 2025 Conservative platform - not the real person. Ask me about ${issueInfo?.label}.`,
   };
 
   const systemPrompt = mode === 'carney'
-    ? `You are an AI simulation based on Mark Carney's verified 2025 Liberal Party platform. You are NOT Mark Carney - if asked, clearly say so. Focus especially on ${issueInfo?.label}. Default to 3 sentences max. Only expand if the user explicitly asks for more detail. No em dashes, no emojis, no markdown stars. User profile: ${profileSummary}. Priority issues: ${selectedIssueLabels}.
-
-Key Liberal positions: Housing - GST removed for first-time buyers under $1M (saves up to $50k), 500,000 homes/year. Tax cut saving families up to $825/year. Dental care expanded to 18-64. Carbon tax cancelled, industrial pricing kept. Retaliatory tariffs on US goods directing revenue to workers.`
-    : `You are an AI simulation based on Pierre Poilievre's verified 2025 Conservative Party platform. You are NOT Pierre Poilievre - if asked, clearly say so. Focus especially on ${issueInfo?.label}. Default to 3 sentences max. Only expand if the user explicitly asks for more detail. No em dashes, no emojis, no markdown stars. User profile: ${profileSummary}. Priority issues: ${selectedIssueLabels}.
-
-Key Conservative positions: Housing - GST removed on ALL new homes under $1.3M, sell federal land, 2.3M homes in 5 years. Income tax cut saving workers $900/year. Cancel all carbon pricing. Early CUSMA renegotiation. Income-contingent student loan repayment.`;
+    ? `You are an AI simulation based on Mark Carney's verified 2025 Liberal Party platform. You are NOT Mark Carney and must never claim to be. If asked whether you are real or the actual candidate, clearly say: "No - I'm an AI simulation built by Tallied, based only on Mark Carney's public 2025 platform positions. I'm not him or anyone from his team." Default to 3 sentences max, expand only if asked. No em dashes, no emojis, no markdown. User profile: ${profileSummary}. Priority issues: ${selectedIssueLabels}. Key Liberal positions: GST removed for first-time buyers under $1M (saves up to $50k), 500,000 homes/year. Tax cut saving families up to $825/year. Dental care expanded to 18-64. Carbon tax cancelled, industrial pricing kept. Retaliatory tariffs on US goods directing revenue to workers.`
+    : `You are an AI simulation based on Pierre Poilievre's verified 2025 Conservative Party platform. You are NOT Pierre Poilievre and must never claim to be. If asked whether you are real or the actual candidate, clearly say: "No - I'm an AI simulation built by Tallied, based only on Pierre Poilievre's public 2025 platform positions. I'm not him or anyone from his team." Default to 3 sentences max, expand only if asked. No em dashes, no emojis, no markdown. User profile: ${profileSummary}. Priority issues: ${selectedIssueLabels}. Key Conservative positions: GST removed on ALL new homes under $1.3M, sell federal land, 2.3M homes in 5 years. Income tax cut saving workers $900/year. Cancel all carbon pricing. Early CUSMA renegotiation. Income-contingent student loan repayment.`;
 
   React.useEffect(() => { messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' }); }, [messages]);
 
@@ -932,7 +750,6 @@ Key Conservative positions: Housing - GST removed on ALL new homes under $1.3M, 
 
   return (
     <div style={{ marginTop: '12px', border: `1px solid ${candidate.bubbleBorder}`, borderRadius: '12px', overflow: 'hidden' }}>
-      {/* Chat header */}
       <div style={{ background: candidate.bubbleBg, padding: '10px 14px', display: 'flex', alignItems: 'center', gap: '8px', borderBottom: `1px solid ${candidate.bubbleBorder}` }}>
         <img src={candidate.img} alt={candidate.name} style={{ width: '28px', height: '28px', borderRadius: '50%', objectFit: 'cover', objectPosition: 'top' }} />
         <div>
@@ -940,8 +757,6 @@ Key Conservative positions: Housing - GST removed on ALL new homes under $1.3M, 
           <p style={{ fontFamily: "'Inter', sans-serif", fontSize: '10px', color: '#888', fontStyle: 'italic' }}>AI simulation of platform positions only - NOT the real candidate</p>
         </div>
       </div>
-
-      {/* Messages */}
       <div style={{ background: '#FAFAFA', padding: '12px', maxHeight: '260px', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '8px' }}>
         <div style={{ background: candidate.bubbleBg, border: `1px solid ${candidate.bubbleBorder}`, borderRadius: '10px', padding: '10px 12px', maxWidth: '85%' }}>
           <p style={{ fontFamily: "'Lora', Georgia, serif", fontSize: '13px', color: '#111', lineHeight: 1.6 }}>{candidate.intro}</p>
@@ -962,11 +777,9 @@ Key Conservative positions: Housing - GST removed on ALL new homes under $1.3M, 
         )}
         <div ref={messagesEndRef} />
       </div>
-
-      {/* Input */}
       <div style={{ display: 'flex', gap: '8px', padding: '10px', background: 'white', borderTop: `1px solid ${candidate.bubbleBorder}` }}>
         <input value={input} onChange={e => setInput(e.target.value)} onKeyDown={e => { if (e.key === 'Enter') send(); }}
-          placeholder={`Ask ${candidate.name.split(' ')[0]} about ${issueInfo?.label.split(' ')[0].toLowerCase()}...`}
+          placeholder={`Ask about ${issueInfo?.label.split(' ')[0].toLowerCase()}...`}
           style={{ flex: 1, border: '1px solid #E0E0E0', borderRadius: '8px', padding: '9px 12px', fontFamily: "'Lora', Georgia, serif", fontSize: '13px', outline: 'none', color: '#222' }} />
         <button onClick={send} disabled={!input.trim() || loading}
           style={{ padding: '9px 16px', borderRadius: '8px', fontFamily: "'Inter', sans-serif", fontSize: '13px', fontWeight: 600, border: 'none', cursor: input.trim() && !loading ? 'pointer' : 'not-allowed', background: input.trim() && !loading ? '#7EB3FF' : '#E0E0E0', color: input.trim() && !loading ? 'white' : '#AAA', transition: 'all 0.15s' }}>
@@ -983,7 +796,6 @@ function DecisionSummaryPage({ answers, selectedIssues, onChat, onRestart }) {
   const labelMap = {
     student: { 'College/university': 'college student', 'Yes, college/university': 'college student', 'In high school': 'high school student', 'Recently graduated': 'recent grad', 'Not a student': 'non-student' },
     employment: { 'Employed full-time': 'employed full-time', 'Employed part-time': 'employed part-time', 'Looking for work': 'looking for work', 'Not currently working': 'not currently working' },
-    income: { 'Under $40k': 'under $40k', '$40k-$75k': '$40k-$75k', '$75k-$120k': '$75k-$120k', 'Over $120k': 'over $120k' },
     housing: { 'Renting': 'renter', 'Homeowner': 'homeowner', 'Living with family': 'living with family', 'Looking to buy': 'looking to buy' }
   };
 
@@ -993,12 +805,11 @@ function DecisionSummaryPage({ answers, selectedIssues, onChat, onRestart }) {
         <div style={{ textAlign: 'center', padding: '40px 0 28px' }}>
           <h1 style={{ fontFamily: "'Lora', Georgia, serif", fontSize: '32px', fontWeight: 500, color: '#111', marginBottom: '10px' }}>Your Summary</h1>
           <p style={{ fontFamily: "'Lora', Georgia, serif", fontSize: '15px', color: '#555' }}>
-            {[labelMap.student[answers.student], labelMap.employment[answers.employment], labelMap.income[answers.income], labelMap.housing[answers.housing]].filter(Boolean).join(' · ')}
+            {[labelMap.student[answers.student], labelMap.employment[answers.employment], labelMap.housing[answers.housing]].filter(Boolean).join(' · ')}
           </p>
           <p style={{ fontFamily: "'Inter', sans-serif", fontSize: '13px', color: '#888', marginTop: '6px' }}>Priorities: {selectedIssueData.map(i => i.label).join(', ')}</p>
         </div>
 
-        {/* Quick visual breakdown */}
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))', gap: '12px', marginBottom: '28px' }}>
           {selectedIssueData.map(issue => (
             <div key={issue.key} style={{ background: 'white', borderRadius: '14px', overflow: 'hidden', border: '1px solid #E0E0E0' }}>
@@ -1013,10 +824,9 @@ function DecisionSummaryPage({ answers, selectedIssues, onChat, onRestart }) {
           ))}
         </div>
 
-        {/* Questions to ask yourself */}
         <div style={{ background: 'white', borderRadius: '16px', padding: '24px', marginBottom: '16px', border: '1px solid #E0E0E0' }}>
           <h3 style={{ fontFamily: "'Lora', Georgia, serif", fontSize: '18px', fontWeight: 500, color: '#111', marginBottom: '16px' }}>Questions to ask yourself</h3>
-          {['Which candidate\'s approach to your top issue feels more realistic?', 'Are there tradeoffs you\'re willing to accept on lower-priority issues?', 'Does your local candidate\'s position matter as much as the party leader\'s?'].map((q, i) => (
+          {["Which candidate's approach to your top issue feels more realistic?", "Are there tradeoffs you're willing to accept on lower-priority issues?", "Does your local candidate's position matter as much as the party leader's?"].map((q, i) => (
             <div key={i} style={{ display: 'flex', gap: '12px', marginBottom: '12px', alignItems: 'flex-start' }}>
               <div style={{ width: '22px', height: '22px', borderRadius: '50%', background: '#EEF4FF', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, marginTop: '1px' }}>
                 <span style={{ fontFamily: "'Inter', sans-serif", fontSize: '11px', fontWeight: 600, color: '#2D6FD4' }}>{i+1}</span>
@@ -1026,7 +836,6 @@ function DecisionSummaryPage({ answers, selectedIssues, onChat, onRestart }) {
           ))}
         </div>
 
-        {/* Next steps */}
         <div style={{ background: 'white', borderRadius: '16px', padding: '24px', marginBottom: '16px', border: '1px solid #E0E0E0' }}>
           <h3 style={{ fontFamily: "'Lora', Georgia, serif", fontSize: '18px', fontWeight: 500, color: '#111', marginBottom: '16px' }}>What now?</h3>
           {[
@@ -1045,7 +854,6 @@ function DecisionSummaryPage({ answers, selectedIssues, onChat, onRestart }) {
           ))}
         </div>
 
-        {/* Chat CTA */}
         <div style={{ background: 'white', borderRadius: '16px', padding: '24px', border: '1px solid #E0E0E0', textAlign: 'center' }}>
           <div style={{ display: 'flex', justifyContent: 'center', gap: '8px', marginBottom: '14px' }}>
             <img src={IMGS.carney} alt="Carney" style={{ width: '44px', height: '44px', borderRadius: '50%', objectFit: 'cover', objectPosition: 'top', border: '2px solid #FCA5A5' }} />
@@ -1079,7 +887,7 @@ function ChatPage({ answers, selectedIssues, onRestart }) {
   const [loadingMode, setLoadingMode] = useState(null);
   const messagesEndRef = React.useRef(null);
 
-  const profileSummary = answers ? `${answers.student}, ${answers.employment}, ${answers.income} income, ${answers.housing}` : 'Not provided';
+  const profileSummary = answers ? `${answers.student}, ${answers.employment}, ${answers.housing}` : 'Not provided';
   const selectedIssueLabels = selectedIssues ? issueOptions.filter(i => selectedIssues.includes(i.key)).map(i => i.label).join(', ') : 'Not selected';
 
   const systemPrompts = {
@@ -1094,8 +902,8 @@ Key Conservative positions: GST removed on ALL new homes under $1.3M. Sell feder
   };
 
   const candidates = {
-    carney: { name: 'Mark Carney', img: IMGS.carney, bubbleBg: '#FEF2F2', bubbleBorder: '#FECACA', badge: 'Liberal', badgeBg: '#FEE2E2', badgeText: '#991B1B', intro: "I'm an AI simulation of Mark Carney, based on his verified 2025 Liberal platform. Ask me about housing, healthcare, climate, jobs, or anything else. What's on your mind?" },
-    poilievre: { name: 'Pierre Poilievre', img: IMGS.poilievre, bubbleBg: '#EFF6FF', bubbleBorder: '#BFDBFE', badge: 'Conservative', badgeBg: '#DBEAFE', badgeText: '#1E40AF', intro: "I'm an AI simulation of Pierre Poilievre, based on his verified 2025 Conservative platform. Ask me about housing, jobs, affordability, trade, or anything else. What do you want to know?" }
+    carney: { name: 'Mark Carney', img: IMGS.carney, bubbleBg: '#FEF2F2', bubbleBorder: '#FECACA', badge: 'Liberal', badgeBg: '#FEE2E2', badgeText: '#991B1B', intro: "I'm an AI simulation based on Mark Carney's verified 2025 Liberal platform - not the real person. Ask me about housing, healthcare, climate, jobs, or anything else in the platform." },
+    poilievre: { name: 'Pierre Poilievre', img: IMGS.poilievre, bubbleBg: '#EFF6FF', bubbleBorder: '#BFDBFE', badge: 'Conservative', badgeBg: '#DBEAFE', badgeText: '#1E40AF', intro: "I'm an AI simulation based on Pierre Poilievre's verified 2025 Conservative platform - not the real person. Ask me about housing, jobs, affordability, trade, or anything else in the platform." }
   };
 
   const config = candidates[mode];
@@ -1140,8 +948,6 @@ Key Conservative positions: GST removed on ALL new homes under $1.3M. Sell feder
 
   return (
     <div style={{ minHeight: '100vh', background: '#FEFEFE', display: 'flex', flexDirection: 'column' }}>
-
-      {/* Candidate switcher header */}
       <div style={{ background: 'white', borderBottom: '1px solid #E8E8E8', padding: '16px 20px' }}>
         <div style={{ maxWidth: '800px', margin: '0 auto' }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '14px' }}>
@@ -1163,7 +969,6 @@ Key Conservative positions: GST removed on ALL new homes under $1.3M. Sell feder
         </div>
       </div>
 
-      {/* Disclaimer */}
       <div style={{ maxWidth: '800px', margin: '0 auto', width: '100%', padding: '10px 20px 0' }}>
         <div style={{ background: '#FFF0F3', border: '1.5px solid #F4B8C4', borderRadius: '10px', padding: '12px 16px' }}>
           <p style={{ fontFamily: "'Inter', sans-serif", fontSize: '12px', fontWeight: 600, color: '#A3244A', marginBottom: '4px' }}>Important: AI Simulation Only</p>
@@ -1176,7 +981,6 @@ Key Conservative positions: GST removed on ALL new homes under $1.3M. Sell feder
         </div>
       </div>
 
-      {/* Messages */}
       <div style={{ flex: 1, overflowY: 'auto', padding: '16px 20px' }}>
         <div style={{ maxWidth: '800px', margin: '0 auto', display: 'flex', flexDirection: 'column', gap: '12px' }}>
           <div style={{ background: config.bubbleBg, border: `1px solid ${config.bubbleBorder}`, borderRadius: '14px', borderTopLeftRadius: '3px', padding: '14px 16px', maxWidth: '80%' }}>
@@ -1209,7 +1013,6 @@ Key Conservative positions: GST removed on ALL new homes under $1.3M. Sell feder
         </div>
       </div>
 
-      {/* Input */}
       <div style={{ background: 'white', borderTop: '1px solid #E8E8E8', padding: '12px 20px' }}>
         <div style={{ maxWidth: '800px', margin: '0 auto', display: 'flex', gap: '8px' }}>
           <input value={input} onChange={e => setInput(e.target.value)} onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); }}}
